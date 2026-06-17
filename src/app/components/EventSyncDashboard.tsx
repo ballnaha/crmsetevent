@@ -1,0 +1,1118 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Dayjs } from "dayjs";
+import {
+  Avatar,
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import {
+  Ban,
+  BadgeCheck,
+  CalendarDays,
+  ClipboardCheck,
+  Database,
+  ExternalLink,
+  Globe2,
+  Lightbulb,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  RefreshCw,
+  SearchCheck,
+  Send,
+  X,
+  UserRound,
+} from "lucide-react";
+
+const tabsList = [
+  { id: "all", label: "All Sources" },
+  { id: "bitec", label: "BITEC Calendar" },
+  { id: "impact", label: "IMPACT Muang Thong" },
+];
+
+type EventRow = {
+  id?: string;
+  title: string;
+  source: string;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  date: string;
+  venue?: string | null;
+  hall?: string | null;
+  category?: string | null;
+  sourceUrl?: string | null;
+  imageUrl?: string | null;
+  leadIdea?: string | null;
+  orderNo?: string | null;
+  status?: string | null;
+  organizerName?: string | null;
+  organizerContactName?: string | null;
+  organizerPhone?: string | null;
+  organizerEmail?: string | null;
+  organizerWebsite?: string | null;
+};
+
+const statusOptions = [
+  {
+    id: "NEW",
+    label: "มาใหม่",
+    description: "Lead ที่ sync เข้ามาใหม่ ยังไม่ได้คัดกรอง",
+    action: "ตรวจข้อมูลผู้จัดงาน",
+    color: "var(--brand)",
+    bg: "rgba(14, 165, 233, 0.14)",
+    icon: BadgeCheck,
+  },
+  {
+    id: "NEEDS_REVIEW",
+    label: "ต้องเช็กข้อมูล",
+    description: "ข้อมูลติดต่อหรือรายละเอียดงานยังไม่ครบ",
+    action: "หาเบอร์หรืออีเมลเพิ่ม",
+    color: "#a78bfa",
+    bg: "rgba(139, 92, 246, 0.14)",
+    icon: SearchCheck,
+  },
+  {
+    id: "READY",
+    label: "น่าติดต่อ",
+    description: "มีข้อมูลพอและเข้ากับบริการ event/LED",
+    action: "เตรียม pitch",
+    color: "var(--warning)",
+    bg: "rgba(245, 158, 11, 0.14)",
+    icon: ClipboardCheck,
+  },
+  {
+    id: "CONTACTED",
+    label: "ติดต่อแล้ว",
+    description: "โทร ส่งไลน์ หรืออีเมลไปแล้ว",
+    action: "รอ feedback",
+    color: "var(--success)",
+    bg: "rgba(16, 185, 129, 0.14)",
+    icon: MessageCircle,
+  },
+  {
+    id: "PROPOSAL",
+    label: "ส่งข้อเสนอแล้ว",
+    description: "ส่งราคา แนวทางงาน หรือ portfolio ให้ลูกค้าแล้ว",
+    action: "ติดตามผล",
+    color: "#38bdf8",
+    bg: "rgba(56, 189, 248, 0.14)",
+    icon: Send,
+  },
+  {
+    id: "NOT_INTERESTED",
+    label: "ไม่น่าสนใจ",
+    description: "งานไม่เข้าเป้า งบไม่เหมาะ หรือไม่ใช่กลุ่มลูกค้า",
+    action: "พัก lead นี้",
+    color: "var(--danger)",
+    bg: "rgba(239, 68, 68, 0.14)",
+    icon: Ban,
+  },
+];
+
+function getStatusMeta(status?: string | null) {
+  return statusOptions.find((item) => item.id === status) || statusOptions[0];
+}
+
+export default function EventSyncDashboard() {
+  const searchParams = useSearchParams();
+  const sourceParam = searchParams ? searchParams.get("source") : null;
+
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [dataSource, setDataSource] = useState("mock");
+  const [activeTab, setActiveTab] = useState("all");
+  const [selectedEvent, setSelectedEvent] = useState<EventRow | null>(null);
+  const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
+  const [dateTo, setDateTo] = useState<Dayjs | null>(null);
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+  const syncYear = new Date().getFullYear();
+
+  // Sync activeTab state when source URL param changes (e.g. from Sidebar deep-links)
+  useEffect(() => {
+    if (sourceParam && ["all", "bitec", "impact"].includes(sourceParam)) {
+      setActiveTab(sourceParam);
+    } else if (!sourceParam) {
+      setActiveTab("all");
+    }
+    setPage(1);
+  }, [sourceParam]);
+
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/events");
+      if (res.ok) {
+        const data = await res.json();
+        setEvents(data.events || []);
+        setDataSource(data.source || "mock");
+      }
+    } catch (err) {
+      console.error("Failed to load events", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSync = async () => {
+    if (syncing) return;
+
+    try {
+      setSyncing(true);
+      // Pass the active tab as a query parameter (e.g. ?source=bitec)
+      const res = await fetch(`/api/sync?source=${activeTab}&year=${syncYear}`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          await fetchEvents();
+        }
+      }
+    } catch (err) {
+      console.error("Sync failed", err);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  // Filter events dynamically on client side for zero-lag transitioning
+  const filteredEvents = events.filter((e) => {
+    const matchesSource = activeTab === "all" || e.source.toLowerCase() === activeTab;
+    if (!matchesSource) return false;
+
+    if (!dateFrom && !dateTo) return true;
+    if (!e.startsAt) return true;
+
+    const start = new Date(e.startsAt);
+    const end = e.endsAt ? new Date(e.endsAt) : start;
+    const from = dateFrom ? dateFrom.startOf("day").toDate() : null;
+    const to = dateTo ? dateTo.endOf("day").toDate() : null;
+
+    return (!from || end >= from) && (!to || start <= to);
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredEvents.length / rowsPerPage));
+  const pagedEvents = filteredEvents.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+  const firstItem = filteredEvents.length === 0 ? 0 : (page - 1) * rowsPerPage + 1;
+  const lastItem = Math.min(page * rowsPerPage, filteredEvents.length);
+  const hasDateFilter = Boolean(dateFrom || dateTo);
+  const dateRangeInvalid = Boolean(dateFrom && dateTo && dateFrom.isAfter(dateTo, "day"));
+  const datePickerSlotProps = {
+    textField: {
+      size: "small" as const,
+      sx: {
+        width: { xs: "100%", sm: 170 },
+        "& .MuiInputBase-root, & .MuiPickersInputBase-root": {
+          height: 38,
+          color: "var(--foreground)",
+          bgcolor: "rgba(15, 23, 42, 0.98)",
+          borderRadius: "8px",
+        },
+        "& .MuiPickersOutlinedInput-notchedOutline, & .MuiOutlinedInput-notchedOutline": {
+          borderColor: "rgba(148, 163, 184, 0.28)",
+        },
+        "&:hover .MuiPickersOutlinedInput-notchedOutline, &:hover .MuiOutlinedInput-notchedOutline": {
+          borderColor: "rgba(56, 189, 248, 0.55)",
+        },
+        "& .Mui-focused .MuiPickersOutlinedInput-notchedOutline, & .Mui-focused .MuiOutlinedInput-notchedOutline": {
+          borderColor: "var(--brand)",
+          borderWidth: 1,
+        },
+        "& .MuiInputLabel-root": { color: "#cbd5e1", fontSize: "0.76rem", fontWeight: 700 },
+        "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand-hover)" },
+        "& input, & .MuiPickersSectionList-root, & .MuiPickersSectionList-section, & .MuiPickersSectionList-sectionContent": {
+          color: "#f8fafc",
+          fontSize: "0.78rem",
+          fontWeight: 700,
+        },
+        "& .MuiPickersSectionList-sectionContent.Mui-selected": {
+          bgcolor: "rgba(14, 165, 233, 0.28)",
+          color: "#ffffff",
+        },
+        "& .MuiPickersInputBase-sectionsContainer": {
+          py: 0,
+        },
+        "& .MuiIconButton-root": {
+          color: "#38bdf8",
+          mr: -0.4,
+        },
+        "& .MuiSvgIcon-root": {
+          color: "inherit",
+          fontSize: 18,
+        },
+      },
+    },
+  };
+  const datePickerPaperSx = {
+    bgcolor: "#0f172a",
+    color: "var(--foreground)",
+    border: "1px solid rgba(148, 163, 184, 0.22)",
+    borderRadius: "8px",
+    boxShadow: "0 24px 70px rgba(0, 0, 0, 0.55)",
+    "& .MuiTypography-root, & .MuiPickersCalendarHeader-label, & .MuiPickersYear-yearButton": {
+      color: "var(--foreground)",
+    },
+    "& .MuiPickersCalendarHeader-switchViewButton, & .MuiPickersArrowSwitcher-button": {
+      color: "#cbd5e1",
+    },
+    "& .MuiPickersDay-root": {
+      color: "#e2e8f0",
+      borderRadius: "8px",
+    },
+    "& .MuiPickersDay-root:hover": {
+      bgcolor: "rgba(14, 165, 233, 0.18)",
+    },
+    "& .MuiPickersDay-root.Mui-selected": {
+      color: "#ffffff",
+      bgcolor: "var(--brand)",
+      fontWeight: 800,
+    },
+    "& .MuiPickersDay-root.MuiPickersDay-today": {
+      borderColor: "var(--brand-hover)",
+    },
+    "& .MuiDayCalendar-weekDayLabel": {
+      color: "#94a3b8",
+      fontWeight: 800,
+    },
+    "& .MuiPickersYear-yearButton.Mui-selected": {
+      color: "#ffffff",
+      bgcolor: "var(--brand)",
+    },
+  };
+  const closeDetails = () => setSelectedEvent(null);
+  const handleStatusChange = async (status: string) => {
+    if (!selectedEvent?.id) return;
+
+    const res = await fetch("/api/events", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: selectedEvent.id, status }),
+    });
+
+    if (!res.ok) return;
+
+    setEvents((items) => items.map((item) => item.id === selectedEvent.id ? { ...item, status } : item));
+    setSelectedEvent((event) => event ? { ...event, status } : event);
+  };
+
+  return (
+    <Box className="dashboardPage">
+      {/* Page Header */}
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+        <Box>
+          <Typography component="h1" sx={{ fontSize: "1.35rem", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--foreground)" }}>
+            Calendar Scraper Sync
+          </Typography>
+          <Typography sx={{ fontSize: "0.78rem", color: "var(--muted)", mt: 0.25 }}>
+            Scrape and import event calendars from BITEC and IMPACT Exhibition Centers.
+          </Typography>
+        </Box>
+        <Chip
+          label={dataSource === "database" ? "DB Live Connection" : dataSource === "cache" ? "Cached JSON File" : "Mock Sandbox Data"}
+          icon={<Database size={11} />}
+          sx={{
+            fontSize: "0.7rem",
+            height: 22,
+            bgcolor: dataSource === "database" ? "rgba(16, 185, 129, 0.12)" : "rgba(245, 158, 11, 0.12)",
+            color: dataSource === "database" ? "var(--success)" : "var(--warning)",
+            border: `1px solid ${dataSource === "database" ? "rgba(16, 185, 129, 0.2)" : "rgba(245, 158, 11, 0.2)"}`,
+            "& .MuiChip-icon": { color: "inherit" },
+            fontWeight: 600
+          }}
+        />
+      </Stack>
+
+      {/* Tabs Selector & Trigger Panel */}
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mt: 1.5, flexWrap: "wrap", gap: 2 }}>
+        {/* Custom Glassmorphic Tabs */}
+        <Stack
+          direction="row"
+          spacing={0.5}
+          sx={{
+            p: "4px",
+            bgcolor: "rgba(255,255,255,0.02)",
+            borderRadius: "10px",
+            border: "1px solid var(--line)",
+            width: "max-content"
+          }}
+        >
+          {tabsList.map((tab) => (
+            <Button
+              key={tab.id}
+              size="small"
+              onClick={() => { setActiveTab(tab.id); setPage(1); }}
+              sx={{
+                textTransform: "none",
+                fontSize: "0.78rem",
+                px: 2,
+                py: 0.5,
+                borderRadius: "7px",
+                bgcolor: activeTab === tab.id ? "var(--brand-light)" : "transparent",
+                color: activeTab === tab.id ? "#fff" : "var(--muted)",
+                border: activeTab === tab.id ? "1px solid rgba(14, 165, 233, 0.25)" : "1px solid transparent",
+                fontWeight: activeTab === tab.id ? 600 : 500,
+                transition: "all 0.15s ease",
+                "&:hover": {
+                  bgcolor: activeTab === tab.id ? "var(--brand-light)" : "rgba(255,255,255,0.04)",
+                  color: "#fff"
+                }
+              }}
+            >
+              {tab.label}
+            </Button>
+          ))}
+        </Stack>
+
+        {/* Sync Trigger Button */}
+        <Stack spacing={0.75} sx={{ alignItems: { xs: "stretch", sm: "flex-end" } }}>
+          <Button
+            variant="contained"
+            disabled={syncing}
+            onClick={handleSync}
+            aria-busy={syncing}
+            startIcon={
+              <Box
+                component="span"
+                sx={{
+                  display: "inline-flex",
+                  animation: syncing ? "spin 1.2s linear infinite" : "none",
+                  "@keyframes spin": {
+                    "0%": { transform: "rotate(0deg)" },
+                    "100%": { transform: "rotate(360deg)" }
+                  }
+                }}
+              >
+                <RefreshCw size={13} />
+              </Box>
+            }
+            sx={{
+              minWidth: 180,
+              fontSize: "0.78rem",
+              textTransform: "none",
+              bgcolor: syncing ? "rgba(14, 165, 233, 0.72)" : "var(--brand)",
+              color: "#fff",
+              fontWeight: 600,
+              borderRadius: "8px",
+              px: 2.25,
+              py: 0.75,
+              boxShadow: syncing ? "0 0 18px rgba(14, 165, 233, 0.36)" : "0 0 10px rgba(14, 165, 233, 0.3)",
+              "&:hover": {
+                bgcolor: syncing ? "rgba(14, 165, 233, 0.72)" : "var(--brand-hover)",
+                boxShadow: syncing ? "0 0 18px rgba(14, 165, 233, 0.36)" : "0 0 15px rgba(14, 165, 233, 0.45)",
+              },
+              "&.Mui-disabled": {
+                bgcolor: "rgba(14, 165, 233, 0.72)",
+                color: "#fff",
+                opacity: 1,
+                cursor: "wait",
+                boxShadow: "0 0 18px rgba(14, 165, 233, 0.36)",
+              },
+              "& .MuiButton-startIcon": {
+                color: "inherit",
+              },
+            }}
+          >
+            {syncing
+              ? "กำลัง Sync ข้อมูล..."
+              : activeTab === "all"
+              ? `Sync All ${syncYear}`
+              : `Sync ${activeTab.toUpperCase()} ${syncYear}`}
+          </Button>
+          {syncing && (
+            <Typography
+              role="status"
+              aria-live="polite"
+              sx={{
+                fontSize: "0.72rem",
+                color: "var(--brand)",
+                fontWeight: 600,
+                textAlign: { xs: "left", sm: "right" },
+              }}
+            >
+              กำลังดึงข้อมูลและบันทึกเข้า DB...
+              {` (${syncYear})`}
+            </Typography>
+          )}
+        </Stack>
+      </Stack>
+
+      <Paper
+        elevation={0}
+        sx={{
+          border: "1px solid var(--line)",
+          borderRadius: "8px",
+          bgcolor: "rgba(255,255,255,0.02)",
+          p: 1.5,
+        }}
+      >
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 1.25 }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", minWidth: { xs: "100%", sm: "auto" } }}>
+            <Box
+              sx={{
+                display: "grid",
+                placeItems: "center",
+                width: 30,
+                height: 30,
+                borderRadius: "8px",
+                color: "var(--brand)",
+                bgcolor: "rgba(14, 165, 233, 0.1)",
+                border: "1px solid rgba(14, 165, 233, 0.18)",
+                flexShrink: 0,
+              }}
+            >
+              <CalendarDays size={14} />
+            </Box>
+            <Box>
+              <Typography sx={{ color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 800, lineHeight: 1.2 }}>
+                Date Range
+              </Typography>
+              <Typography sx={{ color: "var(--muted-light)", fontSize: "0.68rem", fontWeight: 600 }}>
+                Filter events by show dates
+              </Typography>
+            </Box>
+          </Stack>
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="From"
+              value={dateFrom}
+              format="DD/MM/YYYY"
+              onChange={(value) => {
+                setDateFrom(value);
+                setPage(1);
+              }}
+              slotProps={{
+                textField: {
+                  ...datePickerSlotProps.textField,
+                  error: dateRangeInvalid,
+                },
+              }}
+            />
+            <DatePicker
+              label="To"
+              value={dateTo}
+              format="DD/MM/YYYY"
+              onChange={(value) => {
+                setDateTo(value);
+                setPage(1);
+              }}
+              slotProps={{
+                textField: {
+                  ...datePickerSlotProps.textField,
+                  error: dateRangeInvalid,
+                  helperText: dateRangeInvalid ? "Check range" : "",
+                  sx: {
+                    ...datePickerSlotProps.textField.sx,
+                    "& .MuiFormHelperText-root": { color: "var(--danger)", fontSize: "0.68rem", mt: 0.4 },
+                  },
+                },
+              }}
+            />
+          </LocalizationProvider>
+          {(dateFrom || dateTo) && (
+            <Button
+              size="small"
+              onClick={() => {
+                setDateFrom(null);
+                setDateTo(null);
+                setPage(1);
+              }}
+              sx={{
+                minHeight: 36,
+                textTransform: "none",
+                color: "var(--muted)",
+                border: "1px solid var(--line)",
+                borderRadius: "8px",
+                px: 1.4,
+                fontSize: "0.76rem",
+                fontWeight: 700,
+                "&:hover": {
+                  color: "#fff",
+                  bgcolor: "rgba(255,255,255,0.04)",
+                  borderColor: "rgba(255,255,255,0.16)",
+                },
+              }}
+            >
+              Clear Range
+            </Button>
+          )}
+          <Typography sx={{ color: "var(--muted-light)", fontSize: "0.72rem", fontWeight: 600, ml: { sm: "auto" } }}>
+            {filteredEvents.length} matched
+          </Typography>
+        </Stack>
+      </Paper>
+
+      {/* Main Scraped Events List Card */}
+      <Paper className="dashboardCard ordersCard" elevation={0} sx={{ mt: 1 }}>
+        <Stack direction="row" className="cardTitleRow" sx={{ mb: 2 }}>
+          <Typography component="h2" className="cardTitle">
+            {activeTab === "all"
+              ? "All Synced Event Leads"
+              : activeTab === "bitec"
+              ? "BITEC Synced Event Leads"
+              : "IMPACT Synced Event Leads"}
+          </Typography>
+          <Box className="miniSearch">Search leads…</Box>
+        </Stack>
+
+        <TableContainer>
+          <Table size="small" aria-label="synced event leads list">
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox size="small" />
+                </TableCell>
+                <TableCell>Event Details</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Lead ID</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem" }}>
+                      Loading synced event leads...
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : filteredEvents.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem" }}>
+                      {hasDateFilter ? "No events found for this date range." : "No events found for this source. Click sync to retrieve live data."}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pagedEvents.map((row, idx) => {
+                  const statusMeta = getStatusMeta(row.status);
+
+                  return (
+                    <TableRow
+                      key={row.id || idx}
+                      hover
+                      onClick={() => setSelectedEvent(row)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                    <TableCell padding="checkbox">
+                      <Checkbox size="small" onClick={(event) => event.stopPropagation()} />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.25 }}>
+                      <Stack direction="row" spacing={1.5} className="orderNameCell" sx={{ alignItems: "flex-start" }}>
+                        {row.imageUrl ? (
+                          <Box
+                            component="img"
+                            src={row.imageUrl}
+                            alt={row.title}
+                            sx={{
+                              width: 52,
+                              height: 52,
+                              borderRadius: "8px",
+                              objectFit: "cover",
+                              border: "1px solid var(--line)",
+                              flexShrink: 0,
+                              bgcolor: "rgba(255,255,255,0.04)",
+                            }}
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                          />
+                        ) : (
+                          <Avatar className={`orderAvatar orderAvatar-${row.source.toLowerCase()}`} sx={{ mt: 0.25 }}>
+                            <CalendarDays size={16} />
+                          </Avatar>
+                        )}
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography className="tablePrimary" sx={{ mb: 0.25 }}>{row.title}</Typography>
+                          <Typography className="tableSecondary" sx={{ mb: 0.75 }}>
+                            {row.source} · {row.venue ?? "Bangkok"} · {row.category}
+                          </Typography>
+                          <Stack direction="row" spacing={0.75} sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 0.5 }}>
+                            {(row.organizerName || row.organizerContactName || row.organizerPhone || row.organizerEmail || row.organizerWebsite) && (
+                              <Chip
+                                label="Contact"
+                                size="small"
+                                icon={<UserRound size={11} />}
+                                sx={{
+                                  height: 22,
+                                  fontSize: "0.68rem",
+                                  bgcolor: "rgba(16, 185, 129, 0.1)",
+                                  color: "var(--success)",
+                                  border: "1px solid rgba(16, 185, 129, 0.18)",
+                                  "& .MuiChip-icon": { color: "inherit" },
+                                }}
+                              />
+                            )}
+                            <Typography sx={{ color: "var(--muted-light)", fontSize: "0.7rem", fontWeight: 600 }}>
+                              Click for details
+                            </Typography>
+                          </Stack>
+                        </Box>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>{row.date}</TableCell>
+                    <TableCell>
+                      <Typography className="tableSecondary" sx={{ fontWeight: 600, color: "var(--foreground) !important" }}>
+                        {row.orderNo || `LD-${row.id}`}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Chip
+                          label={statusMeta.label}
+                          size="small"
+                          className="statusPill"
+                          sx={{
+                            color: `${statusMeta.color} !important`,
+                            bgcolor: `${statusMeta.bg} !important`,
+                            border: `1px solid ${statusMeta.color}33 !important`,
+                          }}
+                        />
+                        <IconButton
+                          size="small"
+                          aria-label={`Open details for ${row.title}`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSelectedEvent(row);
+                          }}
+                          sx={{
+                            width: 28,
+                            height: 28,
+                            color: "var(--muted)",
+                            border: "1px solid var(--line)",
+                            borderRadius: "8px",
+                            "&:hover": {
+                              color: "#fff",
+                              bgcolor: "rgba(14, 165, 233, 0.12)",
+                              borderColor: "rgba(14, 165, 233, 0.3)",
+                            },
+                          }}
+                        >
+                          <ExternalLink size={13} />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Stack direction="row" className="tableFooter" sx={{ mt: 2 }}>
+          <Typography>Showing {firstItem}–{lastItem} of {filteredEvents.length} events</Typography>
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+            <span
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              style={{ cursor: page === 1 ? "default" : "pointer", opacity: page === 1 ? 0.35 : 1 }}
+            >
+              Prev
+            </span>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <span
+                key={n}
+                onClick={() => setPage(n)}
+                className={n === page ? "pageBadge" : undefined}
+                style={{ cursor: "pointer" }}
+              >
+                {n}
+              </span>
+            ))}
+            <span
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              style={{ cursor: page === totalPages ? "default" : "pointer", opacity: page === totalPages ? 0.35 : 1 }}
+            >
+              Next
+            </span>
+          </Stack>
+        </Stack>
+      </Paper>
+
+      <Dialog
+        open={Boolean(selectedEvent)}
+        onClose={closeDetails}
+        fullWidth
+        maxWidth="md"
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: "var(--panel-solid)",
+              color: "var(--foreground)",
+              border: "1px solid var(--line)",
+              borderRadius: "8px",
+              boxShadow: "var(--shadow-md)",
+              overflow: "hidden",
+            },
+          },
+        }}
+      >
+        {selectedEvent && (
+          <>
+            {selectedEvent.imageUrl && (
+              <Box
+                component="img"
+                src={selectedEvent.imageUrl}
+                alt={selectedEvent.title}
+                sx={{
+                  width: "100%",
+                  height: 200,
+                  objectFit: "cover",
+                  display: "block",
+                  bgcolor: "rgba(255,255,255,0.04)",
+                }}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+              />
+            )}
+            <DialogTitle sx={{ p: 0 }}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 2,
+                  p: 2.5,
+                  borderBottom: "1px solid var(--line)",
+                  bgcolor: "rgba(255,255,255,0.02)",
+                }}
+              >
+                <Stack direction="row" spacing={1.5} sx={{ minWidth: 0 }}>
+                  <Avatar className={`orderAvatar orderAvatar-${selectedEvent.source.toLowerCase()}`}>
+                    <CalendarDays size={16} />
+                  </Avatar>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography component="h2" sx={{ color: "var(--foreground)", fontSize: "1rem", fontWeight: 800, lineHeight: 1.3 }}>
+                      {selectedEvent.title}
+                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 0.75, mt: 1 }}>
+                      <Chip label={selectedEvent.source} size="small" sx={{ height: 22, fontSize: "0.7rem", bgcolor: "var(--brand-light)", color: "#fff" }} />
+                      <Chip
+                        label={getStatusMeta(selectedEvent.status).label}
+                        size="small"
+                        className="statusPill"
+                        sx={{
+                          color: `${getStatusMeta(selectedEvent.status).color} !important`,
+                          bgcolor: `${getStatusMeta(selectedEvent.status).bg} !important`,
+                          border: `1px solid ${getStatusMeta(selectedEvent.status).color}33 !important`,
+                        }}
+                      />
+                      <Typography sx={{ color: "var(--muted)", fontSize: "0.76rem", fontWeight: 600 }}>
+                        {selectedEvent.orderNo || `LD-${selectedEvent.id}`}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </Stack>
+                <IconButton
+                  aria-label="Close event details"
+                  onClick={closeDetails}
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    color: "var(--muted)",
+                    border: "1px solid var(--line)",
+                    borderRadius: "8px",
+                    flexShrink: 0,
+                    "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,0.05)" },
+                  }}
+                >
+                  <X size={16} />
+                </IconButton>
+              </Stack>
+            </DialogTitle>
+            <DialogContent sx={{ p: 0 }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" },
+                  gap: 0,
+                }}
+              >
+                <Stack spacing={2.25} sx={{ p: 2.5, borderRight: { md: "1px solid var(--line)" } }}>
+                  <Box>
+                    <Typography sx={{ color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 800, mb: 1.25 }}>
+                      Event Summary
+                    </Typography>
+                    <Stack spacing={1.2}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <CalendarDays size={14} color="var(--brand)" />
+                        <Typography sx={{ color: "var(--muted)", fontSize: "0.8rem" }}>{selectedEvent.date}</Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <MapPin size={14} color="var(--brand)" />
+                        <Typography sx={{ color: "var(--muted)", fontSize: "0.8rem" }}>
+                          {selectedEvent.venue || "Bangkok"}{selectedEvent.hall ? ` · ${selectedEvent.hall}` : ""}
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Database size={14} color="var(--brand)" />
+                        <Typography sx={{ color: "var(--muted)", fontSize: "0.8rem" }}>
+                          {selectedEvent.category || "General Event"}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </Box>
+
+                  <Divider sx={{ borderColor: "var(--line)" }} />
+
+                  <Box>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+                      <Lightbulb size={14} color="var(--warning)" />
+                      <Typography sx={{ color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 800 }}>
+                        Lead Opportunity
+                      </Typography>
+                    </Stack>
+                    <Typography
+                      sx={{
+                        color: "var(--muted)",
+                        fontSize: "0.82rem",
+                        lineHeight: 1.6,
+                        border: "1px solid var(--line)",
+                        bgcolor: "rgba(255,255,255,0.02)",
+                        borderRadius: "8px",
+                        p: 1.5,
+                      }}
+                    >
+                      {selectedEvent.leadIdea || "No lead idea available for this event."}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack spacing={2.25} sx={{ p: 2.5 }}>
+                  <Box>
+                    <Typography sx={{ color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 800, mb: 1.25 }}>
+                      Organizer Contact
+                    </Typography>
+                    <Stack spacing={1.15}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start" }}>
+                        <UserRound size={14} color="var(--success)" style={{ marginTop: 3 }} />
+                        <Box>
+                          <Typography sx={{ color: "var(--muted-light)", fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase" }}>
+                            Organizer
+                          </Typography>
+                          <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem", fontWeight: 600 }}>
+                            {selectedEvent.organizerName || "Not provided"}
+                          </Typography>
+                          {selectedEvent.organizerContactName && (
+                            <Typography sx={{ color: "var(--muted)", fontSize: "0.76rem", mt: 0.25 }}>
+                              {selectedEvent.organizerContactName}
+                            </Typography>
+                          )}
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Phone size={14} color="var(--success)" />
+                        <Typography sx={{ color: selectedEvent.organizerPhone ? "var(--foreground)" : "var(--muted-light)", fontSize: "0.8rem" }}>
+                          {selectedEvent.organizerPhone || "Phone not provided"}
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <Mail size={14} color="var(--success)" />
+                        <Typography sx={{ color: selectedEvent.organizerEmail ? "var(--foreground)" : "var(--muted-light)", fontSize: "0.8rem" }}>
+                          {selectedEvent.organizerEmail || "Email not provided"}
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center", minWidth: 0 }}>
+                        <Globe2 size={14} color="var(--success)" />
+                        <Typography sx={{ color: selectedEvent.organizerWebsite ? "var(--foreground)" : "var(--muted-light)", fontSize: "0.8rem", wordBreak: "break-word" }}>
+                          {selectedEvent.organizerWebsite || "Website not provided"}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </Box>
+
+                  {selectedEvent.sourceUrl && (
+                    <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
+                      <Button
+                        component="a"
+                        href={selectedEvent.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        endIcon={<ExternalLink size={13} />}
+                        sx={{
+                          textTransform: "none",
+                          color: "#fff",
+                          bgcolor: "var(--brand)",
+                          borderRadius: "8px",
+                          fontSize: "0.76rem",
+                          fontWeight: 700,
+                          px: 1.6,
+                          "&:hover": { bgcolor: "var(--brand-hover)" },
+                        }}
+                      >
+                        Source Page
+                      </Button>
+                    </Stack>
+                  )}
+                </Stack>
+              </Box>
+
+              {/* Sales Status — full-width pipeline */}
+              <Divider sx={{ borderColor: "var(--line)" }} />
+              <Box sx={{ px: 2.5, py: 2 }}>
+                {(() => {
+                  const currentStatus = getStatusMeta(selectedEvent.status);
+                  const currentIdx = statusOptions.findIndex((o) => o.id === currentStatus.id);
+
+                  return (
+                    <>
+                      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+                        <Typography sx={{ color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 800 }}>
+                          Sales Status
+                        </Typography>
+                        <Chip
+                          label={currentStatus.label}
+                          size="small"
+                          sx={{
+                            height: 22,
+                            fontSize: "0.68rem",
+                            fontWeight: 800,
+                            color: `${currentStatus.color} !important`,
+                            bgcolor: `${currentStatus.bg} !important`,
+                            border: `1px solid ${currentStatus.color}33`,
+                          }}
+                        />
+                      </Stack>
+
+                      {/* Step track */}
+                      <Box sx={{ position: "relative", display: "flex", alignItems: "flex-start" }}>
+                        {/* connecting line */}
+                        <Box sx={{
+                          position: "absolute",
+                          top: 12,
+                          left: `calc(100% / ${statusOptions.length * 2})`,
+                          right: `calc(100% / ${statusOptions.length * 2})`,
+                          height: "1px",
+                          bgcolor: "rgba(255,255,255,0.08)",
+                        }} />
+
+                        {statusOptions.map((option, i) => {
+                          const active = i === currentIdx;
+                          const passed = i < currentIdx;
+                          const StatusIcon = option.icon;
+
+                          return (
+                            <Box
+                              key={option.id}
+                              onClick={() => handleStatusChange(option.id)}
+                              role="button"
+                              aria-pressed={active}
+                              sx={{
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 0.75,
+                                cursor: "pointer",
+                                position: "relative",
+                                zIndex: 1,
+                                "&:hover .step-dot": {
+                                  borderColor: option.color,
+                                  bgcolor: option.bg,
+                                  color: option.color,
+                                },
+                                "&:hover .step-label": { color: option.color },
+                              }}
+                            >
+                              <Box
+                                className="step-dot"
+                                sx={{
+                                  width: 26,
+                                  height: 26,
+                                  borderRadius: "50%",
+                                  display: "grid",
+                                  placeItems: "center",
+                                  bgcolor: active ? option.color : passed ? "rgba(255,255,255,0.08)" : "var(--panel-solid)",
+                                  border: `2px solid ${active ? option.color : passed ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.1)"}`,
+                                  color: active ? "#fff" : passed ? "var(--muted)" : "var(--sidebar-muted)",
+                                  boxShadow: active ? `0 0 12px ${option.color}66` : "none",
+                                  transition: "all 0.18s ease",
+                                }}
+                              >
+                                <StatusIcon size={12} />
+                              </Box>
+                              <Typography
+                                className="step-label"
+                                sx={{
+                                  fontSize: "0.66rem",
+                                  fontWeight: active ? 800 : 500,
+                                  color: active ? option.color : passed ? "var(--muted)" : "var(--sidebar-muted)",
+                                  textAlign: "center",
+                                  lineHeight: 1.3,
+                                  transition: "color 0.18s ease",
+                                  px: 0.25,
+                                }}
+                              >
+                                {option.label}
+                              </Typography>
+                              {active && (
+                                <Box sx={{ width: 16, height: 2, borderRadius: 99, bgcolor: option.color, mt: -0.25 }} />
+                              )}
+                            </Box>
+                          );
+                        })}
+                      </Box>
+
+                      {/* Action hint */}
+                      <Box
+                        sx={{
+                          mt: 2,
+                          px: 1.5,
+                          py: 1,
+                          borderRadius: "8px",
+                          bgcolor: currentStatus.bg,
+                          border: `1px solid ${currentStatus.color}33`,
+                          display: "flex",
+                          gap: 1.5,
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        <Box sx={{ color: currentStatus.color, mt: "1px", flexShrink: 0 }}>
+                          {(() => { const I = currentStatus.icon; return <I size={14} />; })()}
+                        </Box>
+                        <Box>
+                          <Typography sx={{ color: currentStatus.color, fontSize: "0.72rem", fontWeight: 800, lineHeight: 1.2 }}>
+                            {currentStatus.action}
+                          </Typography>
+                          <Typography sx={{ color: "var(--muted)", fontSize: "0.68rem", mt: 0.3, lineHeight: 1.4 }}>
+                            {currentStatus.description}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </>
+                  );
+                })()}
+              </Box>
+            </DialogContent>
+          </>
+        )}
+      </Dialog>
+    </Box>
+  );
+}
