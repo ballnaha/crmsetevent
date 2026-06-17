@@ -40,19 +40,27 @@ model Venue {
 }
 
 model Event {
-  id        Int         @id @default(autoincrement())
-  title     String
-  source    EventSource
-  sourceUrl String?
-  category  String?
-  hall      String?
-  startsAt  DateTime
-  endsAt    DateTime?
-  venueId   Int
-  venue     Venue       @relation(fields: [venueId], references: [id])
-  leads     Lead[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id                   Int         @id @default(autoincrement())
+  title                String
+  source               EventSource
+  sourceUrl            String?
+  category             String?
+  hall                 String?
+  imageUrl             String?
+  organizerName        String?
+  organizerContactName String?
+  organizerPhone       String?
+  organizerEmail       String?
+  organizerWebsite     String?
+  organizerFacebook    String?
+  outreachStatus       String      @default("NEW")
+  startsAt             DateTime
+  endsAt               DateTime?
+  venueId              Int
+  venue                Venue       @relation(fields: [venueId], references: [id])
+  leads                Lead[]
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 
   @@unique([title, startsAt, venueId])
   @@index([source])

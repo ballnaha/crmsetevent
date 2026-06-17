@@ -7,6 +7,31 @@ import path from "path";
 
 const CACHE_PATH = path.join(process.cwd(), "src/generated/scraped_events.json");
 const allowedStatuses = new Set(["NEW", "NEEDS_REVIEW", "READY", "CONTACTED", "PROPOSAL", "NOT_INTERESTED"]);
+const DIGITECH_FACEBOOK_URL = "https://www.facebook.com/digitechasean";
+
+function getVisibleYears() {
+  const currentYear = new Date().getFullYear();
+  return [currentYear];
+}
+
+function isDbEventInYears(event: DbEventWithVenue, years: number[]) {
+  return years.includes(new Date(event.startsAt).getFullYear());
+}
+
+function getCachedEventYear(event: { startsAt?: string | null; date?: string | null }) {
+  if (event.startsAt) {
+    const startsAt = new Date(event.startsAt);
+    if (!Number.isNaN(startsAt.getTime())) return startsAt.getFullYear();
+  }
+
+  const match = event.date?.match(/\b(20\d{2}|21\d{2})\b/);
+  return match ? Number(match[1]) : null;
+}
+
+function isCachedEventInYears(event: { startsAt?: string | null; date?: string | null }, years: number[]) {
+  const year = getCachedEventYear(event);
+  return year === null || years.includes(year);
+}
 
 function getDefaultOutreachStatus(e: DbEventWithVenue) {
   if (e.outreachStatus) return e.outreachStatus;
@@ -14,7 +39,25 @@ function getDefaultOutreachStatus(e: DbEventWithVenue) {
   return "NEEDS_REVIEW";
 }
 
+function getFacebookOverride(event: { title: string; organizerEmail?: string | null; organizerWebsite?: string | null }) {
+  const title = event.title.toLowerCase();
+  const email = event.organizerEmail?.toLowerCase() || "";
+  const website = event.organizerWebsite?.toLowerCase() || "";
+
+  if (
+    title.includes("digitech asean thailand") ||
+    email.includes("info@digitechasean.com") ||
+    website.includes("digitechasean.com")
+  ) {
+    return DIGITECH_FACEBOOK_URL;
+  }
+
+  return null;
+}
+
 function mapDbEvent(e: DbEventWithVenue, idx: number) {
+  const organizerFacebook = getFacebookOverride(e) || e.organizerFacebook || null;
+
   return {
     id: e.id.toString(),
     title: e.title,
@@ -32,6 +75,7 @@ function mapDbEvent(e: DbEventWithVenue, idx: number) {
     organizerPhone: e.organizerPhone || null,
     organizerEmail: e.organizerEmail || null,
     organizerWebsite: e.organizerWebsite || null,
+    organizerFacebook,
     leadIdea: getLeadIdea(e.title, e.category || "", e.venue.name),
     orderNo: `LD-${String(1001 + idx)}`,
     status: getDefaultOutreachStatus(e),
@@ -39,6 +83,8 @@ function mapDbEvent(e: DbEventWithVenue, idx: number) {
 }
 
 export async function GET() {
+  const visibleYears = getVisibleYears();
+
   try {
     if (!prisma) throw new Error("Prisma client not initialized");
     // Attempt to query events from local MySQL
@@ -57,13 +103,24 @@ export async function GET() {
         hall: e.hall,
         category: e.category,
         sourceUrl: e.sourceUrl,
-        outreachStatus: "NEW",
+        imageUrl: e.imageUrl,
+        organizerName: e.organizerName,
+        organizerContactName: e.organizerContactName,
+        organizerPhone: e.organizerPhone,
+        organizerEmail: e.organizerEmail,
+        organizerWebsite: e.organizerWebsite,
+        organizerFacebook: e.organizerFacebook,
+        outreachStatus: e.outreachStatus,
         venue: {
           name: e.venue.name,
           slug: e.venue.slug,
         },
       }, idx));
-      return NextResponse.json({ events: mapped, source: "database" });
+      return NextResponse.json({
+        events: mapped.filter((event) => isCachedEventInYears(event, visibleYears)),
+        source: "database",
+        years: visibleYears,
+      });
     }
   } catch (dbError) {
     console.warn("Prisma database connection failed. Trying mysql2 fallback.", dbError);
@@ -72,7 +129,7 @@ export async function GET() {
   try {
     const dbEvents = await findEventsWithMysql();
     if (dbEvents.length > 0) {
-      return NextResponse.json({ events: dbEvents.map(mapDbEvent), source: "database" });
+      return NextResponse.json({ events: dbEvents.filter((event) => isDbEventInYears(event, visibleYears)).map(mapDbEvent), source: "database", years: visibleYears });
     }
   } catch (dbError) {
     console.warn("mysql2 database connection failed. Falling back to local cache.", dbError);
@@ -83,7 +140,7 @@ export async function GET() {
     try {
       const data = fs.readFileSync(CACHE_PATH, "utf-8");
       const cached = JSON.parse(data);
-      return NextResponse.json({ events: cached, source: "cache" });
+      return NextResponse.json({ events: cached.filter((event: { startsAt?: string | null; date?: string | null }) => isCachedEventInYears(event, visibleYears)), source: "cache", years: visibleYears });
     } catch (cacheError) {
       console.error("Failed to read cache file", cacheError);
     }
@@ -96,7 +153,7 @@ export async function GET() {
     status: index % 3 === 0 ? "NEW" : index % 3 === 1 ? "READY" : "NEEDS_REVIEW",
   }));
 
-  return NextResponse.json({ events: formattedSample, source: "mock" });
+  return NextResponse.json({ events: formattedSample.filter((event) => isCachedEventInYears(event, visibleYears)), source: "mock", years: visibleYears });
 }
 
 export async function PATCH(request: NextRequest) {

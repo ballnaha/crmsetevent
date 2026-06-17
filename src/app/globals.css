@@ -727,29 +727,80 @@ a {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   margin-top: 8px;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.tableFooter span {
-  cursor: pointer;
-  transition: color 0.15s ease;
+.paginationControls {
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.paginationPages {
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.paginationIcon,
+.paginationPage {
+  width: 30px !important;
+  min-width: 30px !important;
+  height: 30px !important;
+  border-radius: 8px !important;
+  color: var(--muted) !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  transition: all 0.15s ease !important;
+}
+
+.paginationPage {
+  padding: 0 !important;
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+}
+
+.paginationIcon:hover,
+.paginationPage:hover {
+  color: var(--foreground) !important;
+  border-color: rgba(56, 189, 248, 0.35) !important;
+  background: rgba(14, 165, 233, 0.08) !important;
+}
+
+.paginationIcon.Mui-disabled {
+  opacity: 0.35 !important;
+  color: var(--muted-light) !important;
+}
+
+.paginationPageActive,
+.paginationPageActive:hover {
+  color: #fff !important;
+  background: var(--brand) !important;
+  border-color: rgba(56, 189, 248, 0.55) !important;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.32) !important;
+}
+
+.paginationEllipsis {
+  display: inline-grid;
+  width: 18px;
+  height: 30px;
+  place-items: center;
+  color: var(--muted-light);
+  font-size: 0.78rem;
   user-select: none;
 }
 
-.tableFooter span:hover {
-  color: var(--foreground);
-}
+@media (max-width: 720px) {
+  .tableFooter {
+    justify-content: flex-start;
+  }
 
-.pageBadge {
-  display: inline-grid;
-  width: 26px;
-  height: 26px;
-  place-items: center;
-  border-radius: 8px;
-  background: var(--brand);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
+  .paginationControls {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 /* ─── Bar Chart ────────────────────────────────────────────────────── */

@@ -1,11 +1,10 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import {
   LayoutDashboard,
   ShieldCheck,
-  Database,
   RefreshCw,
   Settings,
 } from "lucide-react";
@@ -18,10 +17,6 @@ type SidebarProps = {
 export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  
-  const sourceParam = searchParams ? searchParams.get("source") : null;
-  const isSyncPageActive = pathname === "/sync";
 
   return (
     <Box component="aside" className="appSidebar" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -91,7 +86,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
 
             {/* Sync Manager Button */}
             <Button
-              className={`navButton ${pathname === "/sync" && !sourceParam ? "navButtonActive" : ""}`}
+              className={`navButton ${pathname === "/sync" ? "navButtonActive" : ""}`}
               startIcon={<RefreshCw size={16} />}
               onClick={() => {
                 router.push("/sync");
@@ -101,7 +96,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
                 transition: "all 0.15s ease",
                 justifyContent: "flex-start",
                 color: pathname === "/sync" ? "#fff" : "var(--muted)",
-                bgcolor: pathname === "/sync" && !sourceParam ? "var(--sidebar-active-bg)" : "transparent",
+                bgcolor: pathname === "/sync" ? "var(--sidebar-active-bg)" : "transparent",
                 fontWeight: pathname === "/sync" ? 600 : 500,
                 borderRadius: "8px !important",
                 px: 1.5,
@@ -118,76 +113,6 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
             >
               Calendar Sync Hub
             </Button>
-
-            {/* Sub-menus for BITEC and IMPACT */}
-            <Box 
-              sx={{ 
-                display: "flex", 
-                flexDirection: "column", 
-                gap: 0.5, 
-                ml: 3.5, 
-                pl: 1.5, 
-                borderLeft: "1px solid rgba(255, 255, 255, 0.08)",
-                mt: 0.5 
-              }}
-            >
-              <Button
-                className={`subNavButton ${isSyncPageActive && sourceParam === "bitec" ? "subNavButtonActive" : ""}`}
-                startIcon={<Database size={13} />}
-                onClick={() => {
-                  router.push("/sync?source=bitec");
-                  if (onClose) onClose();
-                }}
-                sx={{
-                  transition: "all 0.15s ease",
-                  justifyContent: "flex-start",
-                  color: isSyncPageActive && sourceParam === "bitec" ? "#fff" : "var(--sidebar-muted)",
-                  bgcolor: isSyncPageActive && sourceParam === "bitec" ? "rgba(14, 165, 233, 0.08)" : "transparent",
-                  fontWeight: isSyncPageActive && sourceParam === "bitec" ? 600 : 500,
-                  borderRadius: "6px !important",
-                  px: 1.25,
-                  py: 0.5,
-                  width: "100%",
-                  textTransform: "none",
-                  fontSize: "0.8rem",
-                  borderLeft: "none !important",
-                  "&:hover": {
-                    bgcolor: "rgba(255, 255, 255, 0.03)",
-                    color: "#fff"
-                  }
-                }}
-              >
-                BITEC Scraper
-              </Button>
-              <Button
-                className={`subNavButton ${isSyncPageActive && sourceParam === "impact" ? "subNavButtonActive" : ""}`}
-                startIcon={<Database size={13} />}
-                onClick={() => {
-                  router.push("/sync?source=impact");
-                  if (onClose) onClose();
-                }}
-                sx={{
-                  transition: "all 0.15s ease",
-                  justifyContent: "flex-start",
-                  color: isSyncPageActive && sourceParam === "impact" ? "#fff" : "var(--sidebar-muted)",
-                  bgcolor: isSyncPageActive && sourceParam === "impact" ? "rgba(14, 165, 233, 0.08)" : "transparent",
-                  fontWeight: isSyncPageActive && sourceParam === "impact" ? 600 : 500,
-                  borderRadius: "6px !important",
-                  px: 1.25,
-                  py: 0.5,
-                  width: "100%",
-                  textTransform: "none",
-                  fontSize: "0.8rem",
-                  borderLeft: "none !important",
-                  "&:hover": {
-                    bgcolor: "rgba(255, 255, 255, 0.03)",
-                    color: "#fff"
-                  }
-                }}
-              >
-                IMPACT Scraper
-              </Button>
-            </Box>
           </Stack>
         </Box>
 
@@ -265,7 +190,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               />
             </Stack>
             <Typography sx={{ color: "var(--sidebar-muted)", fontSize: "0.68rem", mt: 0.25, lineHeight: 1.3 }}>
-              BITEC & IMPACT scraper active.
+              Scrapers active.
             </Typography>
           </Box>
         </Box>

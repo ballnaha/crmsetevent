@@ -137,6 +137,14 @@ exports.Prisma.EventScalarFieldEnum = {
   sourceUrl: 'sourceUrl',
   category: 'category',
   hall: 'hall',
+  imageUrl: 'imageUrl',
+  organizerName: 'organizerName',
+  organizerContactName: 'organizerContactName',
+  organizerPhone: 'organizerPhone',
+  organizerEmail: 'organizerEmail',
+  organizerWebsite: 'organizerWebsite',
+  organizerFacebook: 'organizerFacebook',
+  outreachStatus: 'outreachStatus',
   startsAt: 'startsAt',
   endsAt: 'endsAt',
   venueId: 'venueId',
@@ -188,7 +196,15 @@ exports.Prisma.EventOrderByRelevanceFieldEnum = {
   title: 'title',
   sourceUrl: 'sourceUrl',
   category: 'category',
-  hall: 'hall'
+  hall: 'hall',
+  imageUrl: 'imageUrl',
+  organizerName: 'organizerName',
+  organizerContactName: 'organizerContactName',
+  organizerPhone: 'organizerPhone',
+  organizerEmail: 'organizerEmail',
+  organizerWebsite: 'organizerWebsite',
+  organizerFacebook: 'organizerFacebook',
+  outreachStatus: 'outreachStatus'
 };
 
 exports.Prisma.LeadOrderByRelevanceFieldEnum = {

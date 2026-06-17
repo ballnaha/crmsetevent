@@ -1,5 +1,7 @@
 import mysql, { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
+const DIGITECH_FACEBOOK_URL = "https://www.facebook.com/digitechasean";
+
 type RawEventInput = {
   title: string;
   source: string;
@@ -15,6 +17,7 @@ type RawEventInput = {
   organizerPhone?: string | null;
   organizerEmail?: string | null;
   organizerWebsite?: string | null;
+  organizerFacebook?: string | null;
 };
 
 export type DbEventWithVenue = {
@@ -32,6 +35,7 @@ export type DbEventWithVenue = {
   organizerPhone?: string | null;
   organizerEmail?: string | null;
   organizerWebsite?: string | null;
+  organizerFacebook?: string | null;
   outreachStatus?: string | null;
   venue: {
     name: string;
@@ -79,6 +83,7 @@ async function ensureEventContactColumns(conn: mysql.Connection) {
     ["organizerPhone", "VARCHAR(191) NULL"],
     ["organizerEmail", "VARCHAR(191) NULL"],
     ["organizerWebsite", "VARCHAR(191) NULL"],
+    ["organizerFacebook", "VARCHAR(191) NULL"],
     ["outreachStatus", "VARCHAR(32) NOT NULL DEFAULT 'NEW'"],
     ["imageUrl", "VARCHAR(512) NULL"],
   ].filter(([name]) => !existing.has(name));
@@ -86,6 +91,26 @@ async function ensureEventContactColumns(conn: mysql.Connection) {
   for (const [name, definition] of missingColumns) {
     await conn.execute(`ALTER TABLE event ADD COLUMN \`${name}\` ${definition}`);
   }
+}
+
+function getFacebookOverride(item: { title: string; organizerEmail?: string | null; organizerWebsite?: string | null }) {
+  const title = item.title.toLowerCase();
+  const email = item.organizerEmail?.toLowerCase() || "";
+  const website = item.organizerWebsite?.toLowerCase() || "";
+
+  if (
+    title.includes("digitech asean thailand") ||
+    email.includes("info@digitechasean.com") ||
+    website.includes("digitechasean.com")
+  ) {
+    return DIGITECH_FACEBOOK_URL;
+  }
+
+  return null;
+}
+
+function normalizeOrganizerFacebook<T extends { title: string; organizerEmail?: string | null; organizerWebsite?: string | null; organizerFacebook?: string | null }>(item: T): T {
+  return { ...item, organizerFacebook: getFacebookOverride(item) || item.organizerFacebook || null };
 }
 
 export async function upsertEventsWithMysql(items: RawEventInput[]) {
@@ -115,7 +140,8 @@ export async function upsertEventsWithMysql(items: RawEventInput[]) {
 
     const savedEvents: DbEventWithVenue[] = [];
 
-    for (const item of items) {
+    for (const rawItem of items) {
+      const item = normalizeOrganizerFacebook(rawItem);
       const venue = venueMap[item.venueSlug];
       if (!venue) continue;
 
@@ -136,6 +162,7 @@ export async function upsertEventsWithMysql(items: RawEventInput[]) {
             organizerPhone,
             organizerEmail,
             organizerWebsite,
+            organizerFacebook,
             outreachStatus,
             startsAt,
             endsAt,
@@ -143,7 +170,7 @@ export async function upsertEventsWithMysql(items: RawEventInput[]) {
             createdAt,
             updatedAt
           )
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NEW', ?, ?, ?, NOW(3), NOW(3))
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NEW', ?, ?, ?, NOW(3), NOW(3))
          ON DUPLICATE KEY UPDATE
            id = LAST_INSERT_ID(id),
            endsAt = VALUES(endsAt),
@@ -156,6 +183,7 @@ export async function upsertEventsWithMysql(items: RawEventInput[]) {
            organizerPhone = VALUES(organizerPhone),
            organizerEmail = VALUES(organizerEmail),
            organizerWebsite = VALUES(organizerWebsite),
+           organizerFacebook = VALUES(organizerFacebook),
            updatedAt = NOW(3)`,
         [
           item.title,
@@ -169,6 +197,7 @@ export async function upsertEventsWithMysql(items: RawEventInput[]) {
           item.organizerPhone ?? null,
           item.organizerEmail ?? null,
           item.organizerWebsite ?? null,
+          item.organizerFacebook ?? null,
           startsAt,
           endsAt,
           venue.id,
@@ -190,6 +219,7 @@ export async function upsertEventsWithMysql(items: RawEventInput[]) {
         organizerPhone: item.organizerPhone ?? null,
         organizerEmail: item.organizerEmail ?? null,
         organizerWebsite: item.organizerWebsite ?? null,
+        organizerFacebook: item.organizerFacebook ?? null,
         outreachStatus: "NEW",
         venue: {
           name: venue.name,
@@ -223,6 +253,7 @@ type EventRow = RowDataPacket & {
   organizerPhone: string | null;
   organizerEmail: string | null;
   organizerWebsite: string | null;
+  organizerFacebook: string | null;
   outreachStatus: string;
   venueName: string;
   venueSlug: string;
@@ -249,6 +280,7 @@ export async function findEventsWithMysql(): Promise<DbEventWithVenue[]> {
          e.organizerPhone,
          e.organizerEmail,
          e.organizerWebsite,
+         e.organizerFacebook,
          e.outreachStatus,
          v.name AS venueName,
          v.slug AS venueSlug
@@ -272,6 +304,7 @@ export async function findEventsWithMysql(): Promise<DbEventWithVenue[]> {
       organizerPhone: row.organizerPhone,
       organizerEmail: row.organizerEmail,
       organizerWebsite: row.organizerWebsite,
+      organizerFacebook: row.organizerFacebook,
       outreachStatus: row.outreachStatus,
       venue: {
         name: row.venueName,

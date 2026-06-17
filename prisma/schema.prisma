@@ -52,6 +52,7 @@ model Event {
   organizerPhone       String?
   organizerEmail       String?
   organizerWebsite     String?
+  organizerFacebook    String?
   outreachStatus       String   @default("NEW")
   startsAt    DateTime
   endsAt      DateTime?

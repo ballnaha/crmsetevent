@@ -13,8 +13,11 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  FormControl,
   IconButton,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   Table,
   TableBody,
@@ -30,6 +33,10 @@ import {
   Ban,
   BadgeCheck,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   ClipboardCheck,
   Database,
   ExternalLink,
@@ -72,6 +79,7 @@ type EventRow = {
   organizerPhone?: string | null;
   organizerEmail?: string | null;
   organizerWebsite?: string | null;
+  organizerFacebook?: string | null;
 };
 
 const statusOptions = [
@@ -135,6 +143,22 @@ function getStatusMeta(status?: string | null) {
   return statusOptions.find((item) => item.id === status) || statusOptions[0];
 }
 
+function getPaginationItems(page: number, totalPages: number) {
+  const visible = new Set([1, totalPages, page - 1, page, page + 1].filter((item) => item >= 1 && item <= totalPages));
+  const items: Array<number | "ellipsis"> = [];
+  let previous = 0;
+
+  Array.from(visible).sort((a, b) => a - b).forEach((item) => {
+    if (previous && item - previous > 1) {
+      items.push("ellipsis");
+    }
+    items.push(item);
+    previous = item;
+  });
+
+  return items;
+}
+
 export default function EventSyncDashboard() {
   const searchParams = useSearchParams();
   const sourceParam = searchParams ? searchParams.get("source") : null;
@@ -147,9 +171,12 @@ export default function EventSyncDashboard() {
   const [selectedEvent, setSelectedEvent] = useState<EventRow | null>(null);
   const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
   const [dateTo, setDateTo] = useState<Dayjs | null>(null);
+  const [yearFilter, setYearFilter] = useState(String(new Date().getFullYear()));
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
   const syncYear = new Date().getFullYear();
+  const syncYears = [syncYear];
+  const syncYearLabel = String(syncYear);
 
   // Sync activeTab state when source URL param changes (e.g. from Sidebar deep-links)
   useEffect(() => {
@@ -207,6 +234,9 @@ export default function EventSyncDashboard() {
     const matchesSource = activeTab === "all" || e.source.toLowerCase() === activeTab;
     if (!matchesSource) return false;
 
+    const eventYear = e.startsAt ? new Date(e.startsAt).getFullYear() : Number(e.date.match(/\b(20\d{2}|21\d{2})\b/)?.[1]);
+    if (yearFilter !== "all" && eventYear !== Number(yearFilter)) return false;
+
     if (!dateFrom && !dateTo) return true;
     if (!e.startsAt) return true;
 
@@ -222,6 +252,7 @@ export default function EventSyncDashboard() {
   const pagedEvents = filteredEvents.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   const firstItem = filteredEvents.length === 0 ? 0 : (page - 1) * rowsPerPage + 1;
   const lastItem = Math.min(page * rowsPerPage, filteredEvents.length);
+  const paginationItems = getPaginationItems(page, totalPages);
   const hasDateFilter = Boolean(dateFrom || dateTo);
   const dateRangeInvalid = Boolean(dateFrom && dateTo && dateFrom.isAfter(dateTo, "day"));
   const datePickerSlotProps = {
@@ -442,8 +473,8 @@ export default function EventSyncDashboard() {
             {syncing
               ? "กำลัง Sync ข้อมูล..."
               : activeTab === "all"
-              ? `Sync All ${syncYear}`
-              : `Sync ${activeTab.toUpperCase()} ${syncYear}`}
+              ? `Sync All ${syncYearLabel}`
+              : `Sync ${activeTab.toUpperCase()} ${syncYearLabel}`}
           </Button>
           {syncing && (
             <Typography
@@ -457,7 +488,7 @@ export default function EventSyncDashboard() {
               }}
             >
               กำลังดึงข้อมูลและบันทึกเข้า DB...
-              {` (${syncYear})`}
+              {` (${syncYearLabel})`}
             </Typography>
           )}
         </Stack>
@@ -494,10 +525,54 @@ export default function EventSyncDashboard() {
                 Date Range
               </Typography>
               <Typography sx={{ color: "var(--muted-light)", fontSize: "0.68rem", fontWeight: 600 }}>
-                Filter events by show dates
+                Current year only
               </Typography>
             </Box>
           </Stack>
+
+          <FormControl
+            size="small"
+            sx={{
+              width: { xs: "100%", sm: 150 },
+              "& .MuiInputBase-root": {
+                height: 38,
+                color: "var(--foreground)",
+                bgcolor: "rgba(15, 23, 42, 0.98)",
+                borderRadius: "8px",
+                fontSize: "0.78rem",
+                fontWeight: 700,
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(148, 163, 184, 0.28)",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(56, 189, 248, 0.55)",
+              },
+              "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "var(--brand)",
+                borderWidth: 1,
+              },
+              "& .MuiSvgIcon-root": {
+                color: "#38bdf8",
+              },
+            }}
+          >
+            <Select
+              value={yearFilter}
+              displayEmpty
+              onChange={(event) => {
+                setYearFilter(event.target.value);
+                setPage(1);
+              }}
+              inputProps={{ "aria-label": "Filter by year" }}
+            >
+              {syncYears.map((year) => (
+                <MenuItem key={year} value={String(year)}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
@@ -728,30 +803,64 @@ export default function EventSyncDashboard() {
         </TableContainer>
 
         <Stack direction="row" className="tableFooter" sx={{ mt: 2 }}>
-          <Typography>Showing {firstItem}–{lastItem} of {filteredEvents.length} events</Typography>
-          <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-            <span
+          <Typography sx={{ fontSize: "0.78rem", fontWeight: 600 }}>
+            Showing {firstItem}-{lastItem} of {filteredEvents.length} events
+          </Typography>
+          <Stack direction="row" className="paginationControls" aria-label="Event table pagination">
+            <IconButton
+              size="small"
+              className="paginationIcon"
+              disabled={page === 1}
+              aria-label="First page"
+              onClick={() => setPage(1)}
+            >
+              <ChevronsLeft size={14} />
+            </IconButton>
+            <IconButton
+              size="small"
+              className="paginationIcon"
+              disabled={page === 1}
+              aria-label="Previous page"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              style={{ cursor: page === 1 ? "default" : "pointer", opacity: page === 1 ? 0.35 : 1 }}
             >
-              Prev
-            </span>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <span
-                key={n}
-                onClick={() => setPage(n)}
-                className={n === page ? "pageBadge" : undefined}
-                style={{ cursor: "pointer" }}
-              >
-                {n}
-              </span>
-            ))}
-            <span
+              <ChevronLeft size={14} />
+            </IconButton>
+            <Stack direction="row" className="paginationPages">
+              {paginationItems.map((item, idx) => (
+                item === "ellipsis" ? (
+                  <Box key={`ellipsis-${idx}`} component="span" className="paginationEllipsis">...</Box>
+                ) : (
+                  <Button
+                    key={item}
+                    size="small"
+                    aria-label={`Page ${item}`}
+                    aria-current={item === page ? "page" : undefined}
+                    className={item === page ? "paginationPage paginationPageActive" : "paginationPage"}
+                    onClick={() => setPage(item)}
+                  >
+                    {item}
+                  </Button>
+                )
+              ))}
+            </Stack>
+            <IconButton
+              size="small"
+              className="paginationIcon"
+              disabled={page === totalPages}
+              aria-label="Next page"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              style={{ cursor: page === totalPages ? "default" : "pointer", opacity: page === totalPages ? 0.35 : 1 }}
             >
-              Next
-            </span>
+              <ChevronRight size={14} />
+            </IconButton>
+            <IconButton
+              size="small"
+              className="paginationIcon"
+              disabled={page === totalPages}
+              aria-label="Last page"
+              onClick={() => setPage(totalPages)}
+            >
+              <ChevronsRight size={14} />
+            </IconButton>
           </Stack>
         </Stack>
       </Paper>
@@ -943,6 +1052,27 @@ export default function EventSyncDashboard() {
                         <Typography sx={{ color: selectedEvent.organizerWebsite ? "var(--foreground)" : "var(--muted-light)", fontSize: "0.8rem", wordBreak: "break-word" }}>
                           {selectedEvent.organizerWebsite || "Website not provided"}
                         </Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: "center", minWidth: 0 }}>
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                        {selectedEvent.organizerFacebook ? (
+                          <Typography sx={{ color: "var(--foreground)", fontSize: "0.8rem", wordBreak: "break-word" }}>
+                            <a
+                              href={selectedEvent.organizerFacebook.startsWith("http") ? selectedEvent.organizerFacebook : `https://${selectedEvent.organizerFacebook}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ color: "inherit", textDecoration: "underline" }}
+                            >
+                              Facebook Page
+                            </a>
+                          </Typography>
+                        ) : (
+                          <Typography sx={{ color: "var(--muted-light)", fontSize: "0.8rem" }}>
+                            Facebook not provided
+                          </Typography>
+                        )}
                       </Stack>
                     </Stack>
                   </Box>

@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 
 const CACHE_PATH = path.join(process.cwd(), "src/generated/scraped_events.json");
+const DIGITECH_FACEBOOK_URL = "https://www.facebook.com/digitechasean";
 
 type OrganizerContact = {
   organizerName?: string | null;
@@ -13,6 +14,7 @@ type OrganizerContact = {
   organizerPhone?: string | null;
   organizerEmail?: string | null;
   organizerWebsite?: string | null;
+  organizerFacebook?: string | null;
 };
 
 type ScrapedEvent = {
@@ -113,13 +115,13 @@ function parseDateRange(dateStr: string): { startsAt: Date; endsAt: Date | null 
     const p1 = parts[0];
     const p1Parts = p1.split(" ");
     
-    let startDay = p1Parts[0];
-    let startMonth = p1Parts[1] || month;
-    let startYear = year;
+    const startDay = p1Parts[0];
+    const startMonth = p1Parts[1] || month;
+    const startYear = year;
     
-    let endDay = p2Parts[0];
-    let endMonth = month;
-    let endYear = year;
+    const endDay = p2Parts[0];
+    const endMonth = month;
+    const endYear = year;
     
     const dStart = new Date(`${startDay} ${startMonth} ${startYear}`);
     const dEnd = new Date(`${endDay} ${endMonth} ${endYear}`);
@@ -162,6 +164,21 @@ function cleanEmailValue(value: string | null | undefined) {
 function cleanWebsiteValue(value: string | null | undefined) {
   const cleaned = cleanContactValue(value?.replace(/(\s+#.*|Line.*|Facebook.*|FB.*|Tweet.*|Save.*)$/i, ""));
   return cleaned && /^(https?:\/\/|www\.)/i.test(cleaned) ? cleaned : null;
+}
+
+function cleanFacebookValue(value: string | null | undefined) {
+  const cleaned = cleanContactValue(value?.replace(/(\s+#.*|Line.*|Tweet.*|Save.*)$/i, ""));
+  if (!cleaned) return null;
+
+  const match = cleaned.match(/(?:https?:\/\/)?(?:www\.)?(?:facebook\.com|fb\.com|fb\.me)\/[^\s"'<>]+/i);
+  if (!match) return null;
+
+  const url = match[0].replace(/[),.]+$/g, "");
+  return url.startsWith("http") ? url : `https://${url}`;
+}
+
+function isImpactFacebookUrl(value: string | null) {
+  return /facebook\.com\/IMPACTVenue\/?$/i.test(value || "");
 }
 
 function pickLabeledValue(text: string, label: string) {
@@ -236,12 +253,37 @@ function extractOrganizerContact(html: string): OrganizerContact & { imageUrl?: 
     cleanContactValue(contactText.match(/(?:Mobile|Phone|Tel|Telephone)\.?\s*:?\s*([+()\d][+()\d\s.-]{6,})/i)?.[1]);
   const validPhone = isLikelyPhoneValue(phone) ? phone : null;
 
+  let facebook =
+    cleanFacebookValue(pickLabeledValue(contactText, "Facebook")) ||
+    cleanFacebookValue(contactText.match(/(?:https?:\/\/)?(?:www\.)?(?:facebook\.com|fb\.com|fb\.me)\/[^\s"'<>]+/i)?.[0]);
+
+  if (!facebook) {
+    const websiteHost = website?.replace(/^https?:\/\//i, "").replace(/^www\./i, "").split(/[/?#]/)[0];
+    $("a[href]").each((_, el) => {
+      if (facebook) return;
+
+      const href = cleanFacebookValue($(el).attr("href"));
+      if (!href || isImpactFacebookUrl(href)) return;
+
+      const context = $(el).closest("p, li, tr, div, section, article").text().replace(/\s+/g, " ").trim();
+      const isContactLink =
+        /Facebook|Organizer|Organiser|Contact|Website|Email/i.test(context) ||
+        Boolean(email && context.includes(email)) ||
+        Boolean(websiteHost && context.includes(websiteHost));
+
+      if (isContactLink) {
+        facebook = href;
+      }
+    });
+  }
+
   return {
     organizerName: pickLabeledValue(contactText, "Organizer") || pickLabeledValue(contactText, "Organiser"),
     organizerContactName: pickLabeledValue(contactText, "Contact Person") || pickLabeledValue(contactText, "Show Manager") || pickLabeledValue(contactText, "Contact"),
     organizerPhone: validPhone,
     organizerEmail: email,
     organizerWebsite: website,
+    organizerFacebook: facebook,
     imageUrl: extractEventImage(html),
   };
 }
@@ -286,6 +328,14 @@ async function enrichEventsWithOrganizerContacts<T extends { sourceUrl: string; 
 
 function isEventInYear(event: { startsAt: string }, year: number) {
   return new Date(event.startsAt).getFullYear() === year;
+}
+
+function getSyncYears(baseYear: number) {
+  return [baseYear];
+}
+
+function isEventInYears(event: { startsAt: string }, years: number[]) {
+  return years.includes(new Date(event.startsAt).getFullYear());
 }
 
 function dedupeEvents<T extends { title: string; startsAt: string; venueSlug: string }>(events: T[]) {
@@ -372,47 +422,145 @@ async function scrapeImpactLive(year: number): Promise<ScrapedEvent[]> {
 // Scrape live data from BITEC website
 async function scrapeBitecLive(year: number): Promise<ScrapedEvent[]> {
   const list: ScrapedEvent[] = [];
+  let sitemapSuccess = false;
+
   try {
-    const bitecUrl = "https://www.bitec.co.th/visitor/coming-events";
-    const res = await fetch(bitecUrl, {
-      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
-      signal: AbortSignal.timeout(6000), // 6 second timeout
-    });
+    const sitemaps = [
+      "https://www.bitec.co.th/event-sitemap.xml",
+      "https://www.bitec.co.th/event-sitemap2.xml"
+    ];
     
-    if (!res.ok) return [];
-    const html = await res.text();
-    const $ = cheerio.load(html);
+    const targetUrls = new Set<string>();
     
-    $("h3.entry-title a").each((i, el) => {
-      const title = $(el).text().trim();
-      const href = $(el).attr("href") || "";
-      const container = $(el).parent().parent();
-      const dateText = container.find(".date").text().trim();
-
-      const { startsAt, endsAt } = parseDateRange(dateText);
-
-      // BITEC stores images as CSS background-image one level up in .pic .image
-      const gridRow = container.parent();
-      const styleAttr = gridRow.find(".pic .image, .cover .image").first().attr("style") || "";
-      const bgMatch = styleAttr.match(/url\(['"]?([^'")\s]+)['"]?\)/);
-      const imageUrl = bgMatch ? bgMatch[1] : null;
-
-      list.push({
-        title,
-        source: "BITEC",
-        startsAt: startsAt.toISOString(),
-        endsAt: endsAt ? endsAt.toISOString() : null,
-        category: getCategoryFromTitle(title),
-        hall: "BITEC Exhibition Hall",
-        venueSlug: "bitec",
-        sourceUrl: href,
-        imageUrl,
+    for (const sitemapUrl of sitemaps) {
+      console.log(`Fetching BITEC Sitemap: ${sitemapUrl}`);
+      const res = await fetch(sitemapUrl, {
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+        signal: AbortSignal.timeout(10000)
       });
-    });
+      if (!res.ok) continue;
+      
+      const xml = await res.text();
+      const locMatches = xml.match(/<loc>(.*?)<\/loc>/g) || [];
+      for (const loc of locMatches) {
+        const url = loc.replace(/<\/?loc>/g, '').trim();
+        // Keep English URLs only and must contain the year
+        if (url.includes('/event/') && !url.includes('/th/') && url.includes(String(year))) {
+          targetUrls.add(url);
+        }
+      }
+    }
+    
+    const urlList = Array.from(targetUrls);
+    
+    if (urlList.length > 0) {
+      sitemapSuccess = true;
+      console.log(`BITEC Sitemap: Found ${urlList.length} unique English URLs for year ${year}. Fetching details...`);
+      
+      // Batch fetch the detail pages
+      const concurrency = 8;
+      for (let i = 0; i < urlList.length; i += concurrency) {
+        const batch = urlList.slice(i, i + concurrency);
+        await Promise.all(batch.map(async (url) => {
+          try {
+            const pageRes = await fetch(url, {
+              headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+              signal: AbortSignal.timeout(8000)
+            });
+            if (!pageRes.ok) return;
+            
+            const html = await pageRes.text();
+            const $ = cheerio.load(html);
+            
+            const title = $('.entry-title, h1').first().text().trim();
+            const dateText = $('.date').first().text().trim();
+            const hall = $('.venue').first().text().trim() || "BITEC Exhibition Hall";
+            
+            if (title && dateText) {
+              const { startsAt, endsAt } = parseDateRange(dateText);
+              const contactDetail = extractOrganizerContact(html);
+              
+              list.push({
+                title,
+                source: "BITEC",
+                startsAt: startsAt.toISOString(),
+                endsAt: endsAt ? endsAt.toISOString() : null,
+                category: getCategoryFromTitle(title),
+                hall,
+                venueSlug: "bitec",
+                sourceUrl: url,
+                imageUrl: contactDetail.imageUrl ?? $('img.wp-post-image').first().attr('src') ?? null,
+                organizerName: contactDetail.organizerName || null,
+                organizerContactName: contactDetail.organizerContactName || null,
+                organizerPhone: contactDetail.organizerPhone || null,
+                organizerEmail: contactDetail.organizerEmail || null,
+                organizerWebsite: contactDetail.organizerWebsite || null,
+                organizerFacebook: contactDetail.organizerFacebook || null,
+              });
+            }
+          } catch (err) {
+            console.warn(`Failed to fetch event detail for ${url}:`, err instanceof Error ? err.message : String(err));
+          }
+        }));
+      }
+      console.log(`BITEC Sitemap: Successfully scraped ${list.length} events for year ${year}.`);
+    }
   } catch (e) {
-    console.error("Live BITEC scrape failed:", e);
+    console.error("Live BITEC Sitemap scrape failed:", e);
   }
-  return enrichEventsWithOrganizerContacts(list.filter((event) => isEventInYear(event, year)));
+
+  // Fallback: If sitemap fetching failed or returned no events, try the Coming Events list page
+  if (!sitemapSuccess || list.length === 0) {
+    console.log("BITEC Sitemap failed or empty. Falling back to Coming Events page scraping...");
+    try {
+      const bitecUrl = "https://www.bitec.co.th/visitor/coming-events";
+      const res = await fetch(bitecUrl, {
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+        signal: AbortSignal.timeout(10000),
+      });
+      
+      if (res.ok) {
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        
+        const pageList: ScrapedEvent[] = [];
+        
+        $("h3.entry-title a").each((i, el) => {
+          const title = $(el).text().trim();
+          const href = $(el).attr("href") || "";
+          const container = $(el).parent().parent();
+          const dateText = container.find(".date").text().trim();
+
+          const { startsAt, endsAt } = parseDateRange(dateText);
+
+          // BITEC stores images as CSS background-image one level up in .pic .image
+          const gridRow = container.parent();
+          const styleAttr = gridRow.find(".pic .image, .cover .image").first().attr("style") || "";
+          const bgMatch = styleAttr.match(/url\(['"]?([^'")\s]+)['"]?\)/);
+          const imageUrl = bgMatch ? bgMatch[1] : null;
+
+          pageList.push({
+            title,
+            source: "BITEC",
+            startsAt: startsAt.toISOString(),
+            endsAt: endsAt ? endsAt.toISOString() : null,
+            category: getCategoryFromTitle(title),
+            hall: "BITEC Exhibition Hall",
+            venueSlug: "bitec",
+            sourceUrl: href,
+            imageUrl,
+          });
+        });
+        
+        const filteredList = pageList.filter((event) => isEventInYear(event, year));
+        return enrichEventsWithOrganizerContacts(filteredList);
+      }
+    } catch (e) {
+      console.error("BITEC Fallback scrape failed:", e);
+    }
+  }
+
+  return list.filter((event) => isEventInYear(event, year));
 }
 
 function getCategoryFromTitle(title: string): string {
@@ -429,55 +577,80 @@ function getCategoryFromTitle(title: string): string {
   return "General Event";
 }
 
+function getFacebookOverride(event: { title: string; organizerEmail?: string | null; organizerWebsite?: string | null }) {
+  const title = event.title.toLowerCase();
+  const email = event.organizerEmail?.toLowerCase() || "";
+  const website = event.organizerWebsite?.toLowerCase() || "";
+
+  if (
+    title.includes("digitech asean thailand") ||
+    email.includes("info@digitechasean.com") ||
+    website.includes("digitechasean.com")
+  ) {
+    return DIGITECH_FACEBOOK_URL;
+  }
+
+  return null;
+}
+
+function normalizeOrganizerFacebook<T extends { title: string; organizerEmail?: string | null; organizerWebsite?: string | null; organizerFacebook?: string | null }>(event: T): T {
+  const organizerFacebook = getFacebookOverride(event) || event.organizerFacebook || null;
+  return { ...event, organizerFacebook };
+}
+
 function mapSavedEvent(savedEvent: DbEventWithVenue, source: string) {
+  const normalized = normalizeOrganizerFacebook(savedEvent);
+
   return {
-    id: savedEvent.id.toString(),
-    title: savedEvent.title,
-    source: savedEvent.source,
-    date: formatDateRange(new Date(savedEvent.startsAt), savedEvent.endsAt ? new Date(savedEvent.endsAt) : null),
-    venue: savedEvent.venue.name,
-    hall: savedEvent.hall || "Main Exhibition Area",
-    category: savedEvent.category || "General Event",
-    imageUrl: savedEvent.imageUrl || null,
-    organizerName: savedEvent.organizerName || null,
-    organizerContactName: savedEvent.organizerContactName || null,
-    organizerPhone: savedEvent.organizerPhone || null,
-    organizerEmail: savedEvent.organizerEmail || null,
-    organizerWebsite: savedEvent.organizerWebsite || null,
-    leadScore: 80 + (savedEvent.id % 18),
-    leadIdea: getLeadIdea(savedEvent.title, savedEvent.category || "", source),
+    id: normalized.id.toString(),
+    title: normalized.title,
+    source: normalized.source,
+    date: formatDateRange(new Date(normalized.startsAt), normalized.endsAt ? new Date(normalized.endsAt) : null),
+    venue: normalized.venue.name,
+    hall: normalized.hall || "Main Exhibition Area",
+    category: normalized.category || "General Event",
+    imageUrl: normalized.imageUrl || null,
+    organizerName: normalized.organizerName || null,
+    organizerContactName: normalized.organizerContactName || null,
+    organizerPhone: normalized.organizerPhone || null,
+    organizerEmail: normalized.organizerEmail || null,
+    organizerWebsite: normalized.organizerWebsite || null,
+    organizerFacebook: normalized.organizerFacebook || null,
+    leadScore: 80 + (normalized.id % 18),
+    leadIdea: getLeadIdea(normalized.title, normalized.category || "", source),
   };
 }
 
 export async function POST(request: NextRequest) {
   let dbSuccess = false;
   let syncedCount = 0;
-  const syncedEvents: any[] = [];
+  const syncedEvents: ReturnType<typeof mapSavedEvent>[] = [];
 
   const { searchParams } = new URL(request.url);
   const sourceParam = searchParams.get("source")?.toLowerCase() || "all";
   const requestedYear = Number(searchParams.get("year"));
-  const syncYear = Number.isInteger(requestedYear) && requestedYear >= 2000 && requestedYear <= 2100
+  const baseYear = Number.isInteger(requestedYear) && requestedYear >= 2000 && requestedYear <= 2100
     ? requestedYear
     : new Date().getFullYear();
+  const syncYears = getSyncYears(baseYear);
 
   // 1. Fetch live events from websites selectively or in parallel
-  console.log(`Triggering live event scraping for source: ${sourceParam}, year: ${syncYear}...`);
+  console.log(`Triggering live event scraping for source: ${sourceParam}, years: ${syncYears.join(", ")}...`);
   
   let impactLiveList: ScrapedEvent[] = [];
   let bitecLiveList: ScrapedEvent[] = [];
 
   try {
-    const promises: Promise<any[]>[] = [];
+    const promises: Promise<ScrapedEvent[]>[] = [];
     
     if (sourceParam === "all" || sourceParam === "impact") {
-      promises.push(scrapeImpactLive(syncYear));
+      promises.push(Promise.all(syncYears.map((year) => scrapeImpactLive(year))).then((results) => results.flat()));
     } else {
       promises.push(Promise.resolve([]));
     }
     
     if (sourceParam === "all" || sourceParam === "bitec") {
-      promises.push(scrapeBitecLive(syncYear));
+      promises.push(Promise.all(syncYears.map((year) => scrapeBitecLive(year))).then((results) => results.flat()));
     } else {
       promises.push(Promise.resolve([]));
     }
@@ -493,10 +666,10 @@ export async function POST(request: NextRequest) {
   
   const activeFallbackList = fallbackEventsList.filter(item => {
     const matchesSource = sourceParam === "all" || item.venueSlug === sourceParam;
-    return matchesSource && isEventInYear(item, syncYear);
+    return matchesSource && isEventInYears(item, syncYears);
   });
 
-  const activeEventsList = liveEvents.length > 0 ? liveEvents : activeFallbackList;
+  const activeEventsList = (liveEvents.length > 0 ? liveEvents : activeFallbackList).map(normalizeOrganizerFacebook);
   const activeSource = liveEvents.length > 0 ? "live_scraper" : "static_fallback";
 
   // 2. Sync events to Database
@@ -549,10 +722,16 @@ export async function POST(request: NextRequest) {
           category: item.category,
           sourceUrl: item.sourceUrl,
           imageUrl: item.imageUrl ?? null,
+          organizerName: item.organizerName || null,
+          organizerContactName: item.organizerContactName || null,
+          organizerPhone: item.organizerPhone || null,
+          organizerEmail: item.organizerEmail || null,
+          organizerWebsite: item.organizerWebsite || null,
+          organizerFacebook: item.organizerFacebook || null,
         },
         create: {
           title: item.title,
-          source: item.source as any,
+          source: item.source,
           startsAt: start,
           endsAt: item.endsAt ? new Date(item.endsAt) : null,
           hall: item.hall,
@@ -560,6 +739,12 @@ export async function POST(request: NextRequest) {
           venueId: venueId,
           sourceUrl: item.sourceUrl,
           imageUrl: item.imageUrl ?? null,
+          organizerName: item.organizerName || null,
+          organizerContactName: item.organizerContactName || null,
+          organizerPhone: item.organizerPhone || null,
+          organizerEmail: item.organizerEmail || null,
+          organizerWebsite: item.organizerWebsite || null,
+          organizerFacebook: item.organizerFacebook || null,
         },
       });
 
@@ -572,12 +757,13 @@ export async function POST(request: NextRequest) {
         hall: savedEvent.hall,
         category: savedEvent.category,
         sourceUrl: savedEvent.sourceUrl,
-        organizerName: item.organizerName || null,
-        organizerContactName: item.organizerContactName || null,
-        organizerPhone: item.organizerPhone || null,
-        organizerEmail: item.organizerEmail || null,
-        organizerWebsite: item.organizerWebsite || null,
-        imageUrl: item.imageUrl || null,
+        organizerName: savedEvent.organizerName,
+        organizerContactName: savedEvent.organizerContactName,
+        organizerPhone: savedEvent.organizerPhone,
+        organizerEmail: savedEvent.organizerEmail,
+        organizerWebsite: savedEvent.organizerWebsite,
+        organizerFacebook: savedEvent.organizerFacebook,
+        imageUrl: savedEvent.imageUrl,
         venue: {
           name: item.source === "BITEC" ? "BITEC" : "IMPACT Muang Thong Thani",
           slug: item.venueSlug,
@@ -615,6 +801,7 @@ export async function POST(request: NextRequest) {
     organizerPhone: item.organizerPhone || null,
     organizerEmail: item.organizerEmail || null,
     organizerWebsite: item.organizerWebsite || null,
+    organizerFacebook: item.organizerFacebook || null,
     leadScore: 82 + (idx % 15),
     leadIdea: getLeadIdea(item.title, item.category || "", item.source),
     orderNo: `LD-${String(1001 + idx)}`,
@@ -636,7 +823,8 @@ export async function POST(request: NextRequest) {
     syncedCount: dbSuccess ? syncedCount : fallbackList.length,
     source: dbSuccess ? "database" : "cache",
     syncMethod: activeSource,
-    year: syncYear,
+    year: baseYear,
+    years: syncYears,
     events: dbSuccess ? syncedEvents : fallbackList,
   });
 }

@@ -2291,6 +2291,14 @@ export namespace Prisma {
     sourceUrl: string | null
     category: string | null
     hall: string | null
+    imageUrl: string | null
+    organizerName: string | null
+    organizerContactName: string | null
+    organizerPhone: string | null
+    organizerEmail: string | null
+    organizerWebsite: string | null
+    organizerFacebook: string | null
+    outreachStatus: string | null
     startsAt: Date | null
     endsAt: Date | null
     venueId: number | null
@@ -2305,6 +2313,14 @@ export namespace Prisma {
     sourceUrl: string | null
     category: string | null
     hall: string | null
+    imageUrl: string | null
+    organizerName: string | null
+    organizerContactName: string | null
+    organizerPhone: string | null
+    organizerEmail: string | null
+    organizerWebsite: string | null
+    organizerFacebook: string | null
+    outreachStatus: string | null
     startsAt: Date | null
     endsAt: Date | null
     venueId: number | null
@@ -2319,6 +2335,14 @@ export namespace Prisma {
     sourceUrl: number
     category: number
     hall: number
+    imageUrl: number
+    organizerName: number
+    organizerContactName: number
+    organizerPhone: number
+    organizerEmail: number
+    organizerWebsite: number
+    organizerFacebook: number
+    outreachStatus: number
     startsAt: number
     endsAt: number
     venueId: number
@@ -2345,6 +2369,14 @@ export namespace Prisma {
     sourceUrl?: true
     category?: true
     hall?: true
+    imageUrl?: true
+    organizerName?: true
+    organizerContactName?: true
+    organizerPhone?: true
+    organizerEmail?: true
+    organizerWebsite?: true
+    organizerFacebook?: true
+    outreachStatus?: true
     startsAt?: true
     endsAt?: true
     venueId?: true
@@ -2359,6 +2391,14 @@ export namespace Prisma {
     sourceUrl?: true
     category?: true
     hall?: true
+    imageUrl?: true
+    organizerName?: true
+    organizerContactName?: true
+    organizerPhone?: true
+    organizerEmail?: true
+    organizerWebsite?: true
+    organizerFacebook?: true
+    outreachStatus?: true
     startsAt?: true
     endsAt?: true
     venueId?: true
@@ -2373,6 +2413,14 @@ export namespace Prisma {
     sourceUrl?: true
     category?: true
     hall?: true
+    imageUrl?: true
+    organizerName?: true
+    organizerContactName?: true
+    organizerPhone?: true
+    organizerEmail?: true
+    organizerWebsite?: true
+    organizerFacebook?: true
+    outreachStatus?: true
     startsAt?: true
     endsAt?: true
     venueId?: true
@@ -2474,6 +2522,14 @@ export namespace Prisma {
     sourceUrl: string | null
     category: string | null
     hall: string | null
+    imageUrl: string | null
+    organizerName: string | null
+    organizerContactName: string | null
+    organizerPhone: string | null
+    organizerEmail: string | null
+    organizerWebsite: string | null
+    organizerFacebook: string | null
+    outreachStatus: string
     startsAt: Date
     endsAt: Date | null
     venueId: number
@@ -2507,6 +2563,14 @@ export namespace Prisma {
     sourceUrl?: boolean
     category?: boolean
     hall?: boolean
+    imageUrl?: boolean
+    organizerName?: boolean
+    organizerContactName?: boolean
+    organizerPhone?: boolean
+    organizerEmail?: boolean
+    organizerWebsite?: boolean
+    organizerFacebook?: boolean
+    outreachStatus?: boolean
     startsAt?: boolean
     endsAt?: boolean
     venueId?: boolean
@@ -2526,6 +2590,14 @@ export namespace Prisma {
     sourceUrl?: boolean
     category?: boolean
     hall?: boolean
+    imageUrl?: boolean
+    organizerName?: boolean
+    organizerContactName?: boolean
+    organizerPhone?: boolean
+    organizerEmail?: boolean
+    organizerWebsite?: boolean
+    organizerFacebook?: boolean
+    outreachStatus?: boolean
     startsAt?: boolean
     endsAt?: boolean
     venueId?: boolean
@@ -2533,7 +2605,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "source" | "sourceUrl" | "category" | "hall" | "startsAt" | "endsAt" | "venueId" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
+  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "source" | "sourceUrl" | "category" | "hall" | "imageUrl" | "organizerName" | "organizerContactName" | "organizerPhone" | "organizerEmail" | "organizerWebsite" | "organizerFacebook" | "outreachStatus" | "startsAt" | "endsAt" | "venueId" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
   export type EventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     venue?: boolean | VenueDefaultArgs<ExtArgs>
     leads?: boolean | Event$leadsArgs<ExtArgs>
@@ -2553,6 +2625,14 @@ export namespace Prisma {
       sourceUrl: string | null
       category: string | null
       hall: string | null
+      imageUrl: string | null
+      organizerName: string | null
+      organizerContactName: string | null
+      organizerPhone: string | null
+      organizerEmail: string | null
+      organizerWebsite: string | null
+      organizerFacebook: string | null
+      outreachStatus: string
       startsAt: Date
       endsAt: Date | null
       venueId: number
@@ -2935,6 +3015,14 @@ export namespace Prisma {
     readonly sourceUrl: FieldRef<"Event", 'String'>
     readonly category: FieldRef<"Event", 'String'>
     readonly hall: FieldRef<"Event", 'String'>
+    readonly imageUrl: FieldRef<"Event", 'String'>
+    readonly organizerName: FieldRef<"Event", 'String'>
+    readonly organizerContactName: FieldRef<"Event", 'String'>
+    readonly organizerPhone: FieldRef<"Event", 'String'>
+    readonly organizerEmail: FieldRef<"Event", 'String'>
+    readonly organizerWebsite: FieldRef<"Event", 'String'>
+    readonly organizerFacebook: FieldRef<"Event", 'String'>
+    readonly outreachStatus: FieldRef<"Event", 'String'>
     readonly startsAt: FieldRef<"Event", 'DateTime'>
     readonly endsAt: FieldRef<"Event", 'DateTime'>
     readonly venueId: FieldRef<"Event", 'Int'>
@@ -5434,6 +5522,14 @@ export namespace Prisma {
     sourceUrl: 'sourceUrl',
     category: 'category',
     hall: 'hall',
+    imageUrl: 'imageUrl',
+    organizerName: 'organizerName',
+    organizerContactName: 'organizerContactName',
+    organizerPhone: 'organizerPhone',
+    organizerEmail: 'organizerEmail',
+    organizerWebsite: 'organizerWebsite',
+    organizerFacebook: 'organizerFacebook',
+    outreachStatus: 'outreachStatus',
     startsAt: 'startsAt',
     endsAt: 'endsAt',
     venueId: 'venueId',
@@ -5503,7 +5599,15 @@ export namespace Prisma {
     title: 'title',
     sourceUrl: 'sourceUrl',
     category: 'category',
-    hall: 'hall'
+    hall: 'hall',
+    imageUrl: 'imageUrl',
+    organizerName: 'organizerName',
+    organizerContactName: 'organizerContactName',
+    organizerPhone: 'organizerPhone',
+    organizerEmail: 'organizerEmail',
+    organizerWebsite: 'organizerWebsite',
+    organizerFacebook: 'organizerFacebook',
+    outreachStatus: 'outreachStatus'
   };
 
   export type EventOrderByRelevanceFieldEnum = (typeof EventOrderByRelevanceFieldEnum)[keyof typeof EventOrderByRelevanceFieldEnum]
@@ -5669,6 +5773,14 @@ export namespace Prisma {
     sourceUrl?: StringNullableFilter<"Event"> | string | null
     category?: StringNullableFilter<"Event"> | string | null
     hall?: StringNullableFilter<"Event"> | string | null
+    imageUrl?: StringNullableFilter<"Event"> | string | null
+    organizerName?: StringNullableFilter<"Event"> | string | null
+    organizerContactName?: StringNullableFilter<"Event"> | string | null
+    organizerPhone?: StringNullableFilter<"Event"> | string | null
+    organizerEmail?: StringNullableFilter<"Event"> | string | null
+    organizerWebsite?: StringNullableFilter<"Event"> | string | null
+    organizerFacebook?: StringNullableFilter<"Event"> | string | null
+    outreachStatus?: StringFilter<"Event"> | string
     startsAt?: DateTimeFilter<"Event"> | Date | string
     endsAt?: DateTimeNullableFilter<"Event"> | Date | string | null
     venueId?: IntFilter<"Event"> | number
@@ -5685,6 +5797,14 @@ export namespace Prisma {
     sourceUrl?: SortOrderInput | SortOrder
     category?: SortOrderInput | SortOrder
     hall?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    organizerName?: SortOrderInput | SortOrder
+    organizerContactName?: SortOrderInput | SortOrder
+    organizerPhone?: SortOrderInput | SortOrder
+    organizerEmail?: SortOrderInput | SortOrder
+    organizerWebsite?: SortOrderInput | SortOrder
+    organizerFacebook?: SortOrderInput | SortOrder
+    outreachStatus?: SortOrder
     startsAt?: SortOrder
     endsAt?: SortOrderInput | SortOrder
     venueId?: SortOrder
@@ -5706,6 +5826,14 @@ export namespace Prisma {
     sourceUrl?: StringNullableFilter<"Event"> | string | null
     category?: StringNullableFilter<"Event"> | string | null
     hall?: StringNullableFilter<"Event"> | string | null
+    imageUrl?: StringNullableFilter<"Event"> | string | null
+    organizerName?: StringNullableFilter<"Event"> | string | null
+    organizerContactName?: StringNullableFilter<"Event"> | string | null
+    organizerPhone?: StringNullableFilter<"Event"> | string | null
+    organizerEmail?: StringNullableFilter<"Event"> | string | null
+    organizerWebsite?: StringNullableFilter<"Event"> | string | null
+    organizerFacebook?: StringNullableFilter<"Event"> | string | null
+    outreachStatus?: StringFilter<"Event"> | string
     startsAt?: DateTimeFilter<"Event"> | Date | string
     endsAt?: DateTimeNullableFilter<"Event"> | Date | string | null
     venueId?: IntFilter<"Event"> | number
@@ -5722,6 +5850,14 @@ export namespace Prisma {
     sourceUrl?: SortOrderInput | SortOrder
     category?: SortOrderInput | SortOrder
     hall?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    organizerName?: SortOrderInput | SortOrder
+    organizerContactName?: SortOrderInput | SortOrder
+    organizerPhone?: SortOrderInput | SortOrder
+    organizerEmail?: SortOrderInput | SortOrder
+    organizerWebsite?: SortOrderInput | SortOrder
+    organizerFacebook?: SortOrderInput | SortOrder
+    outreachStatus?: SortOrder
     startsAt?: SortOrder
     endsAt?: SortOrderInput | SortOrder
     venueId?: SortOrder
@@ -5744,6 +5880,14 @@ export namespace Prisma {
     sourceUrl?: StringNullableWithAggregatesFilter<"Event"> | string | null
     category?: StringNullableWithAggregatesFilter<"Event"> | string | null
     hall?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    imageUrl?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    organizerName?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    organizerContactName?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    organizerPhone?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    organizerEmail?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    organizerWebsite?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    organizerFacebook?: StringNullableWithAggregatesFilter<"Event"> | string | null
+    outreachStatus?: StringWithAggregatesFilter<"Event"> | string
     startsAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     endsAt?: DateTimeNullableWithAggregatesFilter<"Event"> | Date | string | null
     venueId?: IntWithAggregatesFilter<"Event"> | number
@@ -5982,6 +6126,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     createdAt?: Date | string
@@ -5997,6 +6149,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     venueId: number
@@ -6011,6 +6171,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6026,6 +6194,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     venueId?: IntFieldUpdateOperationsInput | number
@@ -6041,6 +6217,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     venueId: number
@@ -6054,6 +6238,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6067,6 +6259,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     venueId?: IntFieldUpdateOperationsInput | number
@@ -6460,6 +6660,14 @@ export namespace Prisma {
     sourceUrl?: SortOrder
     category?: SortOrder
     hall?: SortOrder
+    imageUrl?: SortOrder
+    organizerName?: SortOrder
+    organizerContactName?: SortOrder
+    organizerPhone?: SortOrder
+    organizerEmail?: SortOrder
+    organizerWebsite?: SortOrder
+    organizerFacebook?: SortOrder
+    outreachStatus?: SortOrder
     startsAt?: SortOrder
     endsAt?: SortOrder
     venueId?: SortOrder
@@ -6479,6 +6687,14 @@ export namespace Prisma {
     sourceUrl?: SortOrder
     category?: SortOrder
     hall?: SortOrder
+    imageUrl?: SortOrder
+    organizerName?: SortOrder
+    organizerContactName?: SortOrder
+    organizerPhone?: SortOrder
+    organizerEmail?: SortOrder
+    organizerWebsite?: SortOrder
+    organizerFacebook?: SortOrder
+    outreachStatus?: SortOrder
     startsAt?: SortOrder
     endsAt?: SortOrder
     venueId?: SortOrder
@@ -6493,6 +6709,14 @@ export namespace Prisma {
     sourceUrl?: SortOrder
     category?: SortOrder
     hall?: SortOrder
+    imageUrl?: SortOrder
+    organizerName?: SortOrder
+    organizerContactName?: SortOrder
+    organizerPhone?: SortOrder
+    organizerEmail?: SortOrder
+    organizerWebsite?: SortOrder
+    organizerFacebook?: SortOrder
+    outreachStatus?: SortOrder
     startsAt?: SortOrder
     endsAt?: SortOrder
     venueId?: SortOrder
@@ -7204,6 +7428,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     createdAt?: Date | string
@@ -7218,6 +7450,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     createdAt?: Date | string
@@ -7261,6 +7501,14 @@ export namespace Prisma {
     sourceUrl?: StringNullableFilter<"Event"> | string | null
     category?: StringNullableFilter<"Event"> | string | null
     hall?: StringNullableFilter<"Event"> | string | null
+    imageUrl?: StringNullableFilter<"Event"> | string | null
+    organizerName?: StringNullableFilter<"Event"> | string | null
+    organizerContactName?: StringNullableFilter<"Event"> | string | null
+    organizerPhone?: StringNullableFilter<"Event"> | string | null
+    organizerEmail?: StringNullableFilter<"Event"> | string | null
+    organizerWebsite?: StringNullableFilter<"Event"> | string | null
+    organizerFacebook?: StringNullableFilter<"Event"> | string | null
+    outreachStatus?: StringFilter<"Event"> | string
     startsAt?: DateTimeFilter<"Event"> | Date | string
     endsAt?: DateTimeNullableFilter<"Event"> | Date | string | null
     venueId?: IntFilter<"Event"> | number
@@ -7398,6 +7646,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     createdAt?: Date | string
@@ -7412,6 +7668,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     venueId: number
@@ -7466,6 +7730,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7480,6 +7752,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     venueId?: IntFieldUpdateOperationsInput | number
@@ -7592,6 +7872,14 @@ export namespace Prisma {
     sourceUrl?: string | null
     category?: string | null
     hall?: string | null
+    imageUrl?: string | null
+    organizerName?: string | null
+    organizerContactName?: string | null
+    organizerPhone?: string | null
+    organizerEmail?: string | null
+    organizerWebsite?: string | null
+    organizerFacebook?: string | null
+    outreachStatus?: string
     startsAt: Date | string
     endsAt?: Date | string | null
     createdAt?: Date | string
@@ -7604,6 +7892,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7618,6 +7914,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7632,6 +7936,14 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     hall?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerWebsite?: NullableStringFieldUpdateOperationsInput | string | null
+    organizerFacebook?: NullableStringFieldUpdateOperationsInput | string | null
+    outreachStatus?: StringFieldUpdateOperationsInput | string
     startsAt?: DateTimeFieldUpdateOperationsInput | Date | string
     endsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
