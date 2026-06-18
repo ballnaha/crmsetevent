@@ -66,7 +66,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               }}
               sx={{
                 justifyContent: "flex-start",
-                color: pathname === "/" ? "#fff" : "var(--muted)",
+                color: pathname === "/" ? "var(--brand-dark)" : "var(--muted)",
                 bgcolor: pathname === "/" ? "var(--sidebar-active-bg)" : "transparent",
                 fontWeight: pathname === "/" ? 600 : 500,
                 px: 1.5,
@@ -89,7 +89,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               }}
               sx={{
                 justifyContent: "flex-start",
-                color: pathname === "/contacts" ? "#fff" : "var(--muted)",
+                color: pathname === "/contacts" ? "var(--brand-dark)" : "var(--muted)",
                 bgcolor: pathname === "/contacts" ? "var(--sidebar-active-bg)" : "transparent",
                 fontWeight: pathname === "/contacts" ? 600 : 500,
                 px: 1.5,
@@ -112,7 +112,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               }}
               sx={{
                 justifyContent: "flex-start",
-                color: pathname === "/email" ? "#fff" : "var(--muted)",
+                color: pathname === "/email" ? "var(--brand-dark)" : "var(--muted)",
                 bgcolor: pathname === "/email" ? "var(--sidebar-active-bg)" : "transparent",
                 fontWeight: pathname === "/email" ? 600 : 500,
                 px: 1.5,
@@ -135,7 +135,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               }}
               sx={{
                 justifyContent: "flex-start",
-                color: pathname === "/sync" ? "#fff" : "var(--muted)",
+                color: pathname === "/sync" ? "var(--brand-dark)" : "var(--muted)",
                 bgcolor: pathname === "/sync" ? "var(--sidebar-active-bg)" : "transparent",
                 fontWeight: pathname === "/sync" ? 600 : 500,
                 px: 1.5,
@@ -197,7 +197,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
             p: 1.25, 
             borderRadius: "10px", 
             border: "1px solid var(--sidebar-line)", 
-            bgcolor: "rgba(14, 165, 233, 0.03)",
+            bgcolor: "rgba(14, 165, 233, 0.06)",
             display: "flex",
             gap: 1.25,
             alignItems: "flex-start"
@@ -206,7 +206,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
           <ShieldCheck size={16} style={{ color: "var(--brand)", marginTop: 2, flexShrink: 0 }} />
           <Box sx={{ width: "100%" }}>
             <Stack direction="row" spacing={1} sx={{ alignItems: "center", justifyContent: "space-between" }}>
-              <Typography sx={{ color: "#fff", fontSize: "0.75rem", fontWeight: 600 }}>Sync Status</Typography>
+              <Typography sx={{ color: "var(--sidebar-text)", fontSize: "0.75rem", fontWeight: 600 }}>Sync Status</Typography>
               <Box
                 sx={{
                   width: 6,
@@ -235,7 +235,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
             p: 1.25, 
             borderRadius: "10px", 
             border: "1px solid var(--sidebar-line)", 
-            bgcolor: "rgba(255, 255, 255, 0.02)"
+            bgcolor: "rgba(0, 0, 0, 0.02)"
           }}
         >
           <Stack direction="row" spacing={1.25} sx={{ alignItems: "center" }}>
@@ -269,7 +269,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               />
             </Box>
             <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography sx={{ color: "#fff", fontSize: "0.75rem", fontWeight: 700, lineHeight: 1.2 }}>
+              <Typography sx={{ color: "var(--sidebar-text)", fontSize: "0.75rem", fontWeight: 700, lineHeight: 1.2 }}>
                 CRM Operator
               </Typography>
               <Typography sx={{ color: "var(--sidebar-muted)", fontSize: "0.65rem", mt: 0.15, fontWeight: 500 }}>
