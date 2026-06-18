@@ -4,9 +4,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import {
   LayoutDashboard,
-  ShieldCheck,
+  Mail,
   RefreshCw,
   Settings,
+  ShieldCheck,
+  Users,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -63,25 +65,64 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
                 if (onClose) onClose();
               }}
               sx={{
-                transition: "all 0.15s ease",
                 justifyContent: "flex-start",
                 color: pathname === "/" ? "#fff" : "var(--muted)",
                 bgcolor: pathname === "/" ? "var(--sidebar-active-bg)" : "transparent",
                 fontWeight: pathname === "/" ? 600 : 500,
-                borderRadius: "8px !important",
                 px: 1.5,
                 py: 1,
                 width: "100%",
                 textTransform: "none",
                 fontSize: "0.85rem",
-                borderLeft: "none !important",
-                "&:hover": {
-                  bgcolor: "rgba(255, 255, 255, 0.04)",
-                  color: "#fff"
-                }
               }}
             >
               Lead Dashboard
+            </Button>
+
+            {/* Contacts Button */}
+            <Button
+              className={`navButton ${pathname === "/contacts" ? "navButtonActive" : ""}`}
+              startIcon={<Users size={16} />}
+              onClick={() => {
+                router.push("/contacts");
+                if (onClose) onClose();
+              }}
+              sx={{
+                justifyContent: "flex-start",
+                color: pathname === "/contacts" ? "#fff" : "var(--muted)",
+                bgcolor: pathname === "/contacts" ? "var(--sidebar-active-bg)" : "transparent",
+                fontWeight: pathname === "/contacts" ? 600 : 500,
+                px: 1.5,
+                py: 1,
+                width: "100%",
+                textTransform: "none",
+                fontSize: "0.85rem",
+              }}
+            >
+              Organizer Contacts
+            </Button>
+
+            {/* Email Campaigns Button */}
+            <Button
+              className={`navButton ${pathname === "/email" ? "navButtonActive" : ""}`}
+              startIcon={<Mail size={16} />}
+              onClick={() => {
+                router.push("/email");
+                if (onClose) onClose();
+              }}
+              sx={{
+                justifyContent: "flex-start",
+                color: pathname === "/email" ? "#fff" : "var(--muted)",
+                bgcolor: pathname === "/email" ? "var(--sidebar-active-bg)" : "transparent",
+                fontWeight: pathname === "/email" ? 600 : 500,
+                px: 1.5,
+                py: 1,
+                width: "100%",
+                textTransform: "none",
+                fontSize: "0.85rem",
+              }}
+            >
+              Email Campaigns
             </Button>
 
             {/* Sync Manager Button */}
@@ -93,22 +134,15 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
                 if (onClose) onClose();
               }}
               sx={{
-                transition: "all 0.15s ease",
                 justifyContent: "flex-start",
                 color: pathname === "/sync" ? "#fff" : "var(--muted)",
                 bgcolor: pathname === "/sync" ? "var(--sidebar-active-bg)" : "transparent",
                 fontWeight: pathname === "/sync" ? 600 : 500,
-                borderRadius: "8px !important",
                 px: 1.5,
                 py: 1,
                 width: "100%",
                 textTransform: "none",
                 fontSize: "0.85rem",
-                borderLeft: "none !important",
-                "&:hover": {
-                  bgcolor: "rgba(255, 255, 255, 0.04)",
-                  color: "#fff"
-                }
               }}
             >
               Calendar Sync Hub

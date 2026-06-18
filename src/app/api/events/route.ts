@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { findEventsWithMysql, updateEventOutreachStatusWithMysql, type DbEventWithVenue } from "@/lib/mysqlEvents";
-import { sampleEvents } from "@/lib/eventSources";
-import fs from "fs";
-import path from "path";
+import { updateEventOutreachStatusWithMysql, type DbEventWithVenue } from "@/lib/mysqlEvents";
 
-const CACHE_PATH = path.join(process.cwd(), "src/generated/scraped_events.json");
 const allowedStatuses = new Set(["NEW", "NEEDS_REVIEW", "READY", "CONTACTED", "PROPOSAL", "NOT_INTERESTED"]);
 const DIGITECH_FACEBOOK_URL = "https://www.facebook.com/digitechasean";
 
 function getVisibleYears() {
   const currentYear = new Date().getFullYear();
   return [currentYear];
-}
-
-function isDbEventInYears(event: DbEventWithVenue, years: number[]) {
-  return years.includes(new Date(event.startsAt).getFullYear());
 }
 
 function getCachedEventYear(event: { startsAt?: string | null; date?: string | null }) {
@@ -93,8 +85,26 @@ export async function GET() {
       orderBy: { startsAt: "desc" },
     });
 
+    // Dedup: same title+source may have multiple rows when startsAt was null on first sync.
     if (dbEvents.length > 0) {
-      const mapped = dbEvents.map((e, idx) => mapDbEvent({
+      // Keep the row with the most recent (non-epoch) startsAt per title+source pair.
+      const EPOCH = new Date(0).getTime();
+      const dedupMap = new Map<string, typeof dbEvents[0]>();
+      for (const e of dbEvents) {
+        const key = `${e.source}|${e.title.trim().toLowerCase()}`;
+        const existing = dedupMap.get(key);
+        if (!existing) { dedupMap.set(key, e); continue; }
+        const eTs = new Date(e.startsAt).getTime();
+        const exTs = new Date(existing.startsAt).getTime();
+        // Prefer the record that is not epoch; if both non-epoch keep the earlier startsAt
+        const eIsEpoch = eTs === EPOCH;
+        const exIsEpoch = exTs === EPOCH;
+        if (exIsEpoch && !eIsEpoch) dedupMap.set(key, e);
+        else if (!eIsEpoch && !exIsEpoch && eTs < exTs) dedupMap.set(key, e);
+      }
+      const deduped = Array.from(dedupMap.values());
+
+      const mapped = deduped.map((e, idx) => mapDbEvent({
         id: e.id,
         title: e.title,
         source: e.source,
@@ -123,37 +133,10 @@ export async function GET() {
       });
     }
   } catch (dbError) {
-    console.warn("Prisma database connection failed. Trying mysql2 fallback.", dbError);
+    console.warn("Prisma database connection failed.", dbError);
   }
 
-  try {
-    const dbEvents = await findEventsWithMysql();
-    if (dbEvents.length > 0) {
-      return NextResponse.json({ events: dbEvents.filter((event) => isDbEventInYears(event, visibleYears)).map(mapDbEvent), source: "database", years: visibleYears });
-    }
-  } catch (dbError) {
-    console.warn("mysql2 database connection failed. Falling back to local cache.", dbError);
-  }
-
-  // Fallback 1: Local Cache JSON file
-  if (fs.existsSync(CACHE_PATH)) {
-    try {
-      const data = fs.readFileSync(CACHE_PATH, "utf-8");
-      const cached = JSON.parse(data);
-      return NextResponse.json({ events: cached.filter((event: { startsAt?: string | null; date?: string | null }) => isCachedEventInYears(event, visibleYears)), source: "cache", years: visibleYears });
-    } catch (cacheError) {
-      console.error("Failed to read cache file", cacheError);
-    }
-  }
-
-  // Fallback 2: Return Hardcoded Sample Events
-  const formattedSample = sampleEvents.map((event, index) => ({
-    ...event,
-    orderNo: `LD-${String(1001 + index)}`,
-    status: index % 3 === 0 ? "NEW" : index % 3 === 1 ? "READY" : "NEEDS_REVIEW",
-  }));
-
-  return NextResponse.json({ events: formattedSample.filter((event) => isCachedEventInYears(event, visibleYears)), source: "mock", years: visibleYears });
+  return NextResponse.json({ events: [], source: "empty", years: visibleYears });
 }
 
 export async function PATCH(request: NextRequest) {

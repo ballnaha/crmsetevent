@@ -178,10 +178,10 @@ export default function LeadDashboard() {
                 borderRadius: "8px",
                 px: 1.5,
                 py: 0.5,
-                bgcolor: "rgba(255,255,255,0.02)",
+                bgcolor: "rgba(0,0,0,0.03)",
                 "&:hover": {
-                  bgcolor: "rgba(255,255,255,0.05)",
-                  borderColor: "rgba(255,255,255,0.15)",
+                  bgcolor: "rgba(0,0,0,0.06)",
+                  borderColor: "rgba(0,0,0,0.12)",
                 }
               }}
             >
@@ -345,7 +345,7 @@ export default function LeadDashboard() {
                   <Typography sx={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--foreground)" }}>{stage.label}</Typography>
                   <Typography sx={{ fontSize: "0.75rem", color: "var(--muted)", fontWeight: 700 }}>{stage.count.toLocaleString()}</Typography>
                 </Stack>
-                <Box sx={{ height: 6, borderRadius: 999, background: "rgba(255, 255, 255, 0.04)", overflow: "hidden" }}>
+                <Box sx={{ height: 6, borderRadius: 999, background: "rgba(0, 0, 0, 0.06)", overflow: "hidden" }}>
                   <Box sx={{ height: "100%", width: `${stage.pct}%`, borderRadius: 999, background: "linear-gradient(90deg, var(--brand), var(--accent))" }} />
                 </Box>
               </Box>

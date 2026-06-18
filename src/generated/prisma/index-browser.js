@@ -120,6 +120,29 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.OrganizerScalarFieldEnum = {
+  id: 'id',
+  companyName: 'companyName',
+  contactName: 'contactName',
+  phone: 'phone',
+  email: 'email',
+  website: 'website',
+  facebook: 'facebook',
+  note: 'note',
+  outreachStatus: 'outreachStatus',
+  lockedFields: 'lockedFields',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ContactActivityScalarFieldEnum = {
+  id: 'id',
+  organizerId: 'organizerId',
+  type: 'type',
+  text: 'text',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.VenueScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -145,6 +168,7 @@ exports.Prisma.EventScalarFieldEnum = {
   organizerWebsite: 'organizerWebsite',
   organizerFacebook: 'organizerFacebook',
   outreachStatus: 'outreachStatus',
+  organizerId: 'organizerId',
   startsAt: 'startsAt',
   endsAt: 'endsAt',
   venueId: 'venueId',
@@ -175,14 +199,78 @@ exports.Prisma.ActivityScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.EmailTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  subject: 'subject',
+  body: 'body',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EmailCampaignScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  templateId: 'templateId',
+  subject: 'subject',
+  body: 'body',
+  status: 'status',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EmailRecipientScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  email: 'email',
+  name: 'name',
+  company: 'company',
+  status: 'status',
+  messageId: 'messageId',
+  error: 'error',
+  sentAt: 'sentAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.OrganizerOrderByRelevanceFieldEnum = {
+  companyName: 'companyName',
+  contactName: 'contactName',
+  phone: 'phone',
+  email: 'email',
+  website: 'website',
+  facebook: 'facebook',
+  note: 'note',
+  outreachStatus: 'outreachStatus'
+};
+
+exports.Prisma.ContactActivityOrderByRelevanceFieldEnum = {
+  type: 'type',
+  text: 'text'
 };
 
 exports.Prisma.VenueOrderByRelevanceFieldEnum = {
@@ -218,6 +306,28 @@ exports.Prisma.LeadOrderByRelevanceFieldEnum = {
 exports.Prisma.ActivityOrderByRelevanceFieldEnum = {
   title: 'title'
 };
+
+exports.Prisma.EmailTemplateOrderByRelevanceFieldEnum = {
+  name: 'name',
+  subject: 'subject',
+  body: 'body'
+};
+
+exports.Prisma.EmailCampaignOrderByRelevanceFieldEnum = {
+  name: 'name',
+  subject: 'subject',
+  body: 'body',
+  status: 'status'
+};
+
+exports.Prisma.EmailRecipientOrderByRelevanceFieldEnum = {
+  email: 'email',
+  name: 'name',
+  company: 'company',
+  status: 'status',
+  messageId: 'messageId',
+  error: 'error'
+};
 exports.EventSource = exports.$Enums.EventSource = {
   BITEC: 'BITEC',
   IMPACT: 'IMPACT',
@@ -240,10 +350,15 @@ exports.LeadPriority = exports.$Enums.LeadPriority = {
 };
 
 exports.Prisma.ModelName = {
+  Organizer: 'Organizer',
+  ContactActivity: 'ContactActivity',
   Venue: 'Venue',
   Event: 'Event',
   Lead: 'Lead',
-  Activity: 'Activity'
+  Activity: 'Activity',
+  EmailTemplate: 'EmailTemplate',
+  EmailCampaign: 'EmailCampaign',
+  EmailRecipient: 'EmailRecipient'
 };
 
 /**

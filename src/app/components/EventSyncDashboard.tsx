@@ -7,7 +7,6 @@ import {
   Avatar,
   Box,
   Button,
-  Checkbox,
   Chip,
   Dialog,
   DialogContent,
@@ -30,25 +29,20 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
-  Ban,
-  BadgeCheck,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  ClipboardCheck,
   Database,
   ExternalLink,
+  Search,
   Globe2,
   Lightbulb,
   Mail,
   MapPin,
-  MessageCircle,
   Phone,
   RefreshCw,
-  SearchCheck,
-  Send,
   X,
   UserRound,
 } from "lucide-react";
@@ -73,7 +67,6 @@ type EventRow = {
   imageUrl?: string | null;
   leadIdea?: string | null;
   orderNo?: string | null;
-  status?: string | null;
   organizerName?: string | null;
   organizerContactName?: string | null;
   organizerPhone?: string | null;
@@ -81,67 +74,6 @@ type EventRow = {
   organizerWebsite?: string | null;
   organizerFacebook?: string | null;
 };
-
-const statusOptions = [
-  {
-    id: "NEW",
-    label: "มาใหม่",
-    description: "Lead ที่ sync เข้ามาใหม่ ยังไม่ได้คัดกรอง",
-    action: "ตรวจข้อมูลผู้จัดงาน",
-    color: "var(--brand)",
-    bg: "rgba(14, 165, 233, 0.14)",
-    icon: BadgeCheck,
-  },
-  {
-    id: "NEEDS_REVIEW",
-    label: "ต้องเช็กข้อมูล",
-    description: "ข้อมูลติดต่อหรือรายละเอียดงานยังไม่ครบ",
-    action: "หาเบอร์หรืออีเมลเพิ่ม",
-    color: "#a78bfa",
-    bg: "rgba(139, 92, 246, 0.14)",
-    icon: SearchCheck,
-  },
-  {
-    id: "READY",
-    label: "น่าติดต่อ",
-    description: "มีข้อมูลพอและเข้ากับบริการ event/LED",
-    action: "เตรียม pitch",
-    color: "var(--warning)",
-    bg: "rgba(245, 158, 11, 0.14)",
-    icon: ClipboardCheck,
-  },
-  {
-    id: "CONTACTED",
-    label: "ติดต่อแล้ว",
-    description: "โทร ส่งไลน์ หรืออีเมลไปแล้ว",
-    action: "รอ feedback",
-    color: "var(--success)",
-    bg: "rgba(16, 185, 129, 0.14)",
-    icon: MessageCircle,
-  },
-  {
-    id: "PROPOSAL",
-    label: "ส่งข้อเสนอแล้ว",
-    description: "ส่งราคา แนวทางงาน หรือ portfolio ให้ลูกค้าแล้ว",
-    action: "ติดตามผล",
-    color: "#38bdf8",
-    bg: "rgba(56, 189, 248, 0.14)",
-    icon: Send,
-  },
-  {
-    id: "NOT_INTERESTED",
-    label: "ไม่น่าสนใจ",
-    description: "งานไม่เข้าเป้า งบไม่เหมาะ หรือไม่ใช่กลุ่มลูกค้า",
-    action: "พัก lead นี้",
-    color: "var(--danger)",
-    bg: "rgba(239, 68, 68, 0.14)",
-    icon: Ban,
-  },
-];
-
-function getStatusMeta(status?: string | null) {
-  return statusOptions.find((item) => item.id === status) || statusOptions[0];
-}
 
 function getPaginationItems(page: number, totalPages: number) {
   const visible = new Set([1, totalPages, page - 1, page, page + 1].filter((item) => item >= 1 && item <= totalPages));
@@ -172,6 +104,7 @@ export default function EventSyncDashboard() {
   const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
   const [dateTo, setDateTo] = useState<Dayjs | null>(null);
   const [yearFilter, setYearFilter] = useState(String(new Date().getFullYear()));
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
   const syncYear = new Date().getFullYear();
@@ -237,6 +170,17 @@ export default function EventSyncDashboard() {
     const eventYear = e.startsAt ? new Date(e.startsAt).getFullYear() : Number(e.date.match(/\b(20\d{2}|21\d{2})\b/)?.[1]);
     if (yearFilter !== "all" && eventYear !== Number(yearFilter)) return false;
 
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      const hit = e.title.toLowerCase().includes(q)
+        || (e.category ?? "").toLowerCase().includes(q)
+        || (e.hall ?? "").toLowerCase().includes(q)
+        || (e.organizerName ?? "").toLowerCase().includes(q)
+        || (e.organizerEmail ?? "").toLowerCase().includes(q)
+        || (e.orderNo ?? "").toLowerCase().includes(q);
+      if (!hit) return false;
+    }
+
     if (!dateFrom && !dateTo) return true;
     if (!e.startsAt) return true;
 
@@ -263,7 +207,7 @@ export default function EventSyncDashboard() {
         "& .MuiInputBase-root, & .MuiPickersInputBase-root": {
           height: 38,
           color: "var(--foreground)",
-          bgcolor: "rgba(15, 23, 42, 0.98)",
+          bgcolor: "#ffffff",
           borderRadius: "8px",
         },
         "& .MuiPickersOutlinedInput-notchedOutline, & .MuiOutlinedInput-notchedOutline": {
@@ -276,16 +220,16 @@ export default function EventSyncDashboard() {
           borderColor: "var(--brand)",
           borderWidth: 1,
         },
-        "& .MuiInputLabel-root": { color: "#cbd5e1", fontSize: "0.76rem", fontWeight: 700 },
-        "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand-hover)" },
+        "& .MuiInputLabel-root": { color: "var(--muted)", fontSize: "0.76rem", fontWeight: 700 },
+        "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand)" },
         "& input, & .MuiPickersSectionList-root, & .MuiPickersSectionList-section, & .MuiPickersSectionList-sectionContent": {
-          color: "#f8fafc",
+          color: "var(--foreground)",
           fontSize: "0.78rem",
           fontWeight: 700,
         },
         "& .MuiPickersSectionList-sectionContent.Mui-selected": {
-          bgcolor: "rgba(14, 165, 233, 0.28)",
-          color: "#ffffff",
+          bgcolor: "rgba(14, 165, 233, 0.18)",
+          color: "var(--foreground)",
         },
         "& .MuiPickersInputBase-sectionsContainer": {
           py: 0,
@@ -302,23 +246,23 @@ export default function EventSyncDashboard() {
     },
   };
   const datePickerPaperSx = {
-    bgcolor: "#0f172a",
+    bgcolor: "#ffffff",
     color: "var(--foreground)",
-    border: "1px solid rgba(148, 163, 184, 0.22)",
+    border: "1px solid rgba(0, 0, 0, 0.1)",
     borderRadius: "8px",
-    boxShadow: "0 24px 70px rgba(0, 0, 0, 0.55)",
+    boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)",
     "& .MuiTypography-root, & .MuiPickersCalendarHeader-label, & .MuiPickersYear-yearButton": {
       color: "var(--foreground)",
     },
     "& .MuiPickersCalendarHeader-switchViewButton, & .MuiPickersArrowSwitcher-button": {
-      color: "#cbd5e1",
+      color: "var(--muted)",
     },
     "& .MuiPickersDay-root": {
-      color: "#e2e8f0",
+      color: "var(--foreground)",
       borderRadius: "8px",
     },
     "& .MuiPickersDay-root:hover": {
-      bgcolor: "rgba(14, 165, 233, 0.18)",
+      bgcolor: "rgba(14, 165, 233, 0.12)",
     },
     "& .MuiPickersDay-root.Mui-selected": {
       color: "#ffffff",
@@ -326,10 +270,10 @@ export default function EventSyncDashboard() {
       fontWeight: 800,
     },
     "& .MuiPickersDay-root.MuiPickersDay-today": {
-      borderColor: "var(--brand-hover)",
+      borderColor: "var(--brand)",
     },
     "& .MuiDayCalendar-weekDayLabel": {
-      color: "#94a3b8",
+      color: "var(--muted)",
       fontWeight: 800,
     },
     "& .MuiPickersYear-yearButton.Mui-selected": {
@@ -338,20 +282,6 @@ export default function EventSyncDashboard() {
     },
   };
   const closeDetails = () => setSelectedEvent(null);
-  const handleStatusChange = async (status: string) => {
-    if (!selectedEvent?.id) return;
-
-    const res = await fetch("/api/events", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: selectedEvent.id, status }),
-    });
-
-    if (!res.ok) return;
-
-    setEvents((items) => items.map((item) => item.id === selectedEvent.id ? { ...item, status } : item));
-    setSelectedEvent((event) => event ? { ...event, status } : event);
-  };
 
   return (
     <Box className="dashboardPage">
@@ -388,7 +318,7 @@ export default function EventSyncDashboard() {
           spacing={0.5}
           sx={{
             p: "4px",
-            bgcolor: "rgba(255,255,255,0.02)",
+            bgcolor: "rgba(0,0,0,0.03)",
             borderRadius: "10px",
             border: "1px solid var(--line)",
             width: "max-content"
@@ -411,8 +341,8 @@ export default function EventSyncDashboard() {
                 fontWeight: activeTab === tab.id ? 600 : 500,
                 transition: "all 0.15s ease",
                 "&:hover": {
-                  bgcolor: activeTab === tab.id ? "var(--brand-light)" : "rgba(255,255,255,0.04)",
-                  color: "#fff"
+                  bgcolor: activeTab === tab.id ? "var(--brand-light)" : "rgba(0,0,0,0.06)",
+                  color: activeTab === tab.id ? "#fff" : "var(--foreground)"
                 }
               }}
             >
@@ -499,7 +429,7 @@ export default function EventSyncDashboard() {
         sx={{
           border: "1px solid var(--line)",
           borderRadius: "8px",
-          bgcolor: "rgba(255,255,255,0.02)",
+          bgcolor: "rgba(0,0,0,0.03)",
           p: 1.5,
         }}
       >
@@ -537,7 +467,7 @@ export default function EventSyncDashboard() {
               "& .MuiInputBase-root": {
                 height: 38,
                 color: "var(--foreground)",
-                bgcolor: "rgba(15, 23, 42, 0.98)",
+                bgcolor: "#ffffff",
                 borderRadius: "8px",
                 fontSize: "0.78rem",
                 fontWeight: 700,
@@ -629,9 +559,9 @@ export default function EventSyncDashboard() {
                 fontSize: "0.76rem",
                 fontWeight: 700,
                 "&:hover": {
-                  color: "#fff",
-                  bgcolor: "rgba(255,255,255,0.04)",
-                  borderColor: "rgba(255,255,255,0.16)",
+                  color: "var(--foreground)",
+                  bgcolor: "rgba(0,0,0,0.06)",
+                  borderColor: "rgba(0,0,0,0.16)",
                 },
               }}
             >
@@ -654,26 +584,32 @@ export default function EventSyncDashboard() {
               ? "BITEC Synced Event Leads"
               : "IMPACT Synced Event Leads"}
           </Typography>
-          <Box className="miniSearch">Search leads…</Box>
+          <Stack direction="row" spacing={0.75} sx={{ alignItems: "center", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", px: 1.25, py: 0.6, bgcolor: "rgba(0,0,0,0.04)", minWidth: 220 }}>
+            <Search size={13} color="var(--muted)" />
+            <Box component="input" placeholder="ค้นหาชื่องาน ผู้จัด หมวด..." value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearch(e.target.value); setPage(1); }}
+              sx={{ flex: 1, background: "none", border: "none", outline: "none", color: "var(--foreground)", fontSize: "0.82rem", fontFamily: "inherit", "&::placeholder": { color: "var(--muted-light)" } }} />
+            {search && (
+              <Box component="button" onClick={() => { setSearch(""); setPage(1); }}
+                sx={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)", display: "flex", alignItems: "center", p: 0, "&:hover": { color: "var(--foreground)" } }}>
+                <X size={12} />
+              </Box>
+            )}
+          </Stack>
         </Stack>
 
         <TableContainer>
           <Table size="small" aria-label="synced event leads list">
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox size="small" />
-                </TableCell>
                 <TableCell>Event Details</TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Lead ID</TableCell>
-                <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                  <TableCell colSpan={3} align="center" sx={{ py: 8 }}>
                     <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem" }}>
                       Loading synced event leads...
                     </Typography>
@@ -681,7 +617,7 @@ export default function EventSyncDashboard() {
                 </TableRow>
               ) : filteredEvents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                  <TableCell colSpan={3} align="center" sx={{ py: 8 }}>
                     <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem" }}>
                       {hasDateFilter ? "No events found for this date range." : "No events found for this source. Click sync to retrieve live data."}
                     </Typography>
@@ -689,8 +625,6 @@ export default function EventSyncDashboard() {
                 </TableRow>
               ) : (
                 pagedEvents.map((row, idx) => {
-                  const statusMeta = getStatusMeta(row.status);
-
                   return (
                     <TableRow
                       key={row.id || idx}
@@ -698,9 +632,6 @@ export default function EventSyncDashboard() {
                       onClick={() => setSelectedEvent(row)}
                       sx={{ cursor: "pointer" }}
                     >
-                    <TableCell padding="checkbox">
-                      <Checkbox size="small" onClick={(event) => event.stopPropagation()} />
-                    </TableCell>
                     <TableCell sx={{ py: 1.25 }}>
                       <Stack direction="row" spacing={1.5} className="orderNameCell" sx={{ alignItems: "flex-start" }}>
                         {row.imageUrl ? (
@@ -715,7 +646,7 @@ export default function EventSyncDashboard() {
                               objectFit: "cover",
                               border: "1px solid var(--line)",
                               flexShrink: 0,
-                              bgcolor: "rgba(255,255,255,0.04)",
+                              bgcolor: "rgba(0,0,0,0.04)",
                             }}
                             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                           />
@@ -757,42 +688,6 @@ export default function EventSyncDashboard() {
                       <Typography className="tableSecondary" sx={{ fontWeight: 600, color: "var(--foreground) !important" }}>
                         {row.orderNo || `LD-${row.id}`}
                       </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-                        <Chip
-                          label={statusMeta.label}
-                          size="small"
-                          className="statusPill"
-                          sx={{
-                            color: `${statusMeta.color} !important`,
-                            bgcolor: `${statusMeta.bg} !important`,
-                            border: `1px solid ${statusMeta.color}33 !important`,
-                          }}
-                        />
-                        <IconButton
-                          size="small"
-                          aria-label={`Open details for ${row.title}`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setSelectedEvent(row);
-                          }}
-                          sx={{
-                            width: 28,
-                            height: 28,
-                            color: "var(--muted)",
-                            border: "1px solid var(--line)",
-                            borderRadius: "8px",
-                            "&:hover": {
-                              color: "#fff",
-                              bgcolor: "rgba(14, 165, 233, 0.12)",
-                              borderColor: "rgba(14, 165, 233, 0.3)",
-                            },
-                          }}
-                        >
-                          <ExternalLink size={13} />
-                        </IconButton>
-                      </Stack>
                     </TableCell>
                   </TableRow>
                   );
@@ -895,7 +790,7 @@ export default function EventSyncDashboard() {
                   height: 200,
                   objectFit: "cover",
                   display: "block",
-                  bgcolor: "rgba(255,255,255,0.04)",
+                  bgcolor: "rgba(0,0,0,0.04)",
                 }}
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
               />
@@ -909,7 +804,7 @@ export default function EventSyncDashboard() {
                   gap: 2,
                   p: 2.5,
                   borderBottom: "1px solid var(--line)",
-                  bgcolor: "rgba(255,255,255,0.02)",
+                  bgcolor: "rgba(0,0,0,0.02)",
                 }}
               >
                 <Stack direction="row" spacing={1.5} sx={{ minWidth: 0 }}>
@@ -921,17 +816,7 @@ export default function EventSyncDashboard() {
                       {selectedEvent.title}
                     </Typography>
                     <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 0.75, mt: 1 }}>
-                      <Chip label={selectedEvent.source} size="small" sx={{ height: 22, fontSize: "0.7rem", bgcolor: "var(--brand-light)", color: "#fff" }} />
-                      <Chip
-                        label={getStatusMeta(selectedEvent.status).label}
-                        size="small"
-                        className="statusPill"
-                        sx={{
-                          color: `${getStatusMeta(selectedEvent.status).color} !important`,
-                          bgcolor: `${getStatusMeta(selectedEvent.status).bg} !important`,
-                          border: `1px solid ${getStatusMeta(selectedEvent.status).color}33 !important`,
-                        }}
-                      />
+                      <Chip label={selectedEvent.source} size="small" sx={{ height: 22, fontSize: "0.7rem", bgcolor: "var(--brand-light)", color: "var(--brand)", fontWeight: 700 }} />
                       <Typography sx={{ color: "var(--muted)", fontSize: "0.76rem", fontWeight: 600 }}>
                         {selectedEvent.orderNo || `LD-${selectedEvent.id}`}
                       </Typography>
@@ -948,7 +833,7 @@ export default function EventSyncDashboard() {
                     border: "1px solid var(--line)",
                     borderRadius: "8px",
                     flexShrink: 0,
-                    "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,0.05)" },
+                    "&:hover": { color: "var(--foreground)", bgcolor: "rgba(0,0,0,0.06)" },
                   }}
                 >
                   <X size={16} />
@@ -1003,7 +888,7 @@ export default function EventSyncDashboard() {
                         fontSize: "0.82rem",
                         lineHeight: 1.6,
                         border: "1px solid var(--line)",
-                        bgcolor: "rgba(255,255,255,0.02)",
+                        bgcolor: "rgba(0,0,0,0.03)",
                         borderRadius: "8px",
                         p: 1.5,
                       }}
@@ -1103,142 +988,6 @@ export default function EventSyncDashboard() {
                 </Stack>
               </Box>
 
-              {/* Sales Status — full-width pipeline */}
-              <Divider sx={{ borderColor: "var(--line)" }} />
-              <Box sx={{ px: 2.5, py: 2 }}>
-                {(() => {
-                  const currentStatus = getStatusMeta(selectedEvent.status);
-                  const currentIdx = statusOptions.findIndex((o) => o.id === currentStatus.id);
-
-                  return (
-                    <>
-                      <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-                        <Typography sx={{ color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 800 }}>
-                          Sales Status
-                        </Typography>
-                        <Chip
-                          label={currentStatus.label}
-                          size="small"
-                          sx={{
-                            height: 22,
-                            fontSize: "0.68rem",
-                            fontWeight: 800,
-                            color: `${currentStatus.color} !important`,
-                            bgcolor: `${currentStatus.bg} !important`,
-                            border: `1px solid ${currentStatus.color}33`,
-                          }}
-                        />
-                      </Stack>
-
-                      {/* Step track */}
-                      <Box sx={{ position: "relative", display: "flex", alignItems: "flex-start" }}>
-                        {/* connecting line */}
-                        <Box sx={{
-                          position: "absolute",
-                          top: 12,
-                          left: `calc(100% / ${statusOptions.length * 2})`,
-                          right: `calc(100% / ${statusOptions.length * 2})`,
-                          height: "1px",
-                          bgcolor: "rgba(255,255,255,0.08)",
-                        }} />
-
-                        {statusOptions.map((option, i) => {
-                          const active = i === currentIdx;
-                          const passed = i < currentIdx;
-                          const StatusIcon = option.icon;
-
-                          return (
-                            <Box
-                              key={option.id}
-                              onClick={() => handleStatusChange(option.id)}
-                              role="button"
-                              aria-pressed={active}
-                              sx={{
-                                flex: 1,
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                gap: 0.75,
-                                cursor: "pointer",
-                                position: "relative",
-                                zIndex: 1,
-                                "&:hover .step-dot": {
-                                  borderColor: option.color,
-                                  bgcolor: option.bg,
-                                  color: option.color,
-                                },
-                                "&:hover .step-label": { color: option.color },
-                              }}
-                            >
-                              <Box
-                                className="step-dot"
-                                sx={{
-                                  width: 26,
-                                  height: 26,
-                                  borderRadius: "50%",
-                                  display: "grid",
-                                  placeItems: "center",
-                                  bgcolor: active ? option.color : passed ? "rgba(255,255,255,0.08)" : "var(--panel-solid)",
-                                  border: `2px solid ${active ? option.color : passed ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.1)"}`,
-                                  color: active ? "#fff" : passed ? "var(--muted)" : "var(--sidebar-muted)",
-                                  boxShadow: active ? `0 0 12px ${option.color}66` : "none",
-                                  transition: "all 0.18s ease",
-                                }}
-                              >
-                                <StatusIcon size={12} />
-                              </Box>
-                              <Typography
-                                className="step-label"
-                                sx={{
-                                  fontSize: "0.66rem",
-                                  fontWeight: active ? 800 : 500,
-                                  color: active ? option.color : passed ? "var(--muted)" : "var(--sidebar-muted)",
-                                  textAlign: "center",
-                                  lineHeight: 1.3,
-                                  transition: "color 0.18s ease",
-                                  px: 0.25,
-                                }}
-                              >
-                                {option.label}
-                              </Typography>
-                              {active && (
-                                <Box sx={{ width: 16, height: 2, borderRadius: 99, bgcolor: option.color, mt: -0.25 }} />
-                              )}
-                            </Box>
-                          );
-                        })}
-                      </Box>
-
-                      {/* Action hint */}
-                      <Box
-                        sx={{
-                          mt: 2,
-                          px: 1.5,
-                          py: 1,
-                          borderRadius: "8px",
-                          bgcolor: currentStatus.bg,
-                          border: `1px solid ${currentStatus.color}33`,
-                          display: "flex",
-                          gap: 1.5,
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <Box sx={{ color: currentStatus.color, mt: "1px", flexShrink: 0 }}>
-                          {(() => { const I = currentStatus.icon; return <I size={14} />; })()}
-                        </Box>
-                        <Box>
-                          <Typography sx={{ color: currentStatus.color, fontSize: "0.72rem", fontWeight: 800, lineHeight: 1.2 }}>
-                            {currentStatus.action}
-                          </Typography>
-                          <Typography sx={{ color: "var(--muted)", fontSize: "0.68rem", mt: 0.3, lineHeight: 1.4 }}>
-                            {currentStatus.description}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </>
-                  );
-                })()}
-              </Box>
             </DialogContent>
           </>
         )}

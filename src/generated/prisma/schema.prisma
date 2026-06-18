@@ -28,6 +28,37 @@ enum LeadPriority {
   HIGH
 }
 
+model Organizer {
+  id             Int               @id @default(autoincrement())
+  companyName    String
+  contactName    String?
+  phone          String?
+  email          String?
+  website        String?
+  facebook       String?
+  note           String?           @db.Text
+  outreachStatus String            @default("NEW")
+  lockedFields   Json              @default("[]")
+  events         Event[]
+  activities     ContactActivity[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([email])
+  @@index([companyName])
+}
+
+model ContactActivity {
+  id          Int       @id @default(autoincrement())
+  organizerId Int
+  organizer   Organizer @relation(fields: [organizerId], references: [id])
+  type        String    @default("NOTE")
+  text        String    @db.Text
+  createdAt   DateTime  @default(now())
+
+  @@index([organizerId])
+}
+
 model Venue {
   id        Int      @id @default(autoincrement())
   name      String
@@ -54,6 +85,8 @@ model Event {
   organizerWebsite     String?
   organizerFacebook    String?
   outreachStatus       String      @default("NEW")
+  organizerId          Int?
+  organizer            Organizer?  @relation(fields: [organizerId], references: [id])
   startsAt             DateTime
   endsAt               DateTime?
   venueId              Int
@@ -96,4 +129,46 @@ model Activity {
   createdAt DateTime  @default(now())
 
   @@index([dueAt])
+}
+
+model EmailTemplate {
+  id        Int             @id @default(autoincrement())
+  name      String
+  subject   String
+  body      String          @db.LongText
+  campaigns EmailCampaign[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model EmailCampaign {
+  id         Int              @id @default(autoincrement())
+  name       String
+  templateId Int
+  template   EmailTemplate    @relation(fields: [templateId], references: [id])
+  subject    String
+  body       String           @db.LongText
+  status     String           @default("DRAFT")
+  sentAt     DateTime?
+  recipients EmailRecipient[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([status])
+}
+
+model EmailRecipient {
+  id         Int           @id @default(autoincrement())
+  campaignId Int
+  campaign   EmailCampaign @relation(fields: [campaignId], references: [id])
+  email      String
+  name       String?
+  company    String?
+  status     String        @default("PENDING")
+  messageId  String?
+  error      String?       @db.Text
+  sentAt     DateTime?
+
+  @@index([campaignId])
+  @@index([status])
 }

@@ -642,13 +642,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const promises: Promise<ScrapedEvent[]>[] = [];
-    
+
     if (sourceParam === "all" || sourceParam === "impact") {
       promises.push(Promise.all(syncYears.map((year) => scrapeImpactLive(year))).then((results) => results.flat()));
     } else {
       promises.push(Promise.resolve([]));
     }
-    
+
     if (sourceParam === "all" || sourceParam === "bitec") {
       promises.push(Promise.all(syncYears.map((year) => scrapeBitecLive(year))).then((results) => results.flat()));
     } else {
@@ -661,7 +661,7 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     console.error("Selective scraping execution failed:", e);
   }
-  
+
   const liveEvents = dedupeEvents([...impactLiveList, ...bitecLiveList]);
   
   const activeFallbackList = fallbackEventsList.filter(item => {
@@ -707,7 +707,19 @@ export async function POST(request: NextRequest) {
     for (const item of activeEventsList) {
       const venueId = venueMap[item.venueSlug];
       const start = new Date(item.startsAt);
-      
+      const isRealDate = start.getTime() !== new Date(0).getTime();
+
+      // If we now have a real date, delete any stale epoch-keyed duplicate for the same title+venue
+      if (isRealDate) {
+        await prisma.event.deleteMany({
+          where: {
+            title: item.title,
+            venueId,
+            startsAt: new Date(0),
+          },
+        }).catch(() => {});
+      }
+
       const savedEvent = await prisma.event.upsert({
         where: {
           title_startsAt_venueId: {
@@ -747,6 +759,54 @@ export async function POST(request: NextRequest) {
           organizerFacebook: item.organizerFacebook || null,
         },
       });
+
+      // Upsert Organizer contact record and link to this event
+      if (item.organizerName || item.organizerEmail) {
+        try {
+          let organizer = null;
+
+          if (item.organizerEmail) {
+            organizer = await prisma.organizer.findFirst({ where: { email: item.organizerEmail } });
+          }
+          if (!organizer && item.organizerName) {
+            organizer = await prisma.organizer.findFirst({ where: { companyName: item.organizerName } });
+          }
+
+          if (organizer) {
+            // Respect field-level locks: skip any field the user has manually locked
+            const locked = new Set(Array.isArray(organizer.lockedFields) ? organizer.lockedFields as string[] : []);
+            organizer = await prisma.organizer.update({
+              where: { id: organizer.id },
+              data: {
+                companyName: locked.has("companyName") ? organizer.companyName : (item.organizerName || organizer.companyName || "Unknown"),
+                contactName: locked.has("contactName") ? organizer.contactName : (item.organizerContactName || organizer.contactName || null),
+                phone:       locked.has("phone")       ? organizer.phone       : (item.organizerPhone       || organizer.phone       || null),
+                email:       locked.has("email")       ? organizer.email       : (item.organizerEmail       || organizer.email       || null),
+                website:     locked.has("website")     ? organizer.website     : (item.organizerWebsite     || organizer.website     || null),
+                facebook:    locked.has("facebook")    ? organizer.facebook    : (item.organizerFacebook    || organizer.facebook    || null),
+              },
+            });
+          } else {
+            organizer = await prisma.organizer.create({
+              data: {
+                companyName: item.organizerName || "Unknown",
+                contactName: item.organizerContactName || null,
+                phone: item.organizerPhone || null,
+                email: item.organizerEmail || null,
+                website: item.organizerWebsite || null,
+                facebook: item.organizerFacebook || null,
+              },
+            });
+          }
+
+          await prisma.event.update({
+            where: { id: savedEvent.id },
+            data: { organizerId: organizer.id },
+          });
+        } catch (orgErr) {
+          console.warn("Organizer upsert skipped for event", savedEvent.id, orgErr);
+        }
+      }
 
       syncedEvents.push(mapSavedEvent({
         id: savedEvent.id,

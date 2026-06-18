@@ -2,14 +2,14 @@
   /* Typography */
   --font-inter: "Inter", system-ui, -apple-system, sans-serif;
 
-  /* Premium Dark Theme Palette */
-  --background: #060913;      /* Deep Space Dark */
-  --foreground: #f8fafc;      /* Ice White for high readability */
-  --muted: #94a3b8;           /* Muted Slate */
-  --muted-light: #64748b;     /* Slate Muted Subtitle */
-  --line: rgba(255, 255, 255, 0.08); /* Transparent divider */
-  --panel: rgba(15, 22, 42, 0.65);  /* Glassmorphic Panel Base */
-  --panel-solid: #0f172a;
+  /* Light Theme Palette */
+  --background: #f1f5f9;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --muted-light: #94a3b8;
+  --line: rgba(0, 0, 0, 0.08);
+  --panel: rgba(255, 255, 255, 0.85);
+  --panel-solid: #ffffff;
 
   /* Brand Accents — Vibrant Glowing Gradients */
   --brand: #0ea5e9;           /* Sky Blue */
@@ -19,7 +19,7 @@
   --accent: #8b5cf6;          /* Violet Accent */
   --accent-light: rgba(139, 92, 246, 0.15);
 
-  /* Semantic Neon Tones */
+  /* Semantic Tones */
   --success: #10b981;         /* Emerald */
   --success-bg: rgba(16, 185, 129, 0.12);
   --warning: #f59e0b;         /* Amber */
@@ -27,20 +27,20 @@
   --danger: #ef4444;          /* Rose */
   --danger-bg: rgba(239, 68, 68, 0.12);
 
-  /* Sidebar Design */
-  --sidebar: #090d16;         /* Deeper sidebar */
+  /* Sidebar — stays dark */
+  --sidebar: #1e293b;
   --sidebar-soft: rgba(255, 255, 255, 0.03);
   --sidebar-active-bg: rgba(14, 165, 233, 0.12);
   --sidebar-active-border: #38bdf8;
-  --sidebar-muted: #64748b;
+  --sidebar-muted: #94a3b8;
   --sidebar-text: #e2e8f0;
-  --sidebar-line: rgba(255, 255, 255, 0.04);
+  --sidebar-line: rgba(255, 255, 255, 0.08);
 
-  /* Glassmorphism & Shadows */
+  /* Shadows */
   --backdrop-blur: blur(20px);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 15px rgba(14, 165, 233, 0.15);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 15px rgba(14, 165, 233, 0.12);
 }
 
 /* ─── Base Styles & Resets ─────────────────────────────────────────── */
@@ -56,7 +56,7 @@ body {
   display: flex;
   flex-direction: column;
   color: var(--foreground);
-  background: radial-gradient(circle at 50% 0%, #0d1527 0%, var(--background) 70%);
+  background: radial-gradient(circle at 50% 0%, #e0eaf4 0%, var(--background) 70%);
   font-family: var(--font-sarabun), var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -69,6 +69,10 @@ body {
   padding: 0;
   margin: 0;
   font-family: var(--font-sarabun), "Sarabun", sans-serif !important;
+}
+
+input, textarea, select {
+  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
 a {
@@ -85,11 +89,11 @@ a {
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* ─── App Frame Layout ─────────────────────────────────────────────── */
@@ -351,7 +355,7 @@ a {
   gap: 16px;
   min-height: 60px;
   border-bottom: 1px solid var(--line);
-  background: rgba(6, 9, 19, 0.8);
+  background: rgba(241, 245, 249, 0.92);
   backdrop-filter: var(--backdrop-blur);
   -webkit-backdrop-filter: var(--backdrop-blur);
   padding: 0 24px;
@@ -362,14 +366,14 @@ a {
   height: 38px;
   border: 1px solid var(--line) !important;
   border-radius: 10px !important;
-  background: rgba(255, 255, 255, 0.02) !important;
+  background: rgba(0, 0, 0, 0.04) !important;
   color: var(--muted) !important;
   transition: all 0.2s ease !important;
 }
 
 .mobileMenuButton:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
   color: var(--foreground) !important;
 }
 
@@ -408,7 +412,7 @@ a {
 
 .metricCard:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
   box-shadow: var(--shadow-md);
 }
 
@@ -568,7 +572,7 @@ a {
 }
 
 .dashboardCard:hover {
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
   box-shadow: var(--shadow-md);
 }
 
@@ -596,14 +600,14 @@ a {
   color: var(--muted-light);
   font-size: 0.78rem;
   padding: 0 12px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(0, 0, 0, 0.04);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .miniSearch:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.06);
   color: var(--muted);
 }
 
@@ -614,7 +618,7 @@ a {
 }
 
 .MuiTableCell-root {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
   color: var(--muted) !important;
   font-size: 0.8rem !important;
   padding: 12px 10px !important;
@@ -624,7 +628,7 @@ a {
 .MuiTableHead-root .MuiTableCell-root {
   color: var(--foreground) !important;
   font-weight: 600 !important;
-  background: rgba(255, 255, 255, 0.01) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
   font-size: 0.76rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
@@ -637,11 +641,11 @@ a {
 }
 
 .MuiTableRow-root:hover {
-  background: rgba(255, 255, 255, 0.02) !important;
+  background: rgba(0, 0, 0, 0.03) !important;
 }
 
 .MuiCheckbox-root {
-  color: rgba(255, 255, 255, 0.3) !important;
+  color: rgba(0, 0, 0, 0.3) !important;
 }
 
 .MuiCheckbox-root.Mui-checked {
@@ -660,7 +664,7 @@ a {
   font-size: 0.8rem !important;
   font-weight: 700 !important;
   border-radius: 10px !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 .orderAvatar-bitec {
@@ -724,7 +728,7 @@ a {
   color: var(--muted-light);
   font-size: 0.78rem;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   margin-top: 8px;
   align-items: center;
   gap: 12px;
@@ -752,7 +756,7 @@ a {
   border-radius: 8px !important;
   color: var(--muted) !important;
   border: 1px solid rgba(148, 163, 184, 0.16) !important;
-  background: rgba(255, 255, 255, 0.02) !important;
+  background: rgba(0, 0, 0, 0.04) !important;
   transition: all 0.15s ease !important;
 }
 
@@ -827,7 +831,7 @@ a {
   width: 12px;
   height: 180px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -904,11 +908,11 @@ a {
   height: 102px;
   place-items: center;
   border-radius: 50%;
-  background: #0d1222; /* Matches deep dark mode backdrop */
+  background: #ffffff;
   color: var(--foreground);
   text-align: center;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .donutCenter p {
@@ -963,7 +967,7 @@ a {
 .continentProgress {
   height: 8px !important;
   border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.03) !important;
+  background: rgba(0, 0, 0, 0.06) !important;
   margin: 12px 0 20px !important;
   overflow: hidden;
 }
