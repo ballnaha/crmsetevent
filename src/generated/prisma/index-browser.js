@@ -232,6 +232,16 @@ exports.Prisma.EmailRecipientScalarFieldEnum = {
   sentAt: 'sentAt'
 };
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  password: 'password',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -328,6 +338,13 @@ exports.Prisma.EmailRecipientOrderByRelevanceFieldEnum = {
   messageId: 'messageId',
   error: 'error'
 };
+
+exports.Prisma.UserOrderByRelevanceFieldEnum = {
+  email: 'email',
+  name: 'name',
+  password: 'password',
+  role: 'role'
+};
 exports.EventSource = exports.$Enums.EventSource = {
   BITEC: 'BITEC',
   IMPACT: 'IMPACT',
@@ -358,7 +375,8 @@ exports.Prisma.ModelName = {
   Activity: 'Activity',
   EmailTemplate: 'EmailTemplate',
   EmailCampaign: 'EmailCampaign',
-  EmailRecipient: 'EmailRecipient'
+  EmailRecipient: 'EmailRecipient',
+  User: 'User'
 };
 
 /**

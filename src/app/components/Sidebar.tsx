@@ -1,14 +1,15 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography, IconButton } from "@mui/material";
+import { useSession, signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Mail,
   RefreshCw,
   Settings,
-  ShieldCheck,
   Users,
+  LogOut,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -19,6 +20,17 @@ type SidebarProps = {
 export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const user = session?.user;
+  const userName = user?.name || "CRM Operator";
+  const userRole = (user as any)?.role || "Administrator";
+  const userInitials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase() || "OP";
 
   return (
     <Box component="aside" className="appSidebar" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -191,44 +203,6 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
 
       {/* Bottom Panel (Status Card + Operator Profile) */}
       <Stack spacing={1.5} sx={{ mt: "auto", pt: 2 }}>
-        {/* Status Indicator Card */}
-        <Box 
-          sx={{ 
-            p: 1.25, 
-            borderRadius: "10px", 
-            border: "1px solid var(--sidebar-line)", 
-            bgcolor: "rgba(14, 165, 233, 0.06)",
-            display: "flex",
-            gap: 1.25,
-            alignItems: "flex-start"
-          }}
-        >
-          <ShieldCheck size={16} style={{ color: "var(--brand)", marginTop: 2, flexShrink: 0 }} />
-          <Box sx={{ width: "100%" }}>
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center", justifyContent: "space-between" }}>
-              <Typography sx={{ color: "var(--sidebar-text)", fontSize: "0.75rem", fontWeight: 600 }}>Sync Status</Typography>
-              <Box
-                sx={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  bgcolor: "var(--success)",
-                  boxShadow: "0 0 8px var(--success)",
-                  animation: "pulseDot 1.6s infinite",
-                  "@keyframes pulseDot": {
-                    "0%": { transform: "scale(0.95)", boxShadow: "0 0 0 0 rgba(16, 185, 129, 0.7)" },
-                    "70%": { transform: "scale(1)", boxShadow: "0 0 0 6px rgba(16, 185, 129, 0)" },
-                    "100%": { transform: "scale(0.95)", boxShadow: "0 0 0 0 rgba(16, 185, 129, 0)" },
-                  },
-                }}
-              />
-            </Stack>
-            <Typography sx={{ color: "var(--sidebar-muted)", fontSize: "0.68rem", mt: 0.25, lineHeight: 1.3 }}>
-              Scrapers active.
-            </Typography>
-          </Box>
-        </Box>
-
         {/* Profile Card */}
         <Box 
           sx={{ 
@@ -238,44 +212,60 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
             bgcolor: "rgba(0, 0, 0, 0.02)"
           }}
         >
-          <Stack direction="row" spacing={1.25} sx={{ alignItems: "center" }}>
-            <Box className="avatarContainer" sx={{ position: "relative" }}>
-              <Box
-                sx={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%)",
-                  display: "grid",
-                  placeItems: "center",
-                  fontWeight: 700,
-                  color: "#fff",
-                  fontSize: "0.75rem",
-                }}
-              >
-                OP
+          <Stack direction="row" spacing={1.25} sx={{ alignItems: "center", justifyContent: "space-between" }}>
+            <Stack direction="row" spacing={1.25} sx={{ alignItems: "center", minWidth: 0, flex: 1 }}>
+              <Box className="avatarContainer" sx={{ position: "relative", flexShrink: 0 }}>
+                <Box
+                  sx={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%)",
+                    display: "grid",
+                    placeItems: "center",
+                    fontWeight: 700,
+                    color: "#fff",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {userInitials}
+                </Box>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    bgcolor: "var(--success)",
+                    border: "1.5px solid var(--sidebar)",
+                    position: "absolute",
+                    bottom: -1,
+                    right: -1,
+                  }}
+                />
               </Box>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  bgcolor: "var(--success)",
-                  border: "1.5px solid var(--sidebar)",
-                  position: "absolute",
-                  bottom: -1,
-                  right: -1,
-                }}
-              />
-            </Box>
-            <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography sx={{ color: "var(--sidebar-text)", fontSize: "0.75rem", fontWeight: 700, lineHeight: 1.2 }}>
-                CRM Operator
-              </Typography>
-              <Typography sx={{ color: "var(--sidebar-muted)", fontSize: "0.65rem", mt: 0.15, fontWeight: 500 }}>
-                Administrator
-              </Typography>
-            </Box>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography sx={{ color: "var(--sidebar-text)", fontSize: "0.75rem", fontWeight: 700, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {userName}
+                </Typography>
+                <Typography sx={{ color: "var(--sidebar-muted)", fontSize: "0.65rem", mt: 0.15, fontWeight: 500, textTransform: "capitalize" }}>
+                  {userRole.toLowerCase()}
+                </Typography>
+              </Box>
+            </Stack>
+            <IconButton 
+              size="small" 
+              onClick={() => signOut({ callbackUrl: "/login" })} 
+              sx={{ 
+                color: "var(--sidebar-muted)", 
+                "&:hover": { 
+                  color: "var(--danger)", 
+                  bgcolor: "var(--danger-bg)" 
+                } 
+              }}
+              title="ออกจากระบบ"
+            >
+              <LogOut size={16} />
+            </IconButton>
           </Stack>
         </Box>
       </Stack>
