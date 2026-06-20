@@ -540,7 +540,7 @@ function TemplateDialog({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [err, setErr] = useState("");
-  const [boilerplateConfirmTarget, setBoilerplateConfirmTarget] = useState<{subject: string, body: string} | null>(null);
+  const [boilerplateConfirmTarget, setBoilerplateConfirmTarget] = useState<{ subject: string, body: string } | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -822,7 +822,7 @@ function TemplateDialog({
         </Button>
       </Box>
     </Dialog>
-    </>
+  </>
   );
 }
 
@@ -858,7 +858,7 @@ function PreviewDialog({ open, onClose, subject, body }: { open: boolean; onClos
           <Stack direction="row" sx={{ alignItems: "center" }}>
             <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 600, minWidth: 60 }}>จาก:</Typography>
             <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.8rem", fontWeight: 600 }}>
-              EventSync System &lt;noreply@eventsync.com&gt;
+              SetEvent Company &lt;noreply@eventsync.com&gt;
             </Typography>
           </Stack>
           <Stack direction="row" sx={{ alignItems: "center" }}>
@@ -1984,7 +1984,7 @@ function resizeAndCompressImage(file: File, maxDim: number = 1200, maxSize: numb
               const ext = outputMime === "image/png" ? ".png" : ".jpg";
               let baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
               const newName = baseName + ext;
-              
+
               const resizedFile = new File([blob], newName, {
                 type: outputMime,
                 lastModified: Date.now(),
