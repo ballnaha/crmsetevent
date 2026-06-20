@@ -6,10 +6,12 @@ import {
   DialogTitle, Divider, FormControl, IconButton, InputLabel,
   MenuItem, Paper, Select, Stack, Tab, Tabs, TextField,
   Tooltip, Typography, Checkbox, FormControlLabel,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 } from "@mui/material";
 import {
   CheckCircle2, ChevronLeft, FileText, ImageIcon, Mail, Paperclip,
   Pencil, Plus, Send, Trash2, Users, X, XCircle, Eye, AlertCircle,
+  Sparkles, Clock, ChevronRight, ChevronsLeft, ChevronsRight
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -37,6 +39,7 @@ type Contact = {
   companyName: string;
   contactName: string | null;
   email: string | null;
+  lastSentAt?: string | null;
 };
 
 type Attachment = {
@@ -46,7 +49,7 @@ type Attachment = {
   size: number;
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const MERGE_TAGS = [
   { tag: "{{contact_name}}", label: "ชื่อผู้ติดต่อ" },
@@ -54,25 +57,140 @@ const MERGE_TAGS = [
   { tag: "{{email}}", label: "อีเมล" },
 ];
 
+const BOILERPLATES = [
+  {
+    name: "✉️ จดหมายทักทายทั่วไป",
+    subject: "สวัสดีคุณ {{contact_name}} — ขอบคุณที่ติดต่อเรา",
+    body: `<div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+  <h2 style="color: #0ea5e9; margin-top: 0; font-size: 20px; font-weight: 700;">เรียนคุณ {{contact_name}},</h2>
+  <p>ขอขอบคุณสำหรับความสนใจในบริการของทาง <strong>{{company_name}}</strong> ทางทีมงานของเรายินดีเป็นอย่างยิ่งที่มีโอกาสได้แนะนำข้อมูลให้แก่ท่าน</p>
+  <p>หากท่านมีคำถามเกี่ยวกับแคมเปญ งานสัมมนา หรือระบบ CRM เพิ่มเติม สามารถติดต่อผู้ดูแลโครงการของท่านได้โดยการตอบกลับอีเมลนี้โดยตรง</p>
+  <p style="margin-top: 24px;">ขอแสดงความนับถือ,<br/><span style="color: #0ea5e9; font-weight: 600;">ทีมงาน EventSync Co.</span></p>
+  <hr style="border: 0; border-top: 1px dashed #e2e8f0; margin: 24px 0;" />
+  <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">อีเมลฉบับนี้ส่งตรงถึง {{email}} จากระบบบริหารจัดการลูกค้าสัมพันธ์อัตโนมัติ</p>
+</div>`
+  },
+  {
+    name: "📅 การ์ดเชิญร่วมงานสัมมนา",
+    subject: "ขอเรียนเชิญคุณ {{contact_name}} เข้าร่วมงานสัมมนาพิเศษประจำปี 2026",
+    body: `<div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+  <div style="background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%); padding: 36px 24px; text-align: center; color: #ffffff;">
+    <span style="font-size: 36px; display: block; margin-bottom: 8px;">✨</span>
+    <h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">EventSync Forum 2026</h1>
+    <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 14px;">The Next Era of Smart Event Technology & CRM Integration</p>
+  </div>
+  <div style="padding: 28px 24px;">
+    <p>เรียน คุณ <strong>{{contact_name}}</strong> จากบริษัท <strong>{{company_name}}</strong>,</p>
+    <p>เรามีความยินดีเป็นอย่างยิ่งที่จะเรียนเชิญท่านเข้าร่วมสัมมนาพิเศษ ที่จะรวมเหล่าผู้บริหารและผู้เชี่ยวชาญจากกลุ่มงาน Event ทั่วประเทศมาร่วมแบ่งปันวิสัยทัศน์ในหัวข้อการใช้ Data ขับเคลื่อนความสำเร็จของการจัดแสดงสินค้า</p>
+    <div style="background-color: #f8fafc; border-radius: 10px; padding: 16px; margin: 20px 0; border-left: 4px solid #8b5cf6;">
+      <p style="margin: 0 0 8px 0; font-weight: 700; color: #8b5cf6; font-size: 14px;">รายละเอียดงานสัมมนา</p>
+      <p style="margin: 0; font-size: 13px;">📆 วันที่: 15 กรกฎาคม 2026<br/>📍 สถานที่: BITEC Grand Hall (Room 201-203)<br/>⏰ เวลา: 13:00 - 17:00 น.</p>
+    </div>
+    <div style="text-align: center; margin: 28px 0;">
+      <a href="#" style="background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%); color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 30px; font-weight: 700; display: inline-block; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">ลงทะเบียนรับบัตรฟรี</a>
+    </div>
+    <p style="margin-bottom: 0;">ขอแสดงความนับถือ,<br/>คณะผู้จัดงาน EventSync Forum</p>
+  </div>
+</div>`
+  },
+  {
+    name: "🚀 ข้อเสนอพิเศษ / Proposal",
+    subject: "ข้อเสนอพิเศษสุดพิเศษสำหรับ {{company_name}} ยกระดับระบบจัดการ Event ของท่าน",
+    body: `<div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 28px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+  <div style="text-align: center; margin-bottom: 24px;">
+    <span style="font-size: 40px;">🚀</span>
+    <h2 style="color: #0ea5e9; margin: 10px 0 4px 0; font-size: 22px; font-weight: 800;">Exclusive Partnership Proposal</h2>
+    <p style="color: #64748b; margin: 0; font-size: 13px;">จัดเตรียมเป็นพิเศษสำหรับ {{company_name}}</p>
+  </div>
+  <p>เรียน คุณ {{contact_name}},</p>
+  <p>สืบเนื่องจากการติดต่อขอข้อมูลระบบบริหารจัดการความสัมพันธ์ลูกค้าร่วมกันที่ผ่านมา ทางทีมงานได้สรุปบริการและอัตราค่าใช้จ่ายพิเศษสำหรับแคมเปญ Q3 ดังรายละเอียดต่อไปนี้:</p>
+  <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px;">
+    <thead>
+      <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+        <th style="padding: 10px; text-align: left; font-weight: 700;">รายการบริการ</th>
+        <th style="padding: 10px; text-align: right; font-weight: 700;">ราคาพิเศษ (บาท)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 10px;">Event Calendar Sync Hub (BITEC & IMPACT)</td>
+        <td style="padding: 10px; text-align: right; font-weight: 600; color: #0ea5e9;">Included</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 10px;">Email Automation Campaign Module</td>
+        <td style="padding: 10px; text-align: right; font-weight: 600; color: #0ea5e9;">Included</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #e2e8f0;">
+        <td style="padding: 10px; font-weight: bold;">ค่าธรรมเนียมรายปีสมาชิก CRM Operator License</td>
+        <td style="padding: 10px; text-align: right; font-weight: bold; color: #8b5cf6;">9,500.- / ปี</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>ข้อเสนอนี้ยืดอายุถึงสิ้นเดือนนี้เท่านั้น ท่านสามารถกดยืนยันเพื่อขอข้อมูลเพิ่มเติมหรือนัดสาธิตการใช้งานระบบกับเจ้าหน้าที่เทคนิคของเรา</p>
+  <div style="text-align: center; margin-top: 24px;">
+    <a href="#" style="background-color: #0f172a; color: #ffffff; padding: 10px 24px; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">นัดจองคิวรับการสาธิตระบบ</a>
+  </div>
+</div>`
+  }
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function paginationItems(page: number, total: number) {
+  const visible = new Set([1, total, page - 1, page, page + 1].filter((n) => n >= 1 && n <= total));
+  const items: (number | "…")[] = [];
+  let prev = 0;
+  Array.from(visible).sort((a, b) => a - b).forEach((n) => {
+    if (prev && n - prev > 1) items.push("…");
+    items.push(n);
+    prev = n;
+  });
+  return items;
+}
+
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleString("th-TH", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return new Date(iso).toLocaleString("th-TH", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 function campaignStatusMeta(s: string) {
-  if (s === "SENT")    return { label: "ส่งแล้ว",   color: "var(--success)", bg: "rgba(16,185,129,0.12)" };
-  if (s === "FAILED")  return { label: "ล้มเหลว",   color: "var(--danger)",  bg: "rgba(239,68,68,0.12)" };
-  if (s === "SENDING") return { label: "กำลังส่ง",  color: "var(--brand)",   bg: "rgba(14,165,233,0.12)" };
-  return                        { label: "Draft",     color: "var(--muted)",   bg: "rgba(148,163,184,0.12)" };
+  if (s === "SENT")    return { label: "ส่งแล้ว",   color: "var(--success)", bg: "rgba(16,185,129,0.08)" };
+  if (s === "FAILED")  return { label: "ล้มเหลว",   color: "var(--danger)",  bg: "rgba(239,68,68,0.08)" };
+  if (s === "SENDING") return { label: "กำลังส่ง",  color: "var(--brand)",   bg: "rgba(14,165,233,0.08)" };
+  return                        { label: "ร่างแคมเปญ", color: "var(--muted)",   bg: "rgba(148,163,184,0.08)" };
 }
 
 function fieldSx() {
   return {
-    "& .MuiInputBase-root": { bgcolor: "rgba(0,0,0,0.03)", color: "var(--foreground)", fontSize: "0.82rem", borderRadius: "8px" },
-    "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(148,163,184,0.2)" },
-    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(56,189,248,0.4)" },
-    "& .Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "var(--brand)", borderWidth: 1 },
-    "& .MuiInputLabel-root": { color: "var(--muted)", fontSize: "0.78rem" },
-    "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand)" },
+    "& .MuiInputBase-root": {
+      bgcolor: "rgba(0,0,0,0.02)",
+      color: "var(--foreground)",
+      fontSize: "0.82rem",
+      borderRadius: "10px",
+      transition: "all 0.15s ease",
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: "rgba(148,163,184,0.15)",
+    },
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: "rgba(14,165,233,0.3)",
+    },
+    "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "var(--brand)",
+      borderWidth: 1.5,
+    },
+    "& .MuiInputLabel-root": {
+      color: "var(--muted)",
+      fontSize: "0.78rem",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "var(--brand)",
+    },
   };
 }
 
@@ -95,6 +213,16 @@ async function fileToAttachment(file: File): Promise<Attachment> {
   });
 }
 
+function compilePreview(html: string) {
+  let preview = html;
+  preview = preview.replaceAll("{{contact_name}}", '<strong style="color: #0ea5e9; background: rgba(14,165,233,0.08); padding: 1px 4px; border-radius: 4px; font-weight: 600;">คุณสมชาย ใจดี</strong>');
+  preview = preview.replaceAll("{{company_name}}", '<strong style="color: #8b5cf6; background: rgba(139,92,246,0.08); padding: 1px 4px; border-radius: 4px; font-weight: 600;">บริษัท มั่งมี คอร์ปอเรชัน</strong>');
+  preview = preview.replaceAll("{{email}}", '<strong style="color: #64748b; background: rgba(100,116,139,0.08); padding: 1px 4px; border-radius: 4px; font-family: monospace;">somchai@mungmee.co.th</strong>');
+  return preview;
+}
+
+// ─── AttachmentZone Component ────────────────────────────────────────────────
+
 function AttachmentZone({ attachments, onChange }: { attachments: Attachment[]; onChange: (a: Attachment[]) => void }) {
   const [dragging, setDragging] = useState(false);
 
@@ -110,11 +238,10 @@ function AttachmentZone({ attachments, onChange }: { attachments: Attachment[]; 
 
   return (
     <Box>
-      <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem", fontWeight: 600, mb: 0.75 }}>
-        ไฟล์แนบ (รูปภาพ / PDF)
+      <Typography sx={{ color: "var(--foreground)", fontSize: "0.76rem", fontWeight: 700, mb: 1 }}>
+        เอกสารแนบ (เอกสาร PDF / สไลด์ / รูปภาพ)
       </Typography>
 
-      {/* Drop zone */}
       <Box
         component="label"
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -122,34 +249,39 @@ function AttachmentZone({ attachments, onChange }: { attachments: Attachment[]; 
         onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
         sx={{
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-          gap: 0.75, p: 2, borderRadius: "10px", cursor: "pointer",
-          border: `1.5px dashed ${dragging ? "var(--brand)" : "rgba(148,163,184,0.25)"}`,
-          bgcolor: dragging ? "rgba(14,165,233,0.06)" : "rgba(0,0,0,0.03)",
-          transition: "all 0.15s ease",
-          "&:hover": { borderColor: "var(--brand)", bgcolor: "rgba(14,165,233,0.04)" },
+          gap: 1, p: 2.5, borderRadius: "12px", cursor: "pointer",
+          border: `2px dashed ${dragging ? "var(--brand)" : "rgba(148,163,184,0.2)"}`,
+          bgcolor: dragging ? "rgba(14,165,233,0.04)" : "rgba(0,0,0,0.01)",
+          transition: "all 0.2s ease-in-out",
+          "&:hover": { borderColor: "var(--brand)", bgcolor: "rgba(14,165,233,0.02)" },
         }}
       >
         <input type="file" multiple hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
           onChange={(e) => addFiles(e.target.files)} />
-        <Paperclip size={18} style={{ color: dragging ? "var(--brand)" : "var(--muted)" }} />
-        <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", textAlign: "center" }}>
-          คลิกหรือลากไฟล์มาวางที่นี่
+        <Box sx={{ p: 1, borderRadius: "50%", bgcolor: "rgba(0,0,0,0.03)", color: dragging ? "var(--brand)" : "var(--muted)", transition: "all 0.15s" }}>
+          <Paperclip size={18} />
+        </Box>
+        <Typography sx={{ color: "var(--foreground)", fontSize: "0.8rem", fontWeight: 600 }}>
+          คลิกหรือลากไฟล์มาวางที่นี่เพื่อแนบไฟล์
         </Typography>
-        <Typography sx={{ color: "var(--muted-light)", fontSize: "0.68rem" }}>
-          รูปภาพ, PDF, Word, Excel — สูงสุด 10 MB / ไฟล์
+        <Typography sx={{ color: "var(--muted)", fontSize: "0.68rem" }}>
+          PDF, Word, Excel, รูปภาพ - สูงสุด 10 MB / ไฟล์
         </Typography>
       </Box>
 
-      {/* Attached file list */}
       {attachments.length > 0 && (
-        <Stack spacing={0.5} sx={{ mt: 1 }}>
+        <Stack spacing={1} sx={{ mt: 1.5 }}>
           {attachments.map((a, i) => (
-            <Stack key={i} direction="row" sx={{ alignItems: "center", gap: 1, p: 0.75, borderRadius: "7px", bgcolor: "rgba(14,165,233,0.07)", border: "1px solid rgba(14,165,233,0.2)" }}>
-              <ImageIcon size={13} style={{ color: "var(--brand)", flexShrink: 0 }} />
-              <Typography sx={{ color: "var(--foreground)", fontSize: "0.78rem", flex: 1, minWidth: 0 }} noWrap>{a.filename}</Typography>
-              <Typography sx={{ color: "var(--muted)", fontSize: "0.7rem", flexShrink: 0 }}>{formatBytes(a.size)}</Typography>
-              <IconButton size="small" onClick={() => remove(i)} sx={{ p: 0.25, color: "var(--muted)", "&:hover": { color: "var(--danger)" } }}>
-                <X size={12} />
+            <Stack key={i} direction="row" sx={{ alignItems: "center", gap: 1.5, px: 2, py: 1, borderRadius: "10px", bgcolor: "rgba(14,165,233,0.05)", border: "1px solid rgba(14,165,233,0.15)" }}>
+              <Box sx={{ width: 28, height: 28, borderRadius: "8px", bgcolor: "rgba(14,165,233,0.1)", color: "var(--brand)", display: "grid", placeItems: "center" }}>
+                <ImageIcon size={14} />
+              </Box>
+              <Typography sx={{ color: "var(--foreground)", fontSize: "0.8rem", fontWeight: 600, flex: 1, minWidth: 0 }} noWrap>
+                {a.filename}
+              </Typography>
+              <Typography sx={{ color: "var(--muted)", fontSize: "0.7rem" }}>{formatBytes(a.size)}</Typography>
+              <IconButton size="small" onClick={() => remove(i)} sx={{ p: 0.25, color: "var(--muted)", "&:hover": { color: "var(--danger)", bgcolor: "rgba(239,68,68,0.08)" } }}>
+                <X size={14} />
               </IconButton>
             </Stack>
           ))}
@@ -159,7 +291,7 @@ function AttachmentZone({ attachments, onChange }: { attachments: Attachment[]; 
   );
 }
 
-// ─── Template Dialog ─────────────────────────────────────────────────────────
+// ─── TemplateDialog Component ────────────────────────────────────────────────
 
 function TemplateDialog({
   open, onClose, initial, onSaved,
@@ -194,7 +326,7 @@ function TemplateDialog({
       const res = await fetch("/api/uploads", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
-      const imgTag = `<img src="${data.url}" alt="${file.name}" style="max-width:100%; height:auto; display:block; margin:8px 0;">`;
+      const imgTag = `<img src="${data.url}" alt="${file.name}" style="max-width:100%; height:auto; display:block; margin:8px 0; border-radius: 8px;">`;
       setBody((prev) => prev + "\n" + imgTag);
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "อัปโหลดไม่สำเร็จ");
@@ -229,117 +361,240 @@ function TemplateDialog({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth
-      slotProps={{ paper: { sx: { bgcolor: "var(--panel-solid)", border: "1px solid var(--line)", borderRadius: "14px", height: "90vh", display: "flex", flexDirection: "column" } } }}>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1, flexShrink: 0 }}>
+    <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth
+      slotProps={{ paper: { sx: { bgcolor: "var(--panel-solid)", border: "1px solid var(--line)", borderRadius: "18px", height: "92vh", display: "flex", flexDirection: "column", overflow: "hidden" } } }}>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 2, px: 3, flexShrink: 0 }}>
         <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-          <FileText size={18} style={{ color: "var(--brand)" }} />
-          <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "1rem" }}>
-            {initial ? "แก้ไข Template" : "สร้าง Template ใหม่"}
-          </Typography>
+          <Box sx={{ width: 34, height: 34, borderRadius: "8px", bgcolor: "rgba(14,165,233,0.08)", color: "var(--brand)", display: "grid", placeItems: "center" }}>
+            <FileText size={16} />
+          </Box>
+          <Box>
+            <Typography sx={{ color: "var(--foreground)", fontWeight: 800, fontSize: "1.05rem" }}>
+              {initial ? "แก้ไข Template โครงร่างจดหมาย" : "สร้าง Template โครงร่างจดหมายใหม่"}
+            </Typography>
+            <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem" }}>
+              ออกแบบโครงร่างอีเมลพร้อมผสานแท็กตัวแปรเฉพาะคน
+            </Typography>
+          </Box>
         </Stack>
-        <IconButton onClick={onClose} size="small" sx={{ color: "var(--muted)" }}>
+        <IconButton onClick={onClose} size="small" sx={{ color: "var(--muted)", bgcolor: "rgba(0,0,0,0.02)", "&:hover": { bgcolor: "rgba(0,0,0,0.05)" } }}>
           <X size={16} />
         </IconButton>
       </DialogTitle>
       <Divider sx={{ borderColor: "var(--line)" }} />
-      <DialogContent sx={{ pt: 2.5, flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
-        <Stack spacing={2.5} sx={{ flex: 1 }}>
-          {err && (
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center", bgcolor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "8px", p: 1.25 }}>
-              <AlertCircle size={14} style={{ color: "var(--danger)", flexShrink: 0 }} />
-              <Typography sx={{ color: "var(--danger)", fontSize: "0.8rem" }}>{err}</Typography>
-            </Stack>
-          )}
-          <TextField label="ชื่อ Template" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" sx={fieldSx()} />
-          <TextField
-            label="Subject (หัวข้ออีเมล)" value={subject} onChange={(e) => setSubject(e.target.value)} fullWidth size="small"
-            placeholder="เช่น  สวัสดี {{contact_name}} — ขอนำเสนอพื้นที่จัดงาน"
-            sx={fieldSx()}
-          />
+      
+      <DialogContent sx={{ p: 3, flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" }, gap: 3.5, flex: 1, minHeight: 0 }}>
+          
+          {/* Left Column: Form Editor */}
+          <Stack spacing={2} sx={{ height: "100%", overflowY: "auto", pr: { md: 1.5 } }}>
+            {err && (
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center", bgcolor: "var(--danger-bg)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "8px", p: 1.25 }}>
+                <AlertCircle size={14} style={{ color: "var(--danger)", flexShrink: 0 }} />
+                <Typography sx={{ color: "var(--danger)", fontSize: "0.8rem", fontWeight: 500 }}>{err}</Typography>
+              </Stack>
+            )}
 
-          {/* Toolbar: Merge tags + Image upload */}
-          <Box>
-            <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 0.75 }}>
-              <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem", fontWeight: 600 }}>
-                Merge Tags — คลิกเพื่อแทรกใน Body
+            <TextField label="ชื่อ Template" placeholder="เช่น เทมเพลตเสนอราคา BITEC" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" sx={fieldSx()} />
+            
+            <TextField
+              label="Subject (หัวข้ออีเมล)" value={subject} onChange={(e) => setSubject(e.target.value)} fullWidth size="small"
+              placeholder="เช่น สวัสดีคุณ {{contact_name}} — ยินดีต้อนรับร่วมโครงการ"
+              sx={fieldSx()}
+            />
+
+            {/* Quick Boilerplates Selection */}
+            <Box>
+              <Typography sx={{ color: "var(--foreground)", fontSize: "0.74rem", fontWeight: 700, mb: 1, display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Sparkles size={12} style={{ color: "var(--brand)" }} /> เลือกโครงร่างเริ่มต้น (Boilerplates)
               </Typography>
-              <Tooltip title="อัปโหลดรูปแล้วแทรก <img> ลง body">
-                <Box component="label" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.25, py: 0.5, borderRadius: "7px", cursor: "pointer", bgcolor: uploading ? "rgba(14,165,233,0.06)" : "rgba(0,0,0,0.04)", border: "1px solid var(--line)", "&:hover": { bgcolor: "rgba(14,165,233,0.1)", borderColor: "rgba(14,165,233,0.4)" }, transition: "all 0.15s" }}>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+                {BOILERPLATES.map((bp) => (
+                  <Button
+                    key={bp.name}
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      if (!body.trim() || confirm("ระบบจะเขียนทับเนื้อความเดิมด้วยโครงร่างเริ่มต้น ต้องการเปลี่ยนตัวเลือกใช่หรือไม่?")) {
+                        setSubject(bp.subject);
+                        setBody(bp.body);
+                      }
+                    }}
+                    sx={{
+                      color: "var(--muted)",
+                      borderColor: "var(--line)",
+                      borderRadius: "8px",
+                      textTransform: "none",
+                      fontSize: "0.72rem",
+                      fontWeight: 600,
+                      px: 1.5,
+                      py: 0.5,
+                      "&:hover": {
+                        borderColor: "var(--brand)",
+                        color: "var(--brand)",
+                        bgcolor: "rgba(14,165,233,0.04)"
+                      }
+                    }}
+                  >
+                    {bp.name}
+                  </Button>
+                ))}
+              </Stack>
+            </Box>
+
+            {/* Toolbar Tags & Media */}
+            <Box>
+              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+                <Typography sx={{ color: "var(--foreground)", fontSize: "0.74rem", fontWeight: 700 }}>
+                  แท็กข้อมูลสำหรับเชื่อมโยง (Merge Tags)
+                </Typography>
+                
+                <Box component="label" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.5, py: 0.5, borderRadius: "8px", cursor: "pointer", bgcolor: uploading ? "rgba(14,165,233,0.08)" : "rgba(0,0,0,0.02)", border: "1px solid var(--line)", "&:hover": { bgcolor: "rgba(14,165,233,0.05)", borderColor: "rgba(14,165,233,0.3)" }, transition: "all 0.15s" }}>
                   <input type="file" hidden accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); e.target.value = ""; }} />
                   {uploading ? <CircularProgress size={12} sx={{ color: "var(--brand)" }} /> : <ImageIcon size={13} style={{ color: "var(--brand)" }} />}
-                  <Typography sx={{ color: "var(--brand)", fontSize: "0.72rem", fontWeight: 600 }}>
-                    {uploading ? "กำลังอัปโหลด..." : "อัปโหลดรูป"}
+                  <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.72rem", fontWeight: 700 }}>
+                    {uploading ? "กำลังอัปโหลด..." : "แทรกรูปภาพ"}
                   </Typography>
                 </Box>
-              </Tooltip>
-            </Stack>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {MERGE_TAGS.map((m) => (
-                <Chip
-                  key={m.tag} label={`${m.tag} · ${m.label}`} size="small"
-                  onClick={() => insertTag(m.tag)}
-                  sx={{ cursor: "pointer", bgcolor: "rgba(14,165,233,0.1)", color: "var(--brand)", border: "1px solid rgba(14,165,233,0.3)", fontSize: "0.7rem", "&:hover": { bgcolor: "rgba(14,165,233,0.2)" } }}
-                />
-              ))}
+              </Stack>
+              
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {MERGE_TAGS.map((m) => (
+                  <Chip
+                    key={m.tag} label={`${m.tag} (${m.label})`} size="small"
+                    onClick={() => insertTag(m.tag)}
+                    sx={{ cursor: "pointer", borderRadius: "6px", bgcolor: "rgba(14,165,233,0.08)", color: "var(--brand-dark)", fontWeight: 600, border: "1px solid rgba(14,165,233,0.2)", fontSize: "0.7rem", "&:hover": { bgcolor: "rgba(14,165,233,0.15)" } }}
+                  />
+                ))}
+              </Box>
             </Box>
-          </Box>
 
-          <TextField
-            label="Body (HTML หรือ Plain Text)"
-            value={body} onChange={(e) => setBody(e.target.value)}
-            fullWidth multiline rows={16} size="small"
-            placeholder={"<p>เรียน {{contact_name}},</p>\n<p>ทางเราขอนำเสนอ...</p>"}
-            sx={{
-              ...fieldSx(),
+            <TextField
+              label="เนื้อหาจดหมาย (รองรับ HTML และ Plain Text)"
+              value={body} onChange={(e) => setBody(e.target.value)}
+              fullWidth multiline rows={12} size="small"
+              placeholder={"เขียนโค้ด HTML ตัวอย่าง:\n<p>สวัสดีคุณ {{contact_name}},</p>\n<p>ยินดีต้อนรับร่วมงานสัมมนา...</p>"}
+              sx={{
+                ...fieldSx(),
+                flex: 1,
+                minHeight: 0,
+                "& .MuiInputBase-root": { fontFamily: "Consolas, Monaco, monospace", fontSize: "0.8rem", color: "var(--foreground)", bgcolor: "rgba(0,0,0,0.015)", borderRadius: "10px", height: "100%", alignItems: "flex-start" },
+                "& .MuiInputBase-input": { resize: "none", height: "100% !important", overflow: "auto !important" },
+                "& .MuiFormControl-root": { height: "100%" },
+              }}
+            />
+          </Stack>
+
+          {/* Right Column: Real-Time Preview */}
+          <Stack spacing={1.5} sx={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column" }}>
+            <Typography sx={{ color: "var(--foreground)", fontSize: "0.76rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.75 }}>
+              <Eye size={14} style={{ color: "var(--brand)" }} /> แสดงตัวอย่างแบบเรียลไทม์ (Live HTML Preview)
+            </Typography>
+            
+            <Box sx={{
               flex: 1,
-              "& .MuiInputBase-root": { fontFamily: "monospace", fontSize: "0.82rem", color: "var(--foreground)", bgcolor: "rgba(0,0,0,0.03)", borderRadius: "8px", width: "100%", height: "100%", alignItems: "flex-start" },
-              "& .MuiInputBase-input": { resize: "none", height: "100% !important", overflow: "auto !important" },
-              "& .MuiFormControl-root": { height: "100%" },
-            }}
-          />
-        </Stack>
+              bgcolor: "#ffffff",
+              borderRadius: "14px",
+              border: "1px solid var(--line)",
+              overflow: "auto",
+              p: 2.5,
+              display: "block",
+              boxShadow: "inset 0 2px 8px rgba(0,0,0,0.03)",
+              minHeight: 300
+            }}>
+              {body.trim() ? (
+                <div dangerouslySetInnerHTML={{ __html: compilePreview(body) }} />
+              ) : (
+                <Box sx={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--muted)", gap: 1, py: 6 }}>
+                  <Eye size={32} style={{ opacity: 0.3 }} />
+                  <Typography sx={{ fontSize: "0.8rem" }}>ป้อนเนื้อความจดหมายเพื่อแสดงตัวอย่าง</Typography>
+                </Box>
+              )}
+            </Box>
+          </Stack>
+
+        </Box>
       </DialogContent>
       <Divider sx={{ borderColor: "var(--line)" }} />
-      <Box sx={{ p: 2, display: "flex", justifyContent: "flex-end", gap: 1 }}>
-        <Button onClick={onClose} size="small" sx={{ color: "var(--muted)", textTransform: "none" }}>ยกเลิก</Button>
+      <Box sx={{ p: 2.5, px: 3, display: "flex", justifyContent: "flex-end", gap: 1.5, flexShrink: 0 }}>
+        <Button onClick={onClose} size="small" sx={{ color: "var(--muted)", textTransform: "none", fontWeight: 600 }}>ยกเลิก</Button>
         <Button onClick={save} disabled={saving} size="small" variant="contained"
-          sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 600, px: 2.5, "&:hover": { bgcolor: "#0284c7" } }}>
-          {saving ? <CircularProgress size={14} sx={{ color: "#fff" }} /> : "บันทึก"}
+          sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 700, px: 3.5, py: 0.75, borderRadius: "8px", "&:hover": { bgcolor: "#0284c7" } }}>
+          {saving ? <CircularProgress size={14} sx={{ color: "#fff" }} /> : "บันทึกเทมเพลต"}
         </Button>
       </Box>
     </Dialog>
   );
 }
 
-// ─── Preview Dialog ───────────────────────────────────────────────────────────
+// ─── PreviewDialog Component ─────────────────────────────────────────────────
 
 function PreviewDialog({ open, onClose, subject, body }: { open: boolean; onClose: () => void; subject: string; body: string }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth
-      slotProps={{ paper: { sx: { bgcolor: "var(--panel-solid)", border: "1px solid var(--line)", borderRadius: "14px" } } }}>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1 }}>
-        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-          <Eye size={18} style={{ color: "var(--brand)" }} />
-          <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "1rem" }}>Preview Email</Typography>
+      slotProps={{ paper: { sx: { bgcolor: "var(--panel-solid)", border: "1px solid var(--line)", borderRadius: "16px", overflow: "hidden", boxShadow: "var(--shadow-md)" } } }}>
+      
+      {/* Mock Client Topbar */}
+      <Box sx={{ bgcolor: "#f1f5f9", px: 2.5, py: 1.5, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--line)" }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#ef4444" }} />
+          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#eab308" }} />
+          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#22c55e" }} />
+          <Typography sx={{ color: "var(--muted)", fontSize: "0.74rem", fontWeight: 650, pl: 1.5, fontFamily: "Consolas, monospace" }}>
+            inbox_preview_message.eml
+          </Typography>
         </Stack>
-        <IconButton onClick={onClose} size="small" sx={{ color: "var(--muted)" }}><X size={16} /></IconButton>
-      </DialogTitle>
-      <Divider sx={{ borderColor: "var(--line)" }} />
-      <DialogContent sx={{ pt: 2 }}>
-        <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem", fontWeight: 600, mb: 0.5 }}>SUBJECT</Typography>
-        <Typography sx={{ color: "var(--foreground)", fontSize: "0.9rem", mb: 2, p: 1.5, bgcolor: "rgba(0,0,0,0.04)", borderRadius: "8px", border: "1px solid var(--line)" }}>
-          {subject || "(ว่าง)"}
-        </Typography>
-        <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem", fontWeight: 600, mb: 0.5 }}>BODY</Typography>
-        <Box sx={{ bgcolor: "#fff", borderRadius: "8px", p: 2, minHeight: 200 }}
-          dangerouslySetInnerHTML={{ __html: body }} />
+        <IconButton onClick={onClose} size="small" sx={{ color: "var(--muted)", bgcolor: "rgba(0,0,0,0.03)", "&:hover": { bgcolor: "rgba(0,0,0,0.06)" } }}><X size={15} /></IconButton>
+      </Box>
+
+      {/* Mock Client Headers */}
+      <Box sx={{ p: 2.5, borderBottom: "1px solid var(--line)", bgcolor: "var(--panel-solid)" }}>
+        <Stack spacing={1.25}>
+          <Stack direction="row" sx={{ alignItems: "flex-start" }}>
+            <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 600, minWidth: 60, mt: 0.25 }}>หัวข้อ:</Typography>
+            <Typography sx={{ color: "var(--foreground)", fontSize: "0.92rem", fontWeight: 700 }}>
+              {subject || "(ไม่มีหัวข้อ)"}
+            </Typography>
+          </Stack>
+          <Stack direction="row" sx={{ alignItems: "center" }}>
+            <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 600, minWidth: 60 }}>จาก:</Typography>
+            <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.8rem", fontWeight: 600 }}>
+              EventSync System &lt;noreply@eventsync.com&gt;
+            </Typography>
+          </Stack>
+          <Stack direction="row" sx={{ alignItems: "center" }}>
+            <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 600, minWidth: 60 }}>ถึง:</Typography>
+            <Typography sx={{ color: "var(--foreground)", fontSize: "0.8rem" }}>
+              {"{{contact_name}} <{{email}} >"}
+            </Typography>
+          </Stack>
+        </Stack>
+      </Box>
+
+      {/* Mock Client Body Frame */}
+      <DialogContent sx={{ p: 0, bgcolor: "#f8fafc", minHeight: 320, display: "flex", justifyContent: "center", py: 4 }}>
+        <Box sx={{
+          width: "100%",
+          maxWidth: 660,
+          bgcolor: "#ffffff",
+          boxShadow: "0 4px 20px rgba(15,23,42,0.05)",
+          borderRadius: "10px",
+          border: "1px solid var(--line)",
+          p: 3,
+          mx: { xs: 2, sm: 3 }
+        }}>
+          {body.trim() ? (
+            <div dangerouslySetInnerHTML={{ __html: body }} />
+          ) : (
+            <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem", textAlign: "center", py: 4 }}>(เทมเพลตนี้ว่างเปล่า)</Typography>
+          )}
+        </Box>
       </DialogContent>
     </Dialog>
   );
 }
 
-// ─── Templates Tab ────────────────────────────────────────────────────────────
+// ─── TemplatesTab Component ──────────────────────────────────────────────────
 
 function TemplatesTab() {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -363,7 +618,7 @@ function TemplatesTab() {
   useEffect(() => { load(); }, [load]);
 
   async function deleteTemplate(id: number) {
-    if (!confirm("ลบ template นี้?")) return;
+    if (!confirm("คุณยืนยันต้องการลบแม่แบบโครงร่างอีเมลนี้ใช่หรือไม่?")) return;
     setDeleting(id);
     try {
       await fetch(`/api/email-templates/${id}`, { method: "DELETE" });
@@ -383,55 +638,130 @@ function TemplatesTab() {
 
   return (
     <Box>
-      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography sx={{ color: "var(--muted)", fontSize: "0.8rem" }}>
-          {templates.length} template{templates.length !== 1 ? "s" : ""}
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+        <Typography sx={{ color: "var(--muted)", fontSize: "0.8rem", fontWeight: 500 }}>
+          พบทั่งหมด {templates.length} รูปแบบแคมเปญ
         </Typography>
         <Button size="small" startIcon={<Plus size={14} />} variant="contained"
           onClick={() => { setEditing(null); setDialogOpen(true); }}
-          sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 600, fontSize: "0.8rem", px: 2, "&:hover": { bgcolor: "#0284c7" } }}>
-          สร้าง Template
+          sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 700, borderRadius: "8px", px: 2.5, py: 0.75, fontSize: "0.8rem", "&:hover": { bgcolor: "#0284c7" } }}>
+          สร้างแม่แบบเทมเพลต
         </Button>
       </Stack>
 
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress size={28} sx={{ color: "var(--brand)" }} /></Box>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}><CircularProgress size={28} sx={{ color: "var(--brand)" }} /></Box>
       ) : templates.length === 0 ? (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <FileText size={40} style={{ color: "var(--muted)", opacity: 0.4, marginBottom: 12 }} />
-          <Typography sx={{ color: "var(--muted)", fontSize: "0.9rem" }}>ยังไม่มี Template — กดปุ่มสร้างเลย</Typography>
+        <Box sx={{
+          textAlign: "center", py: 8, bgcolor: "var(--panel)", border: "1px dashed var(--line)", borderRadius: "14px",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1
+        }}>
+          <FileText size={42} style={{ color: "var(--muted)", opacity: 0.3 }} />
+          <Typography sx={{ color: "var(--muted)", fontSize: "0.88rem" }}>ยังไม่มีแม่แบบจดหมายในระบบ</Typography>
+          <Button size="small" variant="text" onClick={() => { setEditing(null); setDialogOpen(true); }} sx={{ color: "var(--brand)", textTransform: "none", fontWeight: 600 }}>สร้างรูปแบบจดหมายแรกของคุณ ➔</Button>
         </Box>
       ) : (
-        <Stack spacing={1.5}>
+        <Box sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" },
+          gap: 2.5
+        }}>
+          {/* Create template visual placeholder card */}
+          <Paper
+            onClick={() => { setEditing(null); setDialogOpen(true); }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: 185,
+              border: "2.5px dashed rgba(14, 165, 233, 0.2)",
+              bgcolor: "rgba(14, 165, 233, 0.015)",
+              borderRadius: "14px",
+              cursor: "pointer",
+              transition: "all 0.2s ease-in-out",
+              "&:hover": {
+                borderColor: "var(--brand)",
+                bgcolor: "rgba(14, 165, 233, 0.04)",
+                transform: "translateY(-2px)",
+                boxShadow: "var(--shadow-glow)",
+              }
+            }}
+          >
+            <Box sx={{ p: 1, borderRadius: "50%", bgcolor: "rgba(14,165,233,0.08)", color: "var(--brand)", mb: 1 }}>
+              <Plus size={20} />
+            </Box>
+            <Typography sx={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--brand-dark)" }}>สร้างเทมเพลตใหม่</Typography>
+            <Typography sx={{ fontSize: "0.7rem", color: "var(--muted)", mt: 0.5 }}>บันทึกร่างอีเมลไว้ใช้งานด่วน</Typography>
+          </Paper>
+
           {templates.map((t) => (
-            <Paper key={t.id} sx={{ bgcolor: "rgba(0,0,0,0.03)", border: "1px solid var(--line)", borderRadius: "10px", p: 2 }}>
-              <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between" }} spacing={2}>
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.9rem", mb: 0.25 }}>{t.name}</Typography>
-                  <Typography sx={{ color: "var(--brand)", fontSize: "0.8rem", mb: 0.5 }} noWrap>{t.subject}</Typography>
-                  <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem" }}>อัปเดต {fmtDate(t.updatedAt)}</Typography>
-                </Box>
-                <Stack direction="row" spacing={0.5}>
-                  <Tooltip title="Preview">
-                    <IconButton size="small" onClick={() => setPreviewT(t)} sx={{ color: "var(--muted)", "&:hover": { color: "var(--brand)" } }}>
-                      <Eye size={14} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="แก้ไข">
-                    <IconButton size="small" onClick={() => { setEditing(t); setDialogOpen(true); }} sx={{ color: "var(--muted)", "&:hover": { color: "var(--warning)" } }}>
-                      <Pencil size={14} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="ลบ">
-                    <IconButton size="small" onClick={() => deleteTemplate(t.id)} disabled={deleting === t.id} sx={{ color: "var(--muted)", "&:hover": { color: "var(--danger)" } }}>
-                      {deleting === t.id ? <CircularProgress size={12} /> : <Trash2 size={14} />}
-                    </IconButton>
-                  </Tooltip>
+            <Paper key={t.id}
+              sx={{
+                position: "relative",
+                bgcolor: "var(--panel)",
+                border: "1px solid var(--line)",
+                borderRadius: "14px",
+                overflow: "hidden",
+                boxShadow: "var(--shadow-card)",
+                transition: "all 0.22s ease-in-out",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minHeight: 185,
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                  borderColor: "rgba(14, 165, 233, 0.3)",
+                  boxShadow: "var(--shadow-md), var(--shadow-glow)",
+                }
+              }}
+            >
+              {/* Top Accent line */}
+              <Box sx={{ height: 4, background: "linear-gradient(90deg, var(--brand) 0%, var(--accent) 100%)" }} />
+
+              <Box sx={{ p: 2, flexGrow: 1 }}>
+                <Stack direction="row" spacing={1.5} sx={{ mb: 1.5, alignItems: "center" }}>
+                  <Box sx={{ width: 34, height: 34, borderRadius: "8px", bgcolor: "rgba(14,165,233,0.08)", color: "var(--brand)", display: "grid", placeItems: "center", flexShrink: 0 }}>
+                    <FileText size={16} />
+                  </Box>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.88rem", mb: 0.25 }} noWrap>{t.name}</Typography>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.68rem" }}>อัปเดต {fmtDate(t.updatedAt)}</Typography>
+                  </Box>
                 </Stack>
-              </Stack>
+
+                <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.78rem", fontWeight: 600, mb: 1 }} noWrap>
+                  Subject: {t.subject}
+                </Typography>
+
+                <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap", gap: 0.5 }}>
+                  <Chip label={`ขนาด ${formatBytes(t.body.length)}`} size="small" sx={{ height: 18, fontSize: "0.66rem", bgcolor: "rgba(0,0,0,0.03)", color: "var(--muted)", borderRadius: "4px" }} />
+                  <Chip label={`แท็กตัวแปร`} size="small" sx={{ height: 18, fontSize: "0.66rem", bgcolor: "rgba(14,165,233,0.05)", color: "var(--brand-dark)", borderRadius: "4px", fontWeight: 500 }} />
+                </Stack>
+              </Box>
+
+              <Divider sx={{ borderColor: "var(--line)" }} />
+
+              <Box sx={{ px: 1.5, py: 1, bgcolor: "rgba(0,0,0,0.015)", display: "flex", justifyContent: "flex-end", gap: 0.25 }}>
+                <Tooltip title="ดูตัวอย่าง">
+                  <IconButton size="small" onClick={() => setPreviewT(t)} sx={{ color: "var(--muted)", "&:hover": { color: "var(--brand)", bgcolor: "rgba(14,165,233,0.08)" } }}>
+                    <Eye size={14} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="แก้ไข">
+                  <IconButton size="small" onClick={() => { setEditing(t); setDialogOpen(true); }} sx={{ color: "var(--muted)", "&:hover": { color: "var(--warning)", bgcolor: "rgba(245,158,11,0.08)" } }}>
+                    <Pencil size={14} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="ลบ">
+                  <IconButton size="small" onClick={() => deleteTemplate(t.id)} disabled={deleting === t.id} sx={{ color: "var(--muted)", "&:hover": { color: "var(--danger)", bgcolor: "rgba(239,68,68,0.08)" } }}>
+                    {deleting === t.id ? <CircularProgress size={12} /> : <Trash2 size={14} />}
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Paper>
           ))}
-        </Stack>
+        </Box>
       )}
 
       <TemplateDialog open={dialogOpen} onClose={() => setDialogOpen(false)} initial={editing} onSaved={onSaved} />
@@ -440,9 +770,16 @@ function TemplatesTab() {
   );
 }
 
-// ─── Send Campaign Tab ────────────────────────────────────────────────────────
+// ─── Send Campaign Tab ───────────────────────────────────────────────────────
 
 type SendStep = "compose" | "contacts" | "confirm" | "done";
+
+const wizardSteps = [
+  { key: "compose", label: "ข้อมูลแคมเปญ", icon: FileText },
+  { key: "contacts", label: "เลือกผู้รับ", icon: Users },
+  { key: "confirm", label: "ยืนยันการส่ง", icon: Eye },
+  { key: "done", label: "เสร็จสิ้น", icon: CheckCircle2 }
+];
 
 function SendCampaignTab() {
   const [step, setStep] = useState<SendStep>("compose");
@@ -459,8 +796,13 @@ function SendCampaignTab() {
   const [search, setSearch] = useState("");
 
   const [sending, setSending] = useState(false);
-  const [result, setResult] = useState<{ sent: number; failed: number } | null>(null);
+  const [result, setResult] = useState<{ campaignId?: number; sent?: number; failed?: number; queued?: boolean; total?: number } | null>(null);
   const [sendErr, setSendErr] = useState("");
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, filterEmail]);
 
   useEffect(() => {
     (async () => {
@@ -471,6 +813,33 @@ function SendCampaignTab() {
       setLoadingT(false);
     })();
   }, []);
+
+  useEffect(() => {
+    if (!result?.queued || !result?.campaignId || step !== "done") return;
+
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/email-campaigns?id=${result.campaignId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.status !== "SENDING") {
+          setResult({
+            campaignId: result.campaignId,
+            sent: data.sent,
+            failed: data.failed,
+            queued: false,
+            total: result.total,
+          });
+          clearInterval(timer);
+        }
+      } catch (err) {
+        console.error("[Poll Campaign Status Error]", err);
+      }
+    }, 2000);
+
+    return () => clearInterval(timer);
+  }, [result, step]);
 
   async function loadContacts() {
     setLoadingC(true);
@@ -497,6 +866,11 @@ function SendCampaignTab() {
     return true;
   });
 
+  const CONTACTS_PER_PAGE = 20;
+  const totalPages = Math.max(1, Math.ceil(filteredContacts.length / CONTACTS_PER_PAGE));
+  const paginatedContacts = filteredContacts.slice((page - 1) * CONTACTS_PER_PAGE, page * CONTACTS_PER_PAGE);
+  const pgItems = paginationItems(page, totalPages);
+
   function toggleContact(id: string | number) {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -520,7 +894,7 @@ function SendCampaignTab() {
       .filter((c) => selectedIds.has(c.id) && c.email)
       .map((c) => ({ email: c.email!, name: c.contactName ?? undefined, company: c.companyName }));
 
-    if (!recipients.length) { setSendErr("ไม่มีผู้รับที่มีอีเมล"); return; }
+    if (!recipients.length) { setSendErr("ไม่มีรายชื่อที่มีอีเมลปลายทางสำหรับการจัดส่งแคมเปญ"); return; }
 
     setSending(true);
     setSendErr("");
@@ -532,10 +906,10 @@ function SendCampaignTab() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Error");
-      setResult({ sent: data.sent, failed: data.failed });
+      setResult({ campaignId: data.campaignId, sent: data.sent, failed: data.failed, queued: data.queued, total: data.total });
       setStep("done");
     } catch (e: unknown) {
-      setSendErr(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");
+      setSendErr(e instanceof Error ? e.message : "เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     } finally {
       setSending(false);
     }
@@ -555,259 +929,530 @@ function SendCampaignTab() {
   const recipientsWithEmail = contacts.filter((c) => selectedIds.has(c.id) && c.email);
   const recipientsNoEmail = contacts.filter((c) => selectedIds.has(c.id) && !c.email);
 
-  // ── Step: compose ────────────────────────────────────────────────────────
-  if (step === "compose") return (
-    <Box sx={{ maxWidth: 640 }}>
-      <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem", mb: 2 }}>ขั้นตอนที่ 1 — เลือก Template</Typography>
-      <Stack spacing={2.5}>
-        <TextField
-          label="ชื่อแคมเปญ" value={campaignName} onChange={(e) => setCampaignName(e.target.value)} fullWidth size="small"
-          placeholder="เช่น  Invitation — BITEC Q3 2026"
-          sx={fieldSx()}
-        />
-        <FormControl fullWidth size="small" sx={{
-          "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(148,163,184,0.2)" },
-          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(56,189,248,0.4)" },
-          "& .MuiInputLabel-root": { color: "var(--muted)", fontSize: "0.78rem" },
-          "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand)" },
-          "& .MuiSelect-select": { color: "var(--foreground)" },
-        }}>
-          <InputLabel>Email Template</InputLabel>
-          <Select value={templateId} onChange={(e) => setTemplateId(e.target.value as number)} label="Email Template"
-            sx={{ color: "var(--foreground)", "& .MuiSvgIcon-root": { color: "var(--muted)" }, bgcolor: "rgba(0,0,0,0.03)", borderRadius: "8px" }}
-            MenuProps={{ slotProps: { paper: { sx: { bgcolor: "#ffffff", border: "1px solid var(--line)" } } } }}>
-            {loadingT ? (
-              <MenuItem disabled><CircularProgress size={14} /></MenuItem>
-            ) : templates.map((t) => (
-              <MenuItem key={t.id} value={t.id} sx={{ color: "var(--foreground)", "&:hover": { bgcolor: "rgba(0,0,0,0.04)" } }}>
-                {t.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+  const currentStepIdx = wizardSteps.findIndex((s) => s.key === step);
 
-        {selectedTemplate && (
-          <Paper sx={{ bgcolor: "rgba(0,0,0,0.04)", border: "1px solid var(--line)", borderRadius: "8px", p: 1.5 }}>
-            <Typography sx={{ color: "var(--muted)", fontSize: "0.7rem", fontWeight: 600, mb: 0.5 }}>SUBJECT PREVIEW</Typography>
-            <Typography sx={{ color: "var(--brand)", fontSize: "0.85rem" }}>{selectedTemplate.subject}</Typography>
-          </Paper>
-        )}
-
-        <AttachmentZone attachments={attachments} onChange={setAttachments} />
-
-        <Button
-          size="small" variant="contained" endIcon={<Users size={14} />}
-          disabled={!campaignName.trim() || !templateId} onClick={goToContacts}
-          sx={{ alignSelf: "flex-start", bgcolor: "var(--brand)", textTransform: "none", fontWeight: 600, px: 2.5, "&:hover": { bgcolor: "#0284c7" }, "&.Mui-disabled": { opacity: 0.4 } }}>
-          เลือก Contacts →
-        </Button>
-      </Stack>
-    </Box>
-  );
-
-  // ── Step: contacts ────────────────────────────────────────────────────────
-  if (step === "contacts") return (
-    <Box>
-      <Stack direction="row" sx={{ alignItems: "center", mb: 2 }} spacing={1}>
-        <IconButton size="small" onClick={() => setStep("compose")} sx={{ color: "var(--muted)" }}><ChevronLeft size={16} /></IconButton>
-        <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem" }}>ขั้นตอนที่ 2 — เลือก Contacts</Typography>
-      </Stack>
-
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, alignItems: "center", mb: 1.5 }}>
-        <TextField
-          size="small" placeholder="ค้นหา บริษัท / ชื่อ / อีเมล" value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{ flex: 1, minWidth: 200, ...fieldSx() }}
-        />
-        <FormControlLabel
-          control={<Checkbox checked={filterEmail} onChange={(e) => setFilterEmail(e.target.checked)} size="small" sx={{ color: "var(--muted)", "&.Mui-checked": { color: "var(--brand)" } }} />}
-          label={<Typography sx={{ color: "var(--muted)", fontSize: "0.8rem" }}>แสดงเฉพาะที่มีอีเมล</Typography>}
-        />
-        <Button size="small" onClick={toggleAll}
-          sx={{ color: "var(--brand)", textTransform: "none", fontSize: "0.78rem", whiteSpace: "nowrap" }}>
-          {filteredContacts.every((c) => selectedIds.has(c.id)) ? "ยกเลิกทั้งหมด" : "เลือกทั้งหมด"}
-        </Button>
-      </Box>
-
-      <Typography sx={{ color: "var(--muted)", fontSize: "0.75rem", mb: 1 }}>
-        เลือกแล้ว {selectedIds.size} คน · มีอีเมล {recipientsWithEmail.length} คน
-      </Typography>
-
-      {loadingC ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress size={28} sx={{ color: "var(--brand)" }} /></Box>
-      ) : (
-        <Box sx={{ maxHeight: 440, overflowY: "auto", pr: 0.5 }}>
-          <Stack spacing={0.75}>
-            {filteredContacts.map((c) => {
-              const checked = selectedIds.has(c.id);
-              return (
-                <Paper
-                  key={c.id} onClick={() => toggleContact(c.id)}
-                  sx={{
-                    bgcolor: checked ? "rgba(14,165,233,0.08)" : "rgba(0,0,0,0.03)",
-                    border: `1px solid ${checked ? "rgba(14,165,233,0.35)" : "var(--line)"}`,
-                    borderRadius: "8px", p: 1.25, cursor: "pointer",
-                    "&:hover": { borderColor: "var(--brand)" },
-                    transition: "all 0.12s ease",
-                  }}
-                >
-                  <Stack direction="row" sx={{ alignItems: "center" }} spacing={1.5}>
-                    <Checkbox checked={checked} size="small" onClick={(e) => e.stopPropagation()} onChange={() => toggleContact(c.id)}
-                      sx={{ p: 0, color: "var(--muted)", "&.Mui-checked": { color: "var(--brand)" } }} />
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem", fontWeight: 600 }} noWrap>{c.companyName}</Typography>
-                      <Stack direction="row" spacing={1}>
-                        {c.contactName && <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem" }} noWrap>{c.contactName}</Typography>}
-                        {c.email
-                          ? <Typography sx={{ color: "var(--brand)", fontSize: "0.72rem" }} noWrap>{c.email}</Typography>
-                          : <Typography sx={{ color: "var(--danger)", fontSize: "0.72rem" }}>ไม่มีอีเมล</Typography>}
-                      </Stack>
-                    </Box>
-                  </Stack>
-                </Paper>
-              );
-            })}
-            {filteredContacts.length === 0 && (
-              <Typography sx={{ color: "var(--muted)", textAlign: "center", py: 4, fontSize: "0.85rem" }}>ไม่พบ contact</Typography>
-            )}
-          </Stack>
-        </Box>
-      )}
-
-      <Box sx={{ mt: 2 }}>
-        <Button
-          size="small" variant="contained" endIcon={<Send size={14} />}
-          disabled={recipientsWithEmail.length === 0} onClick={() => setStep("confirm")}
-          sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 600, px: 2.5, "&:hover": { bgcolor: "#0284c7" }, "&.Mui-disabled": { opacity: 0.4 } }}>
-          ถัดไป — ยืนยันส่ง ({recipientsWithEmail.length} คน)
-        </Button>
-      </Box>
-    </Box>
-  );
-
-  // ── Step: confirm ─────────────────────────────────────────────────────────
-  if (step === "confirm") return (
-    <Box sx={{ maxWidth: 600 }}>
-      <Stack direction="row" sx={{ alignItems: "center", mb: 2 }} spacing={1}>
-        <IconButton size="small" onClick={() => setStep("contacts")} sx={{ color: "var(--muted)" }}><ChevronLeft size={16} /></IconButton>
-        <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem" }}>ขั้นตอนที่ 3 — ยืนยันก่อนส่ง</Typography>
-      </Stack>
-
-      <Stack spacing={1.5} sx={{ mb: 3 }}>
-        <Paper sx={{ bgcolor: "rgba(0,0,0,0.03)", border: "1px solid var(--line)", borderRadius: "10px", p: 2 }}>
-          <Stack spacing={1}>
-            <Stack direction="row" sx={{ justifyContent: "space-between" }}>
-              <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>แคมเปญ</Typography>
-              <Typography sx={{ color: "var(--foreground)", fontSize: "0.85rem", fontWeight: 600 }}>{campaignName}</Typography>
-            </Stack>
-            <Stack direction="row" sx={{ justifyContent: "space-between" }}>
-              <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>Template</Typography>
-              <Typography sx={{ color: "var(--foreground)", fontSize: "0.85rem" }}>{selectedTemplate?.name}</Typography>
-            </Stack>
-            <Stack direction="row" sx={{ justifyContent: "space-between" }}>
-              <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>Subject</Typography>
-              <Typography sx={{ color: "var(--brand)", fontSize: "0.85rem" }}>{selectedTemplate?.subject}</Typography>
-            </Stack>
-            <Divider sx={{ borderColor: "var(--line)" }} />
-            <Stack direction="row" sx={{ justifyContent: "space-between" }}>
-              <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ส่งถึง</Typography>
-              <Typography sx={{ color: "var(--success)", fontSize: "0.85rem", fontWeight: 700 }}>{recipientsWithEmail.length} คน</Typography>
-            </Stack>
-            {recipientsNoEmail.length > 0 && (
-              <Stack direction="row" sx={{ justifyContent: "space-between" }}>
-                <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ข้าม (ไม่มีอีเมล)</Typography>
-                <Typography sx={{ color: "var(--danger)", fontSize: "0.85rem" }}>{recipientsNoEmail.length} คน</Typography>
-              </Stack>
-            )}
-            {attachments.length > 0 && (
-              <Stack direction="row" sx={{ justifyContent: "space-between" }}>
-                <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ไฟล์แนบ</Typography>
-                <Typography sx={{ color: "var(--foreground)", fontSize: "0.85rem" }}>{attachments.length} ไฟล์</Typography>
-              </Stack>
-            )}
-          </Stack>
-        </Paper>
-
-        {sendErr && (
-          <Stack direction="row" spacing={1} sx={{ alignItems: "center", bgcolor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "8px", p: 1.25 }}>
-            <AlertCircle size={14} style={{ color: "var(--danger)", flexShrink: 0 }} />
-            <Typography sx={{ color: "var(--danger)", fontSize: "0.8rem" }}>{sendErr}</Typography>
-          </Stack>
-        )}
-      </Stack>
-
-      <Button
-        size="small" variant="contained" startIcon={sending ? <CircularProgress size={14} sx={{ color: "#fff" }} /> : <Send size={14} />}
-        disabled={sending} onClick={send}
-        sx={{ bgcolor: "var(--success)", textTransform: "none", fontWeight: 700, px: 3, "&:hover": { bgcolor: "#059669" }, "&.Mui-disabled": { opacity: 0.5 } }}>
-        {sending ? "กำลังส่ง..." : `ส่ง Email ${recipientsWithEmail.length} ฉบับ`}
-      </Button>
-    </Box>
-  );
-
-  // ── Step: done ────────────────────────────────────────────────────────────
   return (
-    <Box sx={{ maxWidth: 480, textAlign: "center", py: 4 }}>
-      <CheckCircle2 size={52} style={{ color: "var(--success)", marginBottom: 16 }} />
-      <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "1.1rem", mb: 1 }}>ส่ง Email เรียบร้อย!</Typography>
-      {result && (
-        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 3 }}>
-          <Chip label={`✓ ส่งสำเร็จ ${result.sent} ฉบับ`} sx={{ bgcolor: "rgba(16,185,129,0.12)", color: "var(--success)", fontWeight: 600 }} />
-          {result.failed > 0 && <Chip label={`✗ ล้มเหลว ${result.failed} ฉบับ`} sx={{ bgcolor: "rgba(239,68,68,0.12)", color: "var(--danger)", fontWeight: 600 }} />}
+    <Box>
+      {/* Premium Stepper Wizard */}
+      <Box sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        mb: 4.5,
+        pb: 3,
+        borderBottom: "1px dashed var(--line)"
+      }}>
+        {wizardSteps.map((s, idx) => {
+          const StepIcon = s.icon;
+          const isActive = s.key === step;
+          const isCompleted = currentStepIdx > idx;
+          const isUpcoming = currentStepIdx < idx;
+
+          return (
+            <Box key={s.key} sx={{ display: "flex", alignItems: "center", flex: idx < wizardSteps.length - 1 ? 1 : "none" }}>
+              <Stack direction="row" spacing={1.25} sx={{ alignItems: "center", position: "relative" }}>
+                <Box sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  display: "grid",
+                  placeItems: "center",
+                  fontWeight: 700,
+                  fontSize: "0.85rem",
+                  transition: "all 0.25s ease-in-out",
+                  bgcolor: isActive
+                    ? "var(--brand)"
+                    : isCompleted
+                      ? "var(--success)"
+                      : "rgba(0,0,0,0.04)",
+                  color: isActive || isCompleted ? "#fff" : "var(--muted)",
+                  boxShadow: isActive
+                    ? "0 0 10px rgba(14, 165, 233, 0.4)"
+                    : isCompleted
+                      ? "0 0 10px rgba(16, 185, 129, 0.35)"
+                      : "none"
+                }}>
+                  <StepIcon size={14} />
+                </Box>
+                <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                  <Typography sx={{
+                    fontSize: "0.78rem",
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? "var(--foreground)" : "var(--muted)",
+                    lineHeight: 1
+                  }}>
+                    {s.label}
+                  </Typography>
+                </Box>
+              </Stack>
+              {idx < wizardSteps.length - 1 && (
+                <Box sx={{
+                  flex: 1,
+                  height: 2,
+                  mx: { xs: 1.5, sm: 3 },
+                  bgcolor: isCompleted ? "var(--success)" : "rgba(148, 163, 184, 0.15)",
+                  transition: "all 0.25s ease"
+                }} />
+              )}
+            </Box>
+          );
+        })}
+      </Box>
+
+      {/* Content Renderers */}
+      {step === "compose" && (
+        <Box sx={{ maxWidth: 660 }}>
+          <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem", mb: 2 }}>
+            ระบุรายละเอียดแคมเปญและแม่แบบจดหมาย
+          </Typography>
+          
+          <Stack spacing={2.5}>
+            <TextField
+              label="ชื่อแคมเปญ (Campaign Name)" value={campaignName} onChange={(e) => setCampaignName(e.target.value)} fullWidth size="small"
+              placeholder="เช่น ส่งเชิญงาน BITEC Q3 - ผู้จัดงานกลุ่มไอที"
+              sx={fieldSx()}
+            />
+
+            <FormControl fullWidth size="small" sx={{
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(148,163,184,0.15)" },
+              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(14,165,233,0.3)" },
+              "& .MuiInputLabel-root": { color: "var(--muted)", fontSize: "0.78rem" },
+              "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand)" },
+              "& .MuiSelect-select": { color: "var(--foreground)", fontSize: "0.82rem" },
+            }}>
+              <InputLabel>เลือกโครงร่างอีเมล (Email Template)</InputLabel>
+              <Select
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value as number)}
+                label="เลือกโครงร่างอีเมล (Email Template)"
+                sx={{ bgcolor: "rgba(0,0,0,0.015)", borderRadius: "10px", "& .MuiSvgIcon-root": { color: "var(--muted)" } }}
+                MenuProps={{ slotProps: { paper: { sx: { bgcolor: "#ffffff", border: "1px solid var(--line)", borderRadius: "8px" } } } }}
+              >
+                {loadingT ? (
+                  <MenuItem disabled><CircularProgress size={14} /></MenuItem>
+                ) : templates.length === 0 ? (
+                  <MenuItem disabled sx={{ color: "var(--muted)" }}>ไม่มีโครงร่างจดหมาย กรุณาสร้างที่แถบ Templates ก่อน</MenuItem>
+                ) : templates.map((t) => (
+                  <MenuItem key={t.id} value={t.id} sx={{ color: "var(--foreground)", fontSize: "0.82rem" }}>
+                    {t.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {selectedTemplate && (
+              <Paper sx={{ bgcolor: "rgba(14,165,233,0.04)", border: "1px solid rgba(14,165,233,0.15)", borderRadius: "10px", p: 2 }}>
+                <Typography sx={{ color: "var(--muted)", fontSize: "0.68rem", fontWeight: 700, mb: 0.5, letterSpacing: "0.02em" }}>หัวข้อจดหมายที่จัดส่ง (SUBJECT)</Typography>
+                <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.85rem", fontWeight: 600 }}>{selectedTemplate.subject}</Typography>
+              </Paper>
+            )}
+
+            <AttachmentZone attachments={attachments} onChange={setAttachments} />
+
+            <Button
+              size="medium" variant="contained" endIcon={<ChevronRight size={14} />}
+              disabled={!campaignName.trim() || !templateId} onClick={goToContacts}
+              sx={{
+                alignSelf: "flex-start", bgcolor: "var(--brand)", textTransform: "none", fontWeight: 700,
+                borderRadius: "8px", px: 3, py: 1, mt: 1.5, "&:hover": { bgcolor: "#0284c7" }, "&.Mui-disabled": { opacity: 0.4 }
+              }}
+            >
+              ขั้นตอนถัดไป: เลือกรายชื่อ Contacts
+            </Button>
+          </Stack>
         </Box>
       )}
-      <Button size="small" variant="contained" onClick={reset}
-        sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 600, px: 3, "&:hover": { bgcolor: "#0284c7" } }}>
-        ส่งแคมเปญใหม่
-      </Button>
+
+      {step === "contacts" && (
+        <Box>
+          <Stack direction="row" sx={{ alignItems: "center", mb: 2.5 }} spacing={1}>
+            <IconButton size="small" onClick={() => setStep("compose")} sx={{ color: "var(--muted)", bgcolor: "rgba(0,0,0,0.03)" }}><ChevronLeft size={16} /></IconButton>
+            <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem" }}>
+              เลือกรายชื่อผู้ติดต่อที่ต้องการส่งแคมเปญ
+            </Typography>
+          </Stack>
+
+          <Paper sx={{ p: 2, bgcolor: "var(--panel)", border: "1px solid var(--line)", borderRadius: "14px", mb: 2.5, boxShadow: "var(--shadow-card)" }}>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "center", justifyContent: "space-between" }}>
+              <Stack direction="row" spacing={2} sx={{ flex: 1, minWidth: 280, alignItems: "center" }}>
+                <TextField
+                  size="small" placeholder="ค้นหาตามบริษัท, ชื่อผู้ติดต่อ หรืออีเมล..." value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  sx={{ flex: 1, ...fieldSx() }}
+                />
+                <FormControlLabel
+                  control={<Checkbox checked={filterEmail} onChange={(e) => setFilterEmail(e.target.checked)} size="small" sx={{ color: "var(--muted)", "&.Mui-checked": { color: "var(--brand)" } }} />}
+                  label={<Typography sx={{ color: "var(--foreground)", fontSize: "0.8rem", fontWeight: 500 }}>แสดงเฉพาะที่มีอีเมล</Typography>}
+                />
+              </Stack>
+              
+              <Button size="small" variant="outlined" onClick={toggleAll}
+                sx={{ color: "var(--brand)", borderColor: "rgba(14,165,233,0.3)", borderRadius: "8px", textTransform: "none", fontSize: "0.78rem", px: 2, py: 0.75, whiteSpace: "nowrap" }}>
+                {filteredContacts.every((c) => selectedIds.has(c.id)) ? "ยกเลิกการเลือกทั้งหมด" : "เลือกทั้งหมดตามผลลัพธ์"}
+              </Button>
+            </Box>
+          </Paper>
+
+          <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", mb: 1.5, fontWeight: 500 }}>
+            เลือกไว้ทั้งหมด <strong style={{ color: "var(--brand-dark)" }}>{selectedIds.size}</strong> รายการ · พร้อมส่ง (มีอีเมล) <strong style={{ color: "var(--success)" }}>{recipientsWithEmail.length}</strong> รายการ
+          </Typography>
+
+          {loadingC ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}><CircularProgress size={28} sx={{ color: "var(--brand)" }} /></Box>
+          ) : (
+            <Stack spacing={2.5}>
+              <TableContainer component={Paper} sx={{ bgcolor: "var(--panel)", border: "1px solid var(--line)", borderRadius: "14px", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: "rgba(0,0,0,0.02)" }}>
+                      <TableCell padding="checkbox" sx={{ width: 50, py: 1.5 }}>
+                        <Checkbox
+                          size="small"
+                          checked={filteredContacts.length > 0 && filteredContacts.every((c) => selectedIds.has(c.id))}
+                          indeterminate={filteredContacts.some((c) => selectedIds.has(c.id)) && !filteredContacts.every((c) => selectedIds.has(c.id))}
+                          onChange={toggleAll}
+                          sx={{ color: "rgba(0,0,0,0.15)", "&.Mui-checked": { color: "var(--brand)" } }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--foreground)", py: 1.5 }}>ชื่อบริษัท / องค์กร</TableCell>
+                      <TableCell sx={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--foreground)", py: 1.5 }}>ชื่อผู้ติดต่อ</TableCell>
+                      <TableCell sx={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--foreground)", py: 1.5 }}>อีเมล</TableCell>
+                      <TableCell sx={{ fontWeight: 700, fontSize: "0.8rem", color: "var(--foreground)", py: 1.5 }}>จัดส่งล่าสุดเมื่อ</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {paginatedContacts.map((c) => {
+                      const checked = selectedIds.has(c.id);
+                      return (
+                        <TableRow
+                          key={c.id}
+                          hover
+                          onClick={() => toggleContact(c.id)}
+                          sx={{
+                            cursor: "pointer",
+                            bgcolor: checked ? "rgba(14,165,233,0.02) !important" : "inherit",
+                            transition: "background-color 0.15s ease"
+                          }}
+                        >
+                          <TableCell padding="checkbox" sx={{ py: 1.25 }}>
+                            <Checkbox
+                              checked={checked}
+                              size="small"
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={() => toggleContact(c.id)}
+                              sx={{ color: "rgba(0,0,0,0.15)", "&.Mui-checked": { color: "var(--brand)" } }}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--foreground)", py: 1.25 }}>
+                            {c.companyName}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: "0.8rem", color: "var(--muted)", py: 1.25 }}>
+                            {c.contactName || "—"}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: "0.8rem", py: 1.25 }}>
+                            {c.email ? (
+                              <Typography sx={{ fontSize: "0.8rem", color: "var(--brand-dark)", fontWeight: 550 }}>
+                                {c.email}
+                              </Typography>
+                            ) : (
+                              <Chip
+                                label="ไม่มีข้อมูลอีเมล"
+                                size="small"
+                                sx={{ height: 18, fontSize: "0.62rem", bgcolor: "var(--danger-bg)", color: "var(--danger)", borderRadius: "4px", fontWeight: 600 }}
+                              />
+                            )}
+                          </TableCell>
+                          <TableCell sx={{ fontSize: "0.8rem", color: "var(--muted)", py: 1.25 }}>
+                            {c.lastSentAt ? (
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                                <Clock size={12} style={{ color: "var(--brand)" }} /> {fmtDate(c.lastSentAt)}
+                              </span>
+                            ) : (
+                              <span style={{ opacity: 0.5 }}>ยังไม่เคยส่ง</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {filteredContacts.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center" sx={{ py: 6, color: "var(--muted)" }}>
+                          ไม่พบข้อมูลผู้ติดต่อตามคำค้นหา
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              {/* Pagination controls inside Step 2 */}
+              {totalPages > 1 && (
+                <Stack direction="row" className="tableFooter" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1, flexWrap: "wrap", gap: 2 }}>
+                  <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 550 }}>
+                    แสดง {(page - 1) * CONTACTS_PER_PAGE + 1} - {Math.min(page * CONTACTS_PER_PAGE, filteredContacts.length)} จากทั้งหมด {filteredContacts.length} รายการ
+                  </Typography>
+                  
+                  <Stack direction="row" className="paginationControls" spacing={0.5} sx={{ alignItems: "center" }}>
+                    <IconButton size="small" className="paginationIcon" disabled={page === 1} onClick={() => setPage(1)}>
+                      <ChevronsLeft size={14} />
+                    </IconButton>
+                    <IconButton size="small" className="paginationIcon" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                      <ChevronLeft size={14} />
+                    </IconButton>
+                    
+                    <Stack direction="row" className="paginationPages" spacing={0.5} sx={{ alignItems: "center" }}>
+                      {pgItems.map((item, idx) => (
+                        item === "…" ? (
+                          <Box key={`ellipsis-${idx}`} component="span" className="paginationEllipsis">...</Box>
+                        ) : (
+                          <Button
+                            key={item}
+                            size="small"
+                            className={item === page ? "paginationPage paginationPageActive" : "paginationPage"}
+                            onClick={() => setPage(item as number)}
+                            sx={{ minWidth: 30, height: 30, p: 0 }}
+                          >
+                            {item}
+                          </Button>
+                        )
+                      ))}
+                    </Stack>
+                    
+                    <IconButton size="small" className="paginationIcon" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
+                      <ChevronRight size={14} />
+                    </IconButton>
+                    <IconButton size="small" className="paginationIcon" disabled={page === totalPages} onClick={() => setPage(totalPages)}>
+                      <ChevronsRight size={14} />
+                    </IconButton>
+                  </Stack>
+                </Stack>
+              )}
+            </Stack>
+          )}
+
+          <Box sx={{ mt: 3, pt: 2, borderTop: "1px solid var(--line)" }}>
+            <Button
+              size="medium" variant="contained" endIcon={<ChevronRight size={14} />}
+              disabled={recipientsWithEmail.length === 0} onClick={() => setStep("confirm")}
+              sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 700, borderRadius: "8px", px: 3.5, py: 1, "&:hover": { bgcolor: "#0284c7" }, "&.Mui-disabled": { opacity: 0.4 } }}>
+              ขั้นตอนถัดไป: ตรวจสอบข้อมูลก่อนส่ง ({recipientsWithEmail.length} รายชื่อ)
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      {step === "confirm" && (
+        <Box sx={{ maxWidth: 620 }}>
+          <Stack direction="row" sx={{ alignItems: "center", mb: 2.5 }} spacing={1}>
+            <IconButton size="small" onClick={() => setStep("contacts")} sx={{ color: "var(--muted)", bgcolor: "rgba(0,0,0,0.03)" }}><ChevronLeft size={16} /></IconButton>
+            <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem" }}>
+              ตรวจสอบรายละเอียดและยืนยันจัดส่งอีเมล
+            </Typography>
+          </Stack>
+
+          <Stack spacing={2.5}>
+            <Paper sx={{ bgcolor: "var(--panel)", border: "1px solid var(--line)", borderRadius: "14px", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
+              <Box sx={{ p: 2, bgcolor: "rgba(0,0,0,0.01)", borderBottom: "1px solid var(--line)" }}>
+                <Typography sx={{ color: "var(--foreground)", fontWeight: 750, fontSize: "0.85rem" }}>สรุปรายละเอียดแคมเปญ (Campaign Receipt)</Typography>
+              </Box>
+              <Box sx={{ p: 2.5 }}>
+                <Stack spacing={1.5}>
+                  <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ชื่อแคมเปญ:</Typography>
+                    <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem", fontWeight: 700 }}>{campaignName}</Typography>
+                  </Stack>
+                  <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>โครงร่างจดหมาย:</Typography>
+                    <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem" }}>{selectedTemplate?.name}</Typography>
+                  </Stack>
+                  <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>หัวข้ออีเมล:</Typography>
+                    <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.82rem", fontWeight: 600 }}>{selectedTemplate?.subject}</Typography>
+                  </Stack>
+                  
+                  <Divider sx={{ my: 0.5, borderColor: "var(--line)" }} />
+                  
+                  <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>จำนวนผู้รับที่พร้อมส่ง:</Typography>
+                    <Typography sx={{ color: "var(--success)", fontSize: "0.85rem", fontWeight: 800 }}>{recipientsWithEmail.length} รายชื่อ</Typography>
+                  </Stack>
+                  {recipientsNoEmail.length > 0 && (
+                    <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+                      <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ข้ามไป (ไม่มีอีเมล):</Typography>
+                      <Typography sx={{ color: "var(--danger)", fontSize: "0.82rem" }}>{recipientsNoEmail.length} รายชื่อ</Typography>
+                    </Stack>
+                  )}
+                  {attachments.length > 0 && (
+                    <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+                      <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ไฟล์แนบเพิ่มเติม:</Typography>
+                      <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem", fontWeight: 650 }}>{attachments.length} ไฟล์</Typography>
+                    </Stack>
+                  )}
+                </Stack>
+              </Box>
+            </Paper>
+
+            {recipientsNoEmail.length > 0 && (
+              <Stack direction="row" spacing={1.5} sx={{ bgcolor: "var(--warning-bg)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: "10px", p: 2, alignItems: "flex-start" }}>
+                <AlertCircle size={16} style={{ color: "var(--warning)", flexShrink: 0, marginTop: 2 }} />
+                <Typography sx={{ color: "var(--foreground)", fontSize: "0.76rem" }}>
+                  มีข้อมูลผู้ติดต่อ <strong>{recipientsNoEmail.length} รายชื่อ</strong> ถูกละเว้นการจัดส่งเนื่องจากไม่มีข้อมูลอีเมลปลายทางที่ถูกต้อง
+                </Typography>
+              </Stack>
+            )}
+
+            {sendErr && (
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center", bgcolor: "var(--danger-bg)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "8px", p: 1.5 }}>
+                <AlertCircle size={14} style={{ color: "var(--danger)", flexShrink: 0 }} />
+                <Typography sx={{ color: "var(--danger)", fontSize: "0.8rem", fontWeight: 500 }}>{sendErr}</Typography>
+              </Stack>
+            )}
+
+            <Button
+              size="large" variant="contained" startIcon={sending ? <CircularProgress size={14} sx={{ color: "#fff" }} /> : <Send size={14} />}
+              disabled={sending} onClick={send}
+              sx={{ bgcolor: "var(--success)", textTransform: "none", fontWeight: 700, borderRadius: "8px", py: 1.25, "&:hover": { bgcolor: "#059669" }, "&.Mui-disabled": { opacity: 0.5 } }}>
+              {sending ? "กำลังประมวลผลการจัดส่ง..." : `ยืนยันและส่งอีเมลออก (${recipientsWithEmail.length} ฉบับ)`}
+            </Button>
+          </Stack>
+        </Box>
+      )}
+
+      {step === "done" && (
+        <Box sx={{ maxWidth: 500, textAlign: "center", py: 5, mx: "auto" }}>
+          {/* Animated SVG Success Mark Container */}
+          <Box sx={{ display: "inline-flex", p: 2, borderRadius: "50%", bgcolor: "rgba(16,185,129,0.08)", color: "var(--success)", mb: 2 }}>
+            <CheckCircle2 size={46} />
+          </Box>
+          <Typography sx={{ color: "var(--foreground)", fontWeight: 800, fontSize: "1.15rem", mb: 1 }}>
+            ส่งอีเมลแคมเปญเสร็จสมบูรณ์!
+          </Typography>
+          <Typography sx={{ color: "var(--muted)", fontSize: "0.8rem", mb: 3 }}>
+            ระบบได้เริ่มดำเนินการจัดส่งอีเมลและบันทึกประวัติลงฐานข้อมูลเรียบร้อยแล้ว
+          </Typography>
+
+          {result && (
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+              {result.queued ? (
+                <Chip
+                  icon={<CircularProgress size={12} sx={{ color: "var(--brand) !important" }} />}
+                  label={`ระบบกำลังดำเนินการจัดส่งทั้งหมด ${result.total} ฉบับในเบื้องหลัง...`}
+                  sx={{ bgcolor: "rgba(14,165,233,0.08)", color: "var(--brand-dark)", fontWeight: 700, borderRadius: "6px", p: 1, "& .MuiChip-icon": { color: "inherit" } }}
+                />
+              ) : (
+                <Box sx={{ display: "flex", gap: 2 }}>
+                  <Chip label={`✓ ส่งสำเร็จ ${result.sent} ฉบับ`} sx={{ bgcolor: "rgba(16,185,129,0.08)", color: "var(--success)", fontWeight: 700, borderRadius: "6px" }} />
+                  {result.failed && result.failed > 0 ? (
+                    <Chip label={`✗ ล้มเหลว ${result.failed} ฉบับ`} sx={{ bgcolor: "rgba(239,68,68,0.08)", color: "var(--danger)", fontWeight: 700, borderRadius: "6px" }} />
+                  ) : null}
+                </Box>
+              )}
+            </Box>
+          )}
+
+          <Button size="medium" variant="contained" onClick={reset}
+            sx={{ bgcolor: "var(--brand)", textTransform: "none", fontWeight: 700, borderRadius: "8px", px: 4, py: 1, "&:hover": { bgcolor: "#0284c7" } }}>
+            สร้างแคมเปญใหม่
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }
 
-// ─── Campaigns History Tab ────────────────────────────────────────────────────
+// ─── Campaigns History Tab ───────────────────────────────────────────────────
 
 function CampaignsTab() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
+  const fetchCampaigns = useCallback(async (showLoading = false) => {
+    if (showLoading) setLoading(true);
+    try {
       const res = await fetch("/api/email-campaigns");
       const data = await res.json();
       setCampaigns(data.campaigns ?? []);
-      setLoading(false);
-    })();
+    } catch (err) {
+      console.error("[fetchCampaigns Error]", err);
+    } finally {
+      if (showLoading) setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchCampaigns(true);
+  }, [fetchCampaigns]);
+
+  useEffect(() => {
+    const hasSending = campaigns.some((c) => c.status === "SENDING");
+    if (!hasSending) return;
+
+    const timer = setInterval(() => {
+      fetchCampaigns(false);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [campaigns, fetchCampaigns]);
 
   return (
     <Box>
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress size={28} sx={{ color: "var(--brand)" }} /></Box>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}><CircularProgress size={28} sx={{ color: "var(--brand)" }} /></Box>
       ) : campaigns.length === 0 ? (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <Mail size={40} style={{ color: "var(--muted)", opacity: 0.4, marginBottom: 12 }} />
-          <Typography sx={{ color: "var(--muted)", fontSize: "0.9rem" }}>ยังไม่เคยส่งแคมเปญ</Typography>
+        <Box sx={{
+          textAlign: "center", py: 8, bgcolor: "var(--panel)", border: "1px dashed var(--line)", borderRadius: "14px",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1
+        }}>
+          <Mail size={42} style={{ color: "var(--muted)", opacity: 0.3 }} />
+          <Typography sx={{ color: "var(--muted)", fontSize: "0.88rem" }}>ยังไม่เคยมีประวัติการจัดส่งแคมเปญอีเมล</Typography>
         </Box>
       ) : (
-        <Stack spacing={1.5}>
+        <Stack spacing={2}>
           {campaigns.map((c) => {
             const meta = campaignStatusMeta(c.status);
             return (
-              <Paper key={c.id} sx={{ bgcolor: "rgba(0,0,0,0.03)", border: "1px solid var(--line)", borderRadius: "10px", p: 2 }}>
-                <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between" }} spacing={2}>
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 0.5 }}>
-                      <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.88rem" }}>{c.name}</Typography>
-                      <Chip label={meta.label} size="small" sx={{ bgcolor: meta.bg, color: meta.color, fontWeight: 600, fontSize: "0.68rem", height: 20 }} />
+              <Paper key={c.id}
+                sx={{
+                  bgcolor: "var(--panel)",
+                  border: "1px solid var(--line)",
+                  borderRadius: "14px",
+                  p: 2.5,
+                  boxShadow: "var(--shadow-card)",
+                  transition: "all 0.15s ease",
+                  "&:hover": {
+                    boxShadow: "var(--shadow-md)",
+                    borderColor: "rgba(0,0,0,0.12)"
+                  }
+                }}
+              >
+                <Stack direction={{ xs: "column", sm: "row" }} sx={{ alignItems: { xs: "flex-start", sm: "center" }, justifyContent: "space-between" }} spacing={2}>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 1 }}>
+                      <Typography sx={{ color: "var(--foreground)", fontWeight: 750, fontSize: "0.9rem" }}>{c.name}</Typography>
+                      <Chip label={meta.label} size="small" sx={{ bgcolor: meta.bg, color: meta.color, fontWeight: 700, fontSize: "0.66rem", height: 20, borderRadius: "6px" }} />
                     </Stack>
-                    <Typography sx={{ color: "var(--muted)", fontSize: "0.75rem" }}>
-                      Template: {c.template.name} · {c._count.recipients} recipients
-                    </Typography>
-                    {c.sentAt && <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem", mt: 0.25 }}>ส่งเมื่อ {fmtDate(c.sentAt)}</Typography>}
+                    
+                    <Stack direction="row" spacing={2} sx={{ color: "var(--muted)", fontSize: "0.74rem", flexWrap: "wrap", gap: 1 }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                        <FileText size={12} /> เทมเพลต: <strong>{c.template.name}</strong>
+                      </span>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                        <Users size={12} /> ผู้รับทั้งหมด: <strong>{c._count.recipients} รายชื่อ</strong>
+                      </span>
+                    </Stack>
+                    
+                    {c.sentAt && (
+                      <Typography sx={{ color: "var(--muted)", fontSize: "0.7rem", mt: 1, display: "flex", alignItems: "center", gap: 0.5 }}>
+                        <Clock size={12} /> ส่งออกเมื่อ {fmtDate(c.sentAt)}
+                      </Typography>
+                    )}
                   </Box>
-                  {c.status === "SENT"   && <CheckCircle2 size={18} style={{ color: "var(--success)", flexShrink: 0 }} />}
-                  {c.status === "FAILED" && <XCircle      size={18} style={{ color: "var(--danger)",  flexShrink: 0 }} />}
+                  
+                  <Box sx={{ alignSelf: { xs: "flex-end", sm: "center" } }}>
+                    {c.status === "SENT"   && <CheckCircle2 size={20} style={{ color: "var(--success)" }} />}
+                    {c.status === "FAILED" && <XCircle      size={20} style={{ color: "var(--danger)" }} />}
+                    {c.status === "SENDING" && <CircularProgress size={18} sx={{ color: "var(--brand)" }} />}
+                  </Box>
                 </Stack>
               </Paper>
             );
@@ -818,38 +1463,50 @@ function CampaignsTab() {
   );
 }
 
-// ─── Root ─────────────────────────────────────────────────────────────────────
+// ─── Root ────────────────────────────────────────────────────────────────────
 
 export default function EmailPage() {
   const [tab, setTab] = useState(0);
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 } }}>
-      <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 3 }}>
-        <Box sx={{ width: 42, height: 42, borderRadius: "11px", bgcolor: "rgba(14,165,233,0.12)", border: "1px solid rgba(14,165,233,0.25)", display: "grid", placeItems: "center" }}>
-          <Mail size={20} style={{ color: "var(--brand)" }} />
+    <Box sx={{ p: { xs: 2.5, md: 4.5 }, maxWidth: 1200, mx: "auto" }}>
+      {/* Premium Header */}
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2.5} sx={{ alignItems: { xs: "flex-start", sm: "center" }, mb: 4 }}>
+        <Box sx={{ width: 46, height: 46, borderRadius: "12px", bgcolor: "rgba(14,165,233,0.1)", border: "1.5px solid rgba(14,165,233,0.2)", display: "grid", placeItems: "center", flexShrink: 0, boxShadow: "var(--shadow-glow)" }}>
+          <Mail size={22} style={{ color: "var(--brand)" }} />
         </Box>
         <Box>
-          <Typography variant="h5" sx={{ color: "var(--foreground)", fontWeight: 800, fontSize: "1.2rem", lineHeight: 1.2 }}>Email Campaigns</Typography>
-          <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>สร้าง template แล้วส่งพร้อมกันหลาย contact</Typography>
+          <Typography variant="h5" sx={{ color: "var(--foreground)", fontWeight: 800, fontSize: "1.3rem", lineHeight: 1.2, letterSpacing: "-0.5px" }}>
+            Email Campaigns Manager
+          </Typography>
+          <Typography sx={{ color: "var(--muted)", fontSize: "0.8rem", mt: 0.25 }}>
+            ออกแบบแม่แบบจดหมายและจัดส่งอีเมลประชาสัมพันธ์กลุ่มเป้าหมายผู้ติดต่อพร้อมกันอย่างมีประสิทธิภาพ
+          </Typography>
         </Box>
       </Stack>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)}
+      {/* Styled Tabs */}
+      <Tabs
+        value={tab}
+        onChange={(_, v) => setTab(v)}
         sx={{
-          mb: 3,
-          "& .MuiTabs-indicator": { bgcolor: "var(--brand)" },
-          "& .MuiTab-root": { color: "var(--muted)", textTransform: "none", fontWeight: 600, fontSize: "0.85rem", minWidth: 0, px: 2 },
+          mb: 3.5,
+          borderBottom: "1px solid var(--line)",
+          "& .MuiTabs-indicator": { bgcolor: "var(--brand)", height: 3, borderRadius: "3px 3px 0 0" },
+          "& .MuiTab-root": { color: "var(--muted)", textTransform: "none", fontWeight: 700, fontSize: "0.85rem", minWidth: 0, px: 3, py: 1.5, transition: "all 0.15s ease" },
           "& .Mui-selected": { color: "var(--brand) !important" },
-        }}>
-        <Tab label="Templates" icon={<FileText size={14} />} iconPosition="start" />
-        <Tab label="ส่งแคมเปญ" icon={<Send size={14} />} iconPosition="start" />
-        <Tab label="ประวัติ" icon={<Mail size={14} />} iconPosition="start" />
+        }}
+      >
+        <Tab label="แม่แบบจดหมาย (Templates)" icon={<FileText size={14} />} iconPosition="start" />
+        <Tab label="ส่งแคมเปญ (Send Campaign)" icon={<Send size={14} />} iconPosition="start" />
+        <Tab label="ประวัติส่ง (History Logs)" icon={<Clock size={14} />} iconPosition="start" />
       </Tabs>
 
-      {tab === 0 && <TemplatesTab />}
-      {tab === 1 && <SendCampaignTab />}
-      {tab === 2 && <CampaignsTab />}
+      <Box sx={{ bgcolor: "transparent" }}>
+        {tab === 0 && <TemplatesTab />}
+        {tab === 1 && <SendCampaignTab />}
+        {tab === 2 && <CampaignsTab />}
+      </Box>
     </Box>
   );
 }

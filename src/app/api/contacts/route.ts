@@ -20,8 +20,40 @@ export async function GET() {
       orderBy: { companyName: "asc" },
     });
 
+    // Query last sent email campaign date for each email address
+    const emailAddresses = organizers
+      .map((o) => o.email?.toLowerCase())
+      .filter((e): e is string => !!e);
+
+    const emailSentLogs = await prisma.emailRecipient.findMany({
+      where: {
+        email: { in: emailAddresses },
+        status: "SENT",
+        sentAt: { not: null }
+      },
+      select: { email: true, sentAt: true },
+      orderBy: { sentAt: "desc" }
+    });
+
+    const emailToLastSent = new Map<string, string>();
+    for (const log of emailSentLogs) {
+      const emailLower = log.email.toLowerCase();
+      if (log.sentAt && !emailToLastSent.has(emailLower)) {
+        emailToLastSent.set(emailLower, log.sentAt.toISOString());
+      }
+    }
+
     if (organizers.length > 0) {
-      return NextResponse.json({ contacts: organizers.map(mapOrganizer), source: "database" });
+      return NextResponse.json({
+        contacts: organizers.map((o) => {
+          const mapped = mapOrganizer(o);
+          return {
+            ...mapped,
+            lastSentAt: o.email ? (emailToLastSent.get(o.email.toLowerCase()) || null) : null
+          };
+        }),
+        source: "database"
+      });
     }
   } catch (err) {
     console.warn("Organizer table query failed", err);

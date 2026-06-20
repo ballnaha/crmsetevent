@@ -10,7 +10,7 @@ import {
   AlertCircle, Ban, BadgeCheck, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight,
   ChevronsLeft, ChevronsRight, ClipboardCheck, Download, ExternalLink,
   FileSpreadsheet, Globe2, Lock, LockOpen, Mail, MessageCircle, Pencil,
-  Phone, Plus, Search, Send, Sparkles, Trash2, Upload, Users, X, SearchCheck,
+  Phone, Plus, Search, Send, Trash2, Upload, Users, X, SearchCheck,
 } from "lucide-react";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -524,184 +524,6 @@ function ImportExcelDialog({ open, onClose, onImported }: {
   );
 }
 
-// ─── Enrich Dialog ───────────────────────────────────────────────────────────
-
-type EnrichResult = {
-  email: string | null;
-  phone: string | null;
-  website: string | null;
-  facebook: string | null;
-  contactName: string | null;
-  confidence: "high" | "medium" | "low";
-  source: string;
-};
-
-function EnrichDialog({ contact, open, onClose, onApply }: {
-  contact: Contact | null;
-  open: boolean;
-  onClose: () => void;
-  onApply: (result: Partial<EnrichResult>) => void;
-}) {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<EnrichResult | null>(null);
-  const [err, setErr] = useState("");
-  const [selected, setSelected] = useState<Set<keyof EnrichResult>>(new Set());
-
-  useEffect(() => {
-    if (open && contact) { setResult(null); setErr(""); setSelected(new Set()); run(); }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, contact?.id]);
-
-  async function run() {
-    if (!contact) return;
-    setLoading(true);
-    try {
-      const res = await fetch("/api/contacts/enrich", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ companyName: contact.companyName }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.result) throw new Error(data.error ?? "ไม่พบข้อมูล");
-      setResult(data.result);
-      // pre-select fields that are empty in current contact and found by AI
-      const r = data.result as EnrichResult;
-      const auto = new Set<keyof EnrichResult>();
-      if (r.email      && !contact.email)       auto.add("email");
-      if (r.phone      && !contact.phone)        auto.add("phone");
-      if (r.website    && !contact.website)      auto.add("website");
-      if (r.facebook   && !contact.facebook)     auto.add("facebook");
-      if (r.contactName && !contact.contactName) auto.add("contactName");
-      setSelected(auto);
-    } catch (e: unknown) {
-      setErr(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function toggle(key: keyof EnrichResult) {
-    setSelected((prev) => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
-  }
-
-  function apply() {
-    if (!result) return;
-    const patch: Partial<EnrichResult> = {};
-    if (selected.has("email")       && result.email)       patch.email       = result.email;
-    if (selected.has("phone")       && result.phone)       patch.phone       = result.phone;
-    if (selected.has("website")     && result.website)     patch.website     = result.website;
-    if (selected.has("facebook")    && result.facebook)    patch.facebook    = result.facebook;
-    if (selected.has("contactName") && result.contactName) patch.contactName = result.contactName;
-    onApply(patch);
-    onClose();
-  }
-
-  const FIELDS: { key: keyof EnrichResult; label: string; current: string | null }[] = contact ? [
-    { key: "email",       label: "อีเมล",       current: contact.email },
-    { key: "phone",       label: "เบอร์โทร",    current: contact.phone },
-    { key: "website",     label: "เว็บไซต์",    current: contact.website },
-    { key: "facebook",    label: "Facebook",     current: contact.facebook },
-    { key: "contactName", label: "ผู้ติดต่อ",   current: contact.contactName },
-  ] : [];
-
-  const confidenceColor = result?.confidence === "high" ? "var(--success)" : result?.confidence === "medium" ? "var(--warning)" : "var(--muted)";
-  const confidenceLabel = result?.confidence === "high" ? "มั่นใจสูง" : result?.confidence === "medium" ? "ปานกลาง" : "ไม่แน่ใจ";
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth
-      slotProps={{ paper: { sx: { bgcolor: "var(--panel-solid)", border: "1px solid var(--line)", borderRadius: "12px" } } }}>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1 }}>
-        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-          <Sparkles size={16} style={{ color: "#a78bfa" }} />
-          <Box>
-            <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem", lineHeight: 1.2 }}>AI Enrich Contact</Typography>
-            <Typography sx={{ color: "var(--muted)", fontSize: "0.72rem" }}>{contact?.companyName}</Typography>
-          </Box>
-        </Stack>
-        <IconButton size="small" onClick={onClose} sx={{ color: "var(--muted)" }}><X size={15} /></IconButton>
-      </DialogTitle>
-      <Divider sx={{ borderColor: "var(--line)" }} />
-      <DialogContent sx={{ pt: 2 }}>
-        {loading && (
-          <Stack sx={{ alignItems: "center", py: 4, gap: 2 }}>
-            <CircularProgress size={32} sx={{ color: "#a78bfa" }} />
-            <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem" }}>กำลังค้นหาข้อมูลจากอินเทอร์เน็ต...</Typography>
-          </Stack>
-        )}
-        {!loading && err && (
-          <Stack direction="row" spacing={1} sx={{ alignItems: "center", p: 1.5, borderRadius: "8px", bgcolor: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)" }}>
-            <AlertCircle size={14} style={{ color: "var(--danger)", flexShrink: 0 }} />
-            <Box>
-              <Typography sx={{ color: "var(--danger)", fontSize: "0.82rem", fontWeight: 600 }}>ไม่พบข้อมูล</Typography>
-              <Typography sx={{ color: "var(--danger)", fontSize: "0.75rem", opacity: 0.8 }}>{err}</Typography>
-            </Box>
-          </Stack>
-        )}
-        {!loading && result && (
-          <Stack spacing={2}>
-            <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
-              <Typography sx={{ color: "var(--muted)", fontSize: "0.75rem" }}>
-                แหล่งข้อมูล: <Typography component="a" href={result.source} target="_blank" sx={{ color: "var(--brand)", fontSize: "0.75rem", textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>{result.source.replace(/^https?:\/\//, "").slice(0, 40)}</Typography>
-              </Typography>
-              <Chip label={confidenceLabel} size="small" sx={{ height: 20, fontSize: "0.68rem", fontWeight: 700, color: confidenceColor, bgcolor: `${confidenceColor}18`, border: `1px solid ${confidenceColor}44` }} />
-            </Stack>
-
-            <Typography sx={{ color: "var(--muted)", fontSize: "0.75rem", fontWeight: 600 }}>
-              เลือก field ที่ต้องการ update (✓ = จะบันทึก)
-            </Typography>
-
-            <Stack spacing={1}>
-              {FIELDS.map(({ key, label, current }) => {
-                const found = result[key] as string | null;
-                if (!found) return null;
-                const isNew = !current;
-                const isDiff = current && current !== found;
-                return (
-                  <Paper key={key} onClick={() => toggle(key)} sx={{ p: 1.5, borderRadius: "8px", cursor: "pointer", border: `1px solid ${selected.has(key) ? "rgba(139,92,246,0.5)" : "var(--line)"}`, bgcolor: selected.has(key) ? "rgba(139,92,246,0.07)" : "rgba(0,0,0,0.02)", transition: "all 0.12s", "&:hover": { borderColor: "rgba(139,92,246,0.4)" } }}>
-                    <Stack direction="row" sx={{ alignItems: "flex-start", gap: 1.5 }}>
-                      <Checkbox checked={selected.has(key)} size="small" onClick={(e) => e.stopPropagation()} onChange={() => toggle(key)}
-                        sx={{ p: 0, mt: 0.25, color: "var(--muted)", "&.Mui-checked": { color: "#a78bfa" } }} />
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.25 }}>
-                          <Typography sx={{ color: "var(--muted)", fontSize: "0.7rem", fontWeight: 600 }}>{label}</Typography>
-                          {isNew && <Chip label="ใหม่" size="small" sx={{ height: 16, fontSize: "0.6rem", fontWeight: 700, color: "var(--success)", bgcolor: "rgba(16,185,129,0.12)" }} />}
-                          {isDiff && <Chip label="ต่างจากเดิม" size="small" sx={{ height: 16, fontSize: "0.6rem", fontWeight: 700, color: "var(--warning)", bgcolor: "rgba(245,158,11,0.12)" }} />}
-                        </Stack>
-                        <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem" }} noWrap>{found}</Typography>
-                        {isDiff && <Typography sx={{ color: "var(--muted-light)", fontSize: "0.72rem", textDecoration: "line-through" }} noWrap>{current}</Typography>}
-                      </Box>
-                    </Stack>
-                  </Paper>
-                );
-              })}
-              {FIELDS.every(({ key }) => !result[key]) && (
-                <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem", textAlign: "center", py: 2 }}>AI ไม่พบข้อมูลติดต่อจากเว็บไซต์นี้</Typography>
-              )}
-            </Stack>
-          </Stack>
-        )}
-      </DialogContent>
-      {!loading && result && selected.size > 0 && (
-        <>
-          <Divider sx={{ borderColor: "var(--line)" }} />
-          <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>อัปเดต {selected.size} field</Typography>
-            <Stack direction="row" spacing={1}>
-              <Button size="small" onClick={onClose} sx={{ color: "var(--muted)", textTransform: "none" }}>ยกเลิก</Button>
-              <Button size="small" variant="contained" onClick={apply}
-                sx={{ bgcolor: "#7c3aed", textTransform: "none", fontWeight: 600, px: 2.5, "&:hover": { bgcolor: "#6d28d9" } }}>
-                บันทึก {selected.size} field
-              </Button>
-            </Stack>
-          </Box>
-        </>
-      )}
-    </Dialog>
-  );
-}
-
-
-
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function ContactsPage() {
@@ -712,10 +534,9 @@ export default function ContactsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage]                 = useState(1);
 
-  // Create / Import / Enrich dialogs
+  // Create / Import dialogs
   const [createOpen, setCreateOpen]     = useState(false);
   const [importOpen, setImportOpen]     = useState(false);
-  const [enrichTarget, setEnrichTarget] = useState<Contact | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
   const [deleting, setDeleting]         = useState(false);
 
@@ -814,17 +635,6 @@ export default function ContactsPage() {
     setDialogMode("view");
   }
 
-  // ── Enrich apply ────────────────────────────────────────────────────────
-  async function applyEnrich(contactId: number | string, patch: Record<string, string | null>) {
-    if (typeof contactId !== "number") return;
-    const res = await fetch("/api/contacts", {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: contactId, ...patch }),
-    });
-    if (!res.ok) return;
-    setContacts((prev) => prev.map((c) => c.id === contactId ? { ...c, ...patch } : c));
-    if (viewContact?.id === contactId) setViewContact((v) => v ? { ...v, ...patch } : v);
-  }
 
   // ── Delete contact ──────────────────────────────────────────────────────
   async function confirmDelete() {
@@ -995,10 +805,6 @@ export default function ContactsPage() {
                           sx={{ width: 28, height: 28, color: "var(--muted)", border: "1px solid var(--line)", borderRadius: "7px", "&:hover": { color: "#fff", bgcolor: "rgba(139,92,246,0.12)", borderColor: "rgba(139,92,246,0.3)" } }}>
                           <Pencil size={12} />
                         </IconButton>
-                        <IconButton size="small" aria-label="AI Enrich" onClick={(e) => { e.stopPropagation(); setEnrichTarget(c); }}
-                          sx={{ width: 28, height: 28, color: "var(--muted)", border: "1px solid var(--line)", borderRadius: "7px", "&:hover": { color: "#fff", bgcolor: "rgba(167,139,250,0.15)", borderColor: "rgba(167,139,250,0.4)" } }}>
-                          <Sparkles size={12} />
-                        </IconButton>
                         <IconButton size="small" aria-label="ลบ" onClick={(e) => { e.stopPropagation(); setDeleteTarget(c); }}
                           sx={{ width: 28, height: 28, color: "var(--muted)", border: "1px solid var(--line)", borderRadius: "7px", "&:hover": { color: "#fff", bgcolor: "rgba(239,68,68,0.15)", borderColor: "rgba(239,68,68,0.4)" } }}>
                           <Trash2 size={12} />
@@ -1066,12 +872,6 @@ export default function ContactsPage() {
                         <Trash2 size={14} />
                       </IconButton>
                     </>
-                  )}
-                  {dialogMode === "edit" && (
-                    <Button size="small" onClick={() => setDialogMode("view")}
-                      sx={{ textTransform: "none", fontSize: "0.82rem", fontWeight: 600, color: "var(--muted)", border: "1px solid var(--line)", borderRadius: "8px", px: 1.5, "&:hover": { color: "var(--foreground)", bgcolor: "rgba(0,0,0,0.06)" } }}>
-                      ยกเลิก
-                    </Button>
                   )}
                   <IconButton onClick={closeDialog} sx={{ width: 34, height: 34, color: "var(--muted)", border: "1px solid var(--line)", borderRadius: "8px", "&:hover": { color: "var(--foreground)", bgcolor: "rgba(0,0,0,0.06)" } }}>
                     <X size={16} />
@@ -1310,13 +1110,6 @@ export default function ContactsPage() {
         </Box>
       </Dialog>
 
-      {/* ── Enrich Dialog ── */}
-      <EnrichDialog
-        contact={enrichTarget}
-        open={Boolean(enrichTarget)}
-        onClose={() => setEnrichTarget(null)}
-        onApply={(patch) => enrichTarget && applyEnrich(enrichTarget.id, patch as Record<string, string | null>)}
-      />
 
       {/* ── Create Contact Dialog ── */}
       <CreateContactDialog
