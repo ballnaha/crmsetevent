@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
 
     const campaigns = await db.emailCampaign.findMany({
       orderBy: { createdAt: "desc" },
+      take: 100,
       include: {
         template: { select: { name: true } },
         _count: { select: { recipients: true } },

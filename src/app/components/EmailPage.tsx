@@ -30,7 +30,7 @@ type Campaign = {
   status: string;
   sentAt: string | null;
   createdAt: string;
-  template: { name: string };
+  template: { name: string } | null;
   _count: { recipients: number };
 };
 
@@ -181,7 +181,7 @@ const BOILERPLATES = [
                                     ยกระดับภาพลักษณ์งานอีเวนต์<br>ด้วย<span style="color: #e50914;">จอ LED คมชัดสูง</span> เต็มตา ทุกมิติ
                                 </h1>
                                 <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0;">
-                                    เรียน คุณ {{contact_name}} จากบริษัท {{company_name}},<br><br>
+                                    เรียน พันธมิตรผู้จัดงานและลูกค้าทุกท่าน,<br><br>
                                     สร้างความประทับใจให้ผู้ร่วมงานด้วย **ระบบจอ LED Display เกรดพรีเมียม (High Refresh Rate)** จาก Set Event Thailand ถ่ายภาพหน้างานสวยคมชัด แสงไม่กระพริบ ออกอากาศลื่นไหลไม่มีสะดุด เหมาะสำหรับงานแต่งงาน งานสัมมนา งานแถลงข่าว และคอนเสิร์ตทุกรูปแบบ
                                 </p>
                             </td>
@@ -204,35 +204,59 @@ const BOILERPLATES = [
                         </tr>
                     </table>
 
-                    <!-- HIGHLIGHT CARDS -->
+                    <!-- HIGHLIGHT CARDS (PACKAGES) -->
                     <table width="100%" style="padding: 0 40px 25px 40px;" class="responsive-padding">
                         <tr>
                             <td>
-                                <div class="info-card">
+                                <!-- PACKAGE S -->
+                                <div class="info-card" style="border-left: 4px solid #0ea5e9; background-color: #f0f9ff; margin-bottom: 20px; border-radius: 12px; padding: 20px; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
                                     <table width="100%">
                                         <tr>
-                                            <td style="font-size: 16px; font-weight: bold; color: #0f172a; padding-bottom: 6px;">
-                                                 บริการงานระบบแบบ One-Stop Service
+                                            <td style="font-size: 16px; font-weight: 800; color: #0369a1; padding-bottom: 8px;">
+                                                 ⚡ PACKAGE S — 60,000 BAHT
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 14px; line-height: 1.6; color: #64748b;">
-                                                เราไม่ได้มีแค่จอ LED แต่พร้อมซัพพอร์ตโครงสร้างทรัส (Truss) ระบบแสง สี เสียง และเอฟเฟกต์หน้างานแบบครบวงจร จบงานได้ในที่เดียว
+                                            <td style="font-size: 13.5px; line-height: 1.7; color: #334155;">
+                                                • <strong>LED Screen:</strong> PH3.9 ขนาด 2x4 เมตร<br>
+                                                • <strong>Lighting System:</strong> Beam 4 Units / Par LED 8 Units / Daylight 8 Units / Truss I shape 2 Units / Truss T shape 2 Units<br>
+                                                • <strong>Sound System (up to 100 Pax):</strong> ลำโพง 2 Units / ไมโครโฟน 2-4 Units
                                             </td>
                                         </tr>
                                     </table>
                                 </div>
 
-                                <div class="info-card">
+                                <!-- PACKAGE M -->
+                                <div class="info-card" style="border-left: 4px solid #8b5cf6; background-color: #faf5ff; margin-bottom: 20px; border-radius: 12px; padding: 20px; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
                                     <table width="100%">
                                         <tr>
-                                            <td style="font-size: 16px; font-weight: bold; color: #0f172a; padding-bottom: 6px;">
-                                                ควบคุมโดย System Engineer มืออาชีพ
+                                            <td style="font-size: 16px; font-weight: 800; color: #6d28d9; padding-bottom: 8px;">
+                                                 ⭐ PACKAGE M — 100,000 BAHT
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 14px; line-height: 1.6; color: #64748b;">
-                                                อุ่นใจตลอดระยะเวลาจัดงาน ด้วยทีมช่างเทคนิคผู้เชี่ยวชาญสแตนด์บายมอนิเตอร์และควบคุมระบบภาพอย่างใกล้ชิดหน้างาน
+                                            <td style="font-size: 13.5px; line-height: 1.7; color: #334155;">
+                                                • <strong>LED Display:</strong> PH2.6 ขนาด 3x5.5 เมตร<br>
+                                                • <strong>Lighting System:</strong> Beam 6 Units / Par LED 10 Units / Par Warm Light 8 Units<br>
+                                                • <strong>Sound System (200 Pax):</strong> ลำโพง Eon JBL 4 Units / ไมโครโฟนไร้สาย 4-6 Units
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <!-- PACKAGE L -->
+                                <div class="info-card" style="border-left: 4px solid #e50914; background-color: #fff5f5; margin-bottom: 10px; border-radius: 12px; padding: 20px; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="font-size: 16px; font-weight: 800; color: #b91c1c; padding-bottom: 8px;">
+                                                 🔥 PACKAGE L — 150,000 BAHT
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 13.5px; line-height: 1.7; color: #334155;">
+                                                • <strong>LED Display:</strong> PH3.9 ขนาด 3x10 เมตร (จอยาวพิเศษ)<br>
+                                                • <strong>Lighting System:</strong> Beam 14 Units / Par LED 16 Units / Par Warm Light 16 Units<br>
+                                                • <strong>Sound System (300-400 Pax):</strong> ลำโพง 6-8 Units / ไมโครโฟนไร้สาย 6 Units
                                             </td>
                                         </tr>
                                     </table>
@@ -248,7 +272,7 @@ const BOILERPLATES = [
                                 <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">SET EVENT THAILAND</p>
                                 <p style="margin: 0 0 20px 0; font-size: 12px; color: #cbd5e1;">ผู้เชี่ยวชาญด้านระบบแสง เสียง ภาพ และโครงสร้างจัดงานอีเวนต์ครบวงจร</p>
                                  
-                                <p style="margin: 0 0 4px 0;">ฝ่ายบริการลูกค้า: 093-726-5055 | Line OA: @setevent</p>
+                                <p style="margin: 0 0 4px 0;">ฝ่ายบริการลูกค้า: 093-726-5055 | Email: setevent26@gmail.com | Line OA: @setevent</p>
                                 <p style="margin: 0 0 20px 0;">Website: <a href="https://www.seteventthailand.com" style="color: #38bdf8; text-decoration: none;">www.seteventthailand.com</a></p>
                                  
                                 <hr style="border: none; border-top: 1px solid #334155; margin-bottom: 20px;">
@@ -516,6 +540,7 @@ function TemplateDialog({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [err, setErr] = useState("");
+  const [boilerplateConfirmTarget, setBoilerplateConfirmTarget] = useState<{subject: string, body: string} | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -570,7 +595,7 @@ function TemplateDialog({
     setBody((prev) => prev + tag);
   }
 
-  return (
+  return (<>
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth
       slotProps={{ paper: { sx: { bgcolor: "var(--panel-solid)", border: "1px solid var(--line)", borderRadius: "18px", height: "92vh", display: "flex", flexDirection: "column", overflow: "hidden" } } }}>
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 2, px: 3, flexShrink: 0 }}>
@@ -625,9 +650,11 @@ function TemplateDialog({
                     size="small"
                     variant="outlined"
                     onClick={() => {
-                      if (!body.trim() || confirm("ระบบจะเขียนทับเนื้อความเดิมด้วยโครงร่างเริ่มต้น ต้องการเปลี่ยนตัวเลือกใช่หรือไม่?")) {
+                      if (!body.trim()) {
                         setSubject(bp.subject);
                         setBody(bp.body);
+                      } else {
+                        setBoilerplateConfirmTarget({ subject: bp.subject, body: bp.body });
                       }
                     }}
                     sx={{
@@ -734,6 +761,68 @@ function TemplateDialog({
         </Button>
       </Box>
     </Dialog>
+
+    {/* ── Overwrite Boilerplate Confirmation Dialog ── */}
+    <Dialog
+      open={Boolean(boilerplateConfirmTarget)}
+      onClose={() => setBoilerplateConfirmTarget(null)}
+      slotProps={{
+        paper: {
+          sx: {
+            bgcolor: "var(--panel-solid)",
+            border: "1px solid var(--line)",
+            borderRadius: "16px",
+            p: 1.5,
+            maxWidth: 400,
+            boxShadow: "var(--shadow-md)",
+          },
+        },
+      }}
+    >
+      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1.5, pb: 1 }}>
+        <Box sx={{ width: 34, height: 34, borderRadius: "50%", bgcolor: "rgba(245,158,11,0.1)", display: "grid", placeItems: "center", color: "var(--warning)" }}>
+          <AlertCircle size={16} />
+        </Box>
+        <Typography sx={{ color: "var(--foreground)", fontWeight: 800, fontSize: "0.95rem" }}>เขียนทับเนื้อหาเดิม?</Typography>
+      </DialogTitle>
+      <DialogContent sx={{ pb: 2 }}>
+        <Typography sx={{ color: "var(--muted)", fontSize: "0.82rem", lineHeight: 1.5 }}>
+          การเลือกโครงร่างใหม่จะ<strong>เขียนทับเนื้อความเดิมทั้งหมด</strong>ที่พิมพ์อยู่ในปัจจุบัน คุณต้องการดำเนินการต่อหรือไม่?
+        </Typography>
+      </DialogContent>
+      <Divider sx={{ borderColor: "var(--line)" }} />
+      <Box sx={{ p: 2, display: "flex", justifyContent: "flex-end", gap: 1 }}>
+        <Button
+          size="small"
+          onClick={() => setBoilerplateConfirmTarget(null)}
+          sx={{ color: "var(--muted)", textTransform: "none", border: "1px solid var(--line)", borderRadius: "8px", px: 2 }}
+        >
+          ยกเลิก
+        </Button>
+        <Button
+          size="small"
+          onClick={() => {
+            if (boilerplateConfirmTarget) {
+              setSubject(boilerplateConfirmTarget.subject);
+              setBody(boilerplateConfirmTarget.body);
+            }
+            setBoilerplateConfirmTarget(null);
+          }}
+          variant="contained"
+          sx={{
+            bgcolor: "var(--warning)",
+            color: "#fff",
+            textTransform: "none",
+            borderRadius: "8px",
+            px: 2,
+            "&:hover": { bgcolor: "rgba(245,158,11,0.9)" },
+          }}
+        >
+          เขียนทับเนื้อความ
+        </Button>
+      </Box>
+    </Dialog>
+    </>
   );
 }
 
@@ -813,6 +902,7 @@ function TemplatesTab() {
   const [editing, setEditing] = useState<EmailTemplate | null>(null);
   const [previewT, setPreviewT] = useState<EmailTemplate | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<EmailTemplate | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -827,12 +917,22 @@ function TemplatesTab() {
 
   useEffect(() => { load(); }, [load]);
 
-  async function deleteTemplate(id: number) {
-    if (!confirm("คุณยืนยันต้องการลบแม่แบบโครงร่างอีเมลนี้ใช่หรือไม่?")) return;
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const id = deleteTarget.id;
     setDeleting(id);
     try {
-      await fetch(`/api/email-templates/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/email-templates/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "เกิดข้อผิดพลาดในการลบแม่แบบโครงร่าง");
+        return;
+      }
       setTemplates((prev) => prev.filter((t) => t.id !== id));
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
     } finally {
       setDeleting(null);
     }
@@ -964,7 +1064,7 @@ function TemplatesTab() {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="ลบ">
-                  <IconButton size="small" onClick={() => deleteTemplate(t.id)} disabled={deleting === t.id} sx={{ color: "var(--muted)", "&:hover": { color: "var(--danger)", bgcolor: "rgba(239,68,68,0.08)" } }}>
+                  <IconButton size="small" onClick={() => setDeleteTarget(t)} disabled={deleting === t.id} sx={{ color: "var(--muted)", "&:hover": { color: "var(--danger)", bgcolor: "rgba(239,68,68,0.08)" } }}>
                     {deleting === t.id ? <CircularProgress size={12} /> : <Trash2 size={14} />}
                   </IconButton>
                 </Tooltip>
@@ -976,6 +1076,67 @@ function TemplatesTab() {
 
       <TemplateDialog open={dialogOpen} onClose={() => setDialogOpen(false)} initial={editing} onSaved={onSaved} />
       {previewT && <PreviewDialog open={!!previewT} onClose={() => setPreviewT(null)} subject={previewT.subject} body={previewT.body} />}
+
+      {/* ── Delete Confirmation Dialog ── */}
+      <Dialog
+        open={Boolean(deleteTarget)}
+        onClose={() => deleting === null && setDeleteTarget(null)}
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: "var(--panel-solid)",
+              border: "1px solid var(--line)",
+              borderRadius: "16px",
+              p: 1.5,
+              maxWidth: 400,
+              boxShadow: "var(--shadow-md)",
+            },
+          },
+        }}
+      >
+        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1.5, pb: 1 }}>
+          <Box sx={{ width: 34, height: 34, borderRadius: "50%", bgcolor: "rgba(239,68,68,0.1)", display: "grid", placeItems: "center", color: "var(--danger)" }}>
+            <Trash2 size={16} />
+          </Box>
+          <Typography sx={{ color: "var(--foreground)", fontWeight: 800, fontSize: "0.95rem" }}>ยืนยันลบแม่แบบโครงร่าง</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pb: 2 }}>
+          <Typography sx={{ color: "var(--muted)", fontSize: "0.82rem", lineHeight: 1.5 }}>
+            คุณแน่ใจหรือไม่ว่าต้องการลบแม่แบบโครงร่าง <strong>{deleteTarget?.name}</strong>?
+          </Typography>
+          <Typography sx={{ color: "var(--danger)", fontSize: "0.78rem", mt: 0.75, fontWeight: 550 }}>
+            ⚠️ คำเตือน: แคมเปญร่างที่อ้างอิงแม่แบบนี้อาจได้รับผลกระทบ
+          </Typography>
+        </DialogContent>
+        <Divider sx={{ borderColor: "var(--line)" }} />
+        <Box sx={{ p: 2, display: "flex", justifyContent: "flex-end", gap: 1 }}>
+          <Button
+            size="small"
+            disabled={deleting !== null}
+            onClick={() => setDeleteTarget(null)}
+            sx={{ color: "var(--muted)", textTransform: "none", border: "1px solid var(--line)", borderRadius: "8px", px: 2 }}
+          >
+            ยกเลิก
+          </Button>
+          <Button
+            size="small"
+            disabled={deleting !== null}
+            onClick={confirmDelete}
+            variant="contained"
+            startIcon={deleting !== null ? <CircularProgress size={13} sx={{ color: "#fff" }} /> : <Trash2 size={13} />}
+            sx={{
+              bgcolor: "var(--danger)",
+              color: "#fff",
+              textTransform: "none",
+              borderRadius: "8px",
+              px: 2,
+              "&:hover": { bgcolor: "var(--danger-hover)" },
+            }}
+          >
+            {deleting !== null ? "กำลังลบ..." : "ลบแม่แบบ"}
+          </Button>
+        </Box>
+      </Dialog>
     </Box>
   );
 }
@@ -1572,9 +1733,12 @@ function SendCampaignTab() {
 
 // ─── Campaigns History Tab ───────────────────────────────────────────────────
 
+const CAMP_PAGE_SIZE = 10;
+
 function CampaignsTab() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   const fetchCampaigns = useCallback(async (showLoading = false) => {
     if (showLoading) setLoading(true);
@@ -1596,13 +1760,12 @@ function CampaignsTab() {
   useEffect(() => {
     const hasSending = campaigns.some((c) => c.status === "SENDING");
     if (!hasSending) return;
-
-    const timer = setInterval(() => {
-      fetchCampaigns(false);
-    }, 3000);
-
+    const timer = setInterval(() => { fetchCampaigns(false); }, 3000);
     return () => clearInterval(timer);
   }, [campaigns, fetchCampaigns]);
+
+  const totalPages = Math.max(1, Math.ceil(campaigns.length / CAMP_PAGE_SIZE));
+  const pageItems = campaigns.slice((page - 1) * CAMP_PAGE_SIZE, page * CAMP_PAGE_SIZE);
 
   return (
     <Box>
@@ -1617,57 +1780,104 @@ function CampaignsTab() {
           <Typography sx={{ color: "var(--muted)", fontSize: "0.88rem" }}>ยังไม่เคยมีประวัติการจัดส่งแคมเปญอีเมล</Typography>
         </Box>
       ) : (
-        <Stack spacing={2}>
-          {campaigns.map((c) => {
-            const meta = campaignStatusMeta(c.status);
-            return (
-              <Paper key={c.id}
-                sx={{
-                  bgcolor: "var(--panel)",
-                  border: "1px solid var(--line)",
-                  borderRadius: "14px",
-                  p: 2.5,
-                  boxShadow: "var(--shadow-card)",
-                  transition: "all 0.15s ease",
-                  "&:hover": {
-                    boxShadow: "var(--shadow-md)",
-                    borderColor: "rgba(0,0,0,0.12)"
-                  }
-                }}
-              >
-                <Stack direction={{ xs: "column", sm: "row" }} sx={{ alignItems: { xs: "flex-start", sm: "center" }, justifyContent: "space-between" }} spacing={2}>
-                  <Box sx={{ minWidth: 0 }}>
-                    <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 1 }}>
-                      <Typography sx={{ color: "var(--foreground)", fontWeight: 750, fontSize: "0.9rem" }}>{c.name}</Typography>
-                      <Chip label={meta.label} size="small" sx={{ bgcolor: meta.bg, color: meta.color, fontWeight: 700, fontSize: "0.66rem", height: 20, borderRadius: "6px" }} />
-                    </Stack>
+        <Box>
+          <Box sx={{ mb: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Typography sx={{ color: "var(--muted)", fontSize: "0.75rem" }}>
+              ทั้งหมด <strong style={{ color: "var(--foreground)" }}>{campaigns.length}</strong> รายการ (100 ล่าสุด)
+            </Typography>
+          </Box>
 
-                    <Stack direction="row" spacing={2} sx={{ color: "var(--muted)", fontSize: "0.74rem", flexWrap: "wrap", gap: 1 }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                        <FileText size={12} /> เทมเพลต: <strong>{c.template.name}</strong>
-                      </span>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                        <Users size={12} /> ผู้รับทั้งหมด: <strong>{c._count.recipients} รายชื่อ</strong>
-                      </span>
-                    </Stack>
+          <TableContainer component={Paper} sx={{ bgcolor: "var(--panel)", border: "1px solid var(--line)", borderRadius: "12px", boxShadow: "none" }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow sx={{ "& th": { bgcolor: "rgba(0,0,0,0.02)", color: "var(--muted)", fontWeight: 700, fontSize: "0.72rem", borderBottom: "1px solid var(--line)", py: 1.25 } }}>
+                  <TableCell>#</TableCell>
+                  <TableCell>ชื่อแคมเปญ</TableCell>
+                  <TableCell>เทมเพลต</TableCell>
+                  <TableCell align="center">ผู้รับ</TableCell>
+                  <TableCell align="center">สถานะ</TableCell>
+                  <TableCell>วันที่ส่ง</TableCell>
+                  <TableCell>วันที่สร้าง</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {pageItems.map((c, idx) => {
+                  const meta = campaignStatusMeta(c.status);
+                  const rowNum = (page - 1) * CAMP_PAGE_SIZE + idx + 1;
+                  return (
+                    <TableRow key={c.id} sx={{ "&:hover": { bgcolor: "rgba(0,0,0,0.015)" }, "& td": { borderBottom: "1px solid var(--line)", py: 1, fontSize: "0.78rem", color: "var(--foreground)" } }}>
+                      <TableCell sx={{ color: "var(--muted) !important", fontSize: "0.7rem !important" }}>{rowNum}</TableCell>
+                      <TableCell>
+                        <Typography sx={{ fontWeight: 600, fontSize: "0.82rem", color: "var(--foreground)" }}>{c.name}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ color: c.template ? "var(--foreground)" : "var(--muted) !important", fontStyle: c.template ? "normal" : "italic" }}>
+                        {c.template?.name || "เทมเพลตถูกลบแล้ว"}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip label={`${c._count.recipients} คน`} size="small" sx={{ fontSize: "0.66rem", height: 18, borderRadius: "4px", bgcolor: "rgba(0,0,0,0.04)", color: "var(--muted)" }} />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip label={meta.label} size="small" sx={{ bgcolor: meta.bg, color: meta.color, fontWeight: 700, fontSize: "0.66rem", height: 20, borderRadius: "6px" }} />
+                      </TableCell>
+                      <TableCell sx={{ color: "var(--muted) !important", fontSize: "0.72rem !important" }}>
+                        {c.sentAt ? fmtDate(c.sentAt) : "—"}
+                      </TableCell>
+                      <TableCell sx={{ color: "var(--muted) !important", fontSize: "0.72rem !important" }}>
+                        {fmtDate(c.createdAt)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-                    {c.sentAt && (
-                      <Typography sx={{ color: "var(--muted)", fontSize: "0.7rem", mt: 1, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <Clock size={12} /> ส่งออกเมื่อ {fmtDate(c.sentAt)}
-                      </Typography>
-                    )}
-                  </Box>
-
-                  <Box sx={{ alignSelf: { xs: "flex-end", sm: "center" } }}>
-                    {c.status === "SENT" && <CheckCircle2 size={20} style={{ color: "var(--success)" }} />}
-                    {c.status === "FAILED" && <XCircle size={20} style={{ color: "var(--danger)" }} />}
-                    {c.status === "SENDING" && <CircularProgress size={18} sx={{ color: "var(--brand)" }} />}
-                  </Box>
-                </Stack>
-              </Paper>
-            );
-          })}
-        </Stack>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mt: 2 }}>
+              <IconButton size="small" disabled={page === 1} onClick={() => setPage(1)} sx={{ color: "var(--muted)" }}>
+                <ChevronsLeft size={15} />
+              </IconButton>
+              <IconButton size="small" disabled={page === 1} onClick={() => setPage(p => p - 1)} sx={{ color: "var(--muted)" }}>
+                <ChevronLeft size={15} />
+              </IconButton>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                .reduce<(number | "…")[]>((acc, p, i, arr) => {
+                  if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push("…");
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, i) =>
+                  p === "…" ? (
+                    <Typography key={`ellipsis-${i}`} sx={{ color: "var(--muted)", fontSize: "0.78rem", px: 0.5 }}>…</Typography>
+                  ) : (
+                    <Button
+                      key={p}
+                      size="small"
+                      variant={p === page ? "contained" : "text"}
+                      onClick={() => setPage(p as number)}
+                      sx={{
+                        minWidth: 30, height: 30, p: 0, fontSize: "0.75rem", fontWeight: 600,
+                        borderRadius: "8px",
+                        ...(p === page
+                          ? { bgcolor: "var(--brand)", color: "#fff", "&:hover": { bgcolor: "#0284c7" } }
+                          : { color: "var(--muted)", "&:hover": { bgcolor: "rgba(0,0,0,0.04)" } })
+                      }}
+                    >
+                      {p}
+                    </Button>
+                  )
+                )}
+              <IconButton size="small" disabled={page === totalPages} onClick={() => setPage(p => p + 1)} sx={{ color: "var(--muted)" }}>
+                <ChevronRight size={15} />
+              </IconButton>
+              <IconButton size="small" disabled={page === totalPages} onClick={() => setPage(totalPages)} sx={{ color: "var(--muted)" }}>
+                <ChevronsRight size={15} />
+              </IconButton>
+            </Box>
+          )}
+        </Box>
       )}
     </Box>
   );

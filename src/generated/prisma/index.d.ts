@@ -9394,7 +9394,7 @@ export namespace Prisma {
   export type EmailCampaignGroupByOutputType = {
     id: number
     name: string
-    templateId: number
+    templateId: number | null
     subject: string
     body: string
     status: string
@@ -9432,7 +9432,7 @@ export namespace Prisma {
     sentAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    template?: boolean | EmailTemplateDefaultArgs<ExtArgs>
+    template?: boolean | EmailCampaign$templateArgs<ExtArgs>
     recipients?: boolean | EmailCampaign$recipientsArgs<ExtArgs>
     _count?: boolean | EmailCampaignCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["emailCampaign"]>
@@ -9453,7 +9453,7 @@ export namespace Prisma {
 
   export type EmailCampaignOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "templateId" | "subject" | "body" | "status" | "sentAt" | "createdAt" | "updatedAt", ExtArgs["result"]["emailCampaign"]>
   export type EmailCampaignInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    template?: boolean | EmailTemplateDefaultArgs<ExtArgs>
+    template?: boolean | EmailCampaign$templateArgs<ExtArgs>
     recipients?: boolean | EmailCampaign$recipientsArgs<ExtArgs>
     _count?: boolean | EmailCampaignCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -9461,13 +9461,13 @@ export namespace Prisma {
   export type $EmailCampaignPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "EmailCampaign"
     objects: {
-      template: Prisma.$EmailTemplatePayload<ExtArgs>
+      template: Prisma.$EmailTemplatePayload<ExtArgs> | null
       recipients: Prisma.$EmailRecipientPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
-      templateId: number
+      templateId: number | null
       subject: string
       body: string
       status: string
@@ -9814,7 +9814,7 @@ export namespace Prisma {
    */
   export interface Prisma__EmailCampaignClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    template<T extends EmailTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EmailTemplateDefaultArgs<ExtArgs>>): Prisma__EmailTemplateClient<$Result.GetResult<Prisma.$EmailTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    template<T extends EmailCampaign$templateArgs<ExtArgs> = {}>(args?: Subset<T, EmailCampaign$templateArgs<ExtArgs>>): Prisma__EmailTemplateClient<$Result.GetResult<Prisma.$EmailTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     recipients<T extends EmailCampaign$recipientsArgs<ExtArgs> = {}>(args?: Subset<T, EmailCampaign$recipientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailRecipientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10199,6 +10199,25 @@ export namespace Prisma {
      * Limit how many EmailCampaigns to delete.
      */
     limit?: number
+  }
+
+  /**
+   * EmailCampaign.template
+   */
+  export type EmailCampaign$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailTemplate
+     */
+    select?: EmailTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailTemplate
+     */
+    omit?: EmailTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailTemplateInclude<ExtArgs> | null
+    where?: EmailTemplateWhereInput
   }
 
   /**
@@ -13181,21 +13200,21 @@ export namespace Prisma {
     NOT?: EmailCampaignWhereInput | EmailCampaignWhereInput[]
     id?: IntFilter<"EmailCampaign"> | number
     name?: StringFilter<"EmailCampaign"> | string
-    templateId?: IntFilter<"EmailCampaign"> | number
+    templateId?: IntNullableFilter<"EmailCampaign"> | number | null
     subject?: StringFilter<"EmailCampaign"> | string
     body?: StringFilter<"EmailCampaign"> | string
     status?: StringFilter<"EmailCampaign"> | string
     sentAt?: DateTimeNullableFilter<"EmailCampaign"> | Date | string | null
     createdAt?: DateTimeFilter<"EmailCampaign"> | Date | string
     updatedAt?: DateTimeFilter<"EmailCampaign"> | Date | string
-    template?: XOR<EmailTemplateScalarRelationFilter, EmailTemplateWhereInput>
+    template?: XOR<EmailTemplateNullableScalarRelationFilter, EmailTemplateWhereInput> | null
     recipients?: EmailRecipientListRelationFilter
   }
 
   export type EmailCampaignOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    templateId?: SortOrder
+    templateId?: SortOrderInput | SortOrder
     subject?: SortOrder
     body?: SortOrder
     status?: SortOrder
@@ -13213,21 +13232,21 @@ export namespace Prisma {
     OR?: EmailCampaignWhereInput[]
     NOT?: EmailCampaignWhereInput | EmailCampaignWhereInput[]
     name?: StringFilter<"EmailCampaign"> | string
-    templateId?: IntFilter<"EmailCampaign"> | number
+    templateId?: IntNullableFilter<"EmailCampaign"> | number | null
     subject?: StringFilter<"EmailCampaign"> | string
     body?: StringFilter<"EmailCampaign"> | string
     status?: StringFilter<"EmailCampaign"> | string
     sentAt?: DateTimeNullableFilter<"EmailCampaign"> | Date | string | null
     createdAt?: DateTimeFilter<"EmailCampaign"> | Date | string
     updatedAt?: DateTimeFilter<"EmailCampaign"> | Date | string
-    template?: XOR<EmailTemplateScalarRelationFilter, EmailTemplateWhereInput>
+    template?: XOR<EmailTemplateNullableScalarRelationFilter, EmailTemplateWhereInput> | null
     recipients?: EmailRecipientListRelationFilter
   }, "id">
 
   export type EmailCampaignOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    templateId?: SortOrder
+    templateId?: SortOrderInput | SortOrder
     subject?: SortOrder
     body?: SortOrder
     status?: SortOrder
@@ -13247,7 +13266,7 @@ export namespace Prisma {
     NOT?: EmailCampaignScalarWhereWithAggregatesInput | EmailCampaignScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"EmailCampaign"> | number
     name?: StringWithAggregatesFilter<"EmailCampaign"> | string
-    templateId?: IntWithAggregatesFilter<"EmailCampaign"> | number
+    templateId?: IntNullableWithAggregatesFilter<"EmailCampaign"> | number | null
     subject?: StringWithAggregatesFilter<"EmailCampaign"> | string
     body?: StringWithAggregatesFilter<"EmailCampaign"> | string
     status?: StringWithAggregatesFilter<"EmailCampaign"> | string
@@ -14021,14 +14040,14 @@ export namespace Prisma {
     sentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    template: EmailTemplateCreateNestedOneWithoutCampaignsInput
+    template?: EmailTemplateCreateNestedOneWithoutCampaignsInput
     recipients?: EmailRecipientCreateNestedManyWithoutCampaignInput
   }
 
   export type EmailCampaignUncheckedCreateInput = {
     id?: number
     name: string
-    templateId: number
+    templateId?: number | null
     subject: string
     body: string
     status?: string
@@ -14046,14 +14065,14 @@ export namespace Prisma {
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    template?: EmailTemplateUpdateOneRequiredWithoutCampaignsNestedInput
+    template?: EmailTemplateUpdateOneWithoutCampaignsNestedInput
     recipients?: EmailRecipientUpdateManyWithoutCampaignNestedInput
   }
 
   export type EmailCampaignUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
-    templateId?: IntFieldUpdateOperationsInput | number
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
     subject?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -14066,7 +14085,7 @@ export namespace Prisma {
   export type EmailCampaignCreateManyInput = {
     id?: number
     name: string
-    templateId: number
+    templateId?: number | null
     subject: string
     body: string
     status?: string
@@ -14088,7 +14107,7 @@ export namespace Prisma {
   export type EmailCampaignUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
-    templateId?: IntFieldUpdateOperationsInput | number
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
     subject?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -14983,9 +15002,9 @@ export namespace Prisma {
     id?: SortOrder
   }
 
-  export type EmailTemplateScalarRelationFilter = {
-    is?: EmailTemplateWhereInput
-    isNot?: EmailTemplateWhereInput
+  export type EmailTemplateNullableScalarRelationFilter = {
+    is?: EmailTemplateWhereInput | null
+    isNot?: EmailTemplateWhereInput | null
   }
 
   export type EmailRecipientListRelationFilter = {
@@ -15545,10 +15564,12 @@ export namespace Prisma {
     connect?: EmailRecipientWhereUniqueInput | EmailRecipientWhereUniqueInput[]
   }
 
-  export type EmailTemplateUpdateOneRequiredWithoutCampaignsNestedInput = {
+  export type EmailTemplateUpdateOneWithoutCampaignsNestedInput = {
     create?: XOR<EmailTemplateCreateWithoutCampaignsInput, EmailTemplateUncheckedCreateWithoutCampaignsInput>
     connectOrCreate?: EmailTemplateCreateOrConnectWithoutCampaignsInput
     upsert?: EmailTemplateUpsertWithoutCampaignsInput
+    disconnect?: EmailTemplateWhereInput | boolean
+    delete?: EmailTemplateWhereInput | boolean
     connect?: EmailTemplateWhereUniqueInput
     update?: XOR<XOR<EmailTemplateUpdateToOneWithWhereWithoutCampaignsInput, EmailTemplateUpdateWithoutCampaignsInput>, EmailTemplateUncheckedUpdateWithoutCampaignsInput>
   }
@@ -16656,7 +16677,7 @@ export namespace Prisma {
     NOT?: EmailCampaignScalarWhereInput | EmailCampaignScalarWhereInput[]
     id?: IntFilter<"EmailCampaign"> | number
     name?: StringFilter<"EmailCampaign"> | string
-    templateId?: IntFilter<"EmailCampaign"> | number
+    templateId?: IntNullableFilter<"EmailCampaign"> | number | null
     subject?: StringFilter<"EmailCampaign"> | string
     body?: StringFilter<"EmailCampaign"> | string
     status?: StringFilter<"EmailCampaign"> | string
@@ -16785,13 +16806,13 @@ export namespace Prisma {
     sentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    template: EmailTemplateCreateNestedOneWithoutCampaignsInput
+    template?: EmailTemplateCreateNestedOneWithoutCampaignsInput
   }
 
   export type EmailCampaignUncheckedCreateWithoutRecipientsInput = {
     id?: number
     name: string
-    templateId: number
+    templateId?: number | null
     subject: string
     body: string
     status?: string
@@ -16824,13 +16845,13 @@ export namespace Prisma {
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    template?: EmailTemplateUpdateOneRequiredWithoutCampaignsNestedInput
+    template?: EmailTemplateUpdateOneWithoutCampaignsNestedInput
   }
 
   export type EmailCampaignUncheckedUpdateWithoutRecipientsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
-    templateId?: IntFieldUpdateOperationsInput | number
+    templateId?: NullableIntFieldUpdateOperationsInput | number | null
     subject?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string

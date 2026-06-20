@@ -144,8 +144,8 @@ model EmailTemplate {
 model EmailCampaign {
   id         Int              @id @default(autoincrement())
   name       String
-  templateId Int
-  template   EmailTemplate    @relation(fields: [templateId], references: [id])
+  templateId Int?
+  template   EmailTemplate?   @relation(fields: [templateId], references: [id], onDelete: SetNull)
   subject    String
   body       String           @db.LongText
   status     String           @default("DRAFT")
