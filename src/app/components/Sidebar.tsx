@@ -10,6 +10,7 @@ import {
   Settings,
   Users,
   LogOut,
+  Image as ImageIcon,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -135,6 +136,29 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               }}
             >
               Email Campaigns
+            </Button>
+
+            {/* Image Library Button */}
+            <Button
+              className={`navButton ${pathname === "/images" ? "navButtonActive" : ""}`}
+              startIcon={<ImageIcon size={16} />}
+              onClick={() => {
+                router.push("/images");
+                if (onClose) onClose();
+              }}
+              sx={{
+                justifyContent: "flex-start",
+                color: pathname === "/images" ? "var(--brand-dark)" : "var(--muted)",
+                bgcolor: pathname === "/images" ? "var(--sidebar-active-bg)" : "transparent",
+                fontWeight: pathname === "/images" ? 600 : 500,
+                px: 1.5,
+                py: 1,
+                width: "100%",
+                textTransform: "none",
+                fontSize: "0.85rem",
+              }}
+            >
+              Image Library
             </Button>
 
             {/* Sync Manager Button */}

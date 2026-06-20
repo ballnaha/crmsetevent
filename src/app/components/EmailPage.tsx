@@ -59,6 +59,215 @@ const MERGE_TAGS = [
 
 const BOILERPLATES = [
   {
+    name: "📺 โปรโมชั่นจอ LED (Set Event)",
+    subject: "ยกระดับภาพลักษณ์งานอีเวนต์ด้วยจอ LED คมชัดสูง — Set Event Thailand",
+    body: `<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Event Thailand - LED Screen Promotion</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6; /* พื้นหลังภายนอกสีเทาอ่อนมาก */
+            font-family: 'Prompt', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            -webkit-font-smoothing: antialiased;
+        }
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+        td {
+            padding: 0;
+        }
+        img {
+            border: 0;
+            display: block;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff; /* ตัวเมลพื้นสีขาวสะอาด Modern */
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .btn-modern {
+            background-color: #e50914; /* สีแดงเอกลักษณ์ของ Set Event */
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 45px;
+            font-weight: 600;
+            border-radius: 8px; /* โค้งมนแบบโมเดิร์นคลาสสิก */
+            display: inline-block;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(229, 9, 21, 0.25);
+            transition: all 0.3s ease;
+        }
+        .info-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        /* Style สำหรับจัดระเบียบรูป 3 รูปใน 1 แถว */
+        .gallery-container {
+            padding: 0 40px 30px 40px;
+        }
+        .gallery-table {
+            width: 100%;
+        }
+        .gallery-cell {
+            width: 31%;
+            padding: 0 1%;
+            vertical-align: top;
+        }
+        .gallery-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+        }
+        @media screen and (max-width: 600px) {
+            .responsive-padding {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+            /* เมื่อเปิดในมือถือ ให้รูปขยายเต็มแผ่ลงมาเป็นแนวตั้งเพื่อความชัดเจน */
+            .gallery-container {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+            .gallery-cell {
+                display: block !important;
+                width: 100% !important;
+                padding: 0 0 15px 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <table width="100%" bgcolor="#f3f4f6" style="padding: 50px 0;">
+        <tr>
+            <td>
+                <div class="email-container">
+                    
+                    <!-- HEADER SECTION -->
+                    <table width="100%" style="padding: 30px 40px; background-color: #ffffff; border-bottom: 1px solid #f1f5f9;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <!-- โลโก้จริงของ Set Event Thailand -->
+                                <img src="https://seteventthailand.com/images/logo1.png" alt="Set Event Thailand" width="120">
+                            </td>
+                            <td align="right" style="color: #64748b; font-size: 13px; font-weight: 500; letter-spacing: 0.5px;">
+                                PROFESSIONAL TEAM <br>
+                                End-to-End Event Solution
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- MAIN CONTENT -->
+                    <table width="100%" style="padding: 45px 40px 20px 40px;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <span style="color: #e50914; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; text-transform: uppercase;">Premium LED Screen Rental</span>
+                                <h1 style="font-size: 26px; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; line-height: 1.4;">
+                                    ยกระดับภาพลักษณ์งานอีเวนต์<br>ด้วย<span style="color: #e50914;">จอ LED คมชัดสูง</span> เต็มตา ทุกมิติ
+                                </h1>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0;">
+                                    เรียน คุณ {{contact_name}} จากบริษัท {{company_name}},<br><br>
+                                    สร้างความประทับใจให้ผู้ร่วมงานด้วย **ระบบจอ LED Display เกรดพรีเมียม (High Refresh Rate)** จาก Set Event Thailand ถ่ายภาพหน้างานสวยคมชัด แสงไม่กระพริบ ออกอากาศลื่นไหลไม่มีสะดุด เหมาะสำหรับงานแต่งงาน งานสัมมนา งานแถลงข่าว และคอนเสิร์ตทุกรูปแบบ
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- 3-IMAGE GALLERY ROW (เพิ่มโซนแสดงภาพผลงาน 3 ภาพใน 1 แถว) -->
+                    <table width="100%" class="gallery-container">
+                        <tr>
+                            <td>
+                                <table class="gallery-table" style="width:100%">
+                                    <tr>
+                                        <!-- ภาพที่ 1 (แนะนำขนาดสี่เหลี่ยมจัตุรัส หรือ 4:3 เช่น 400x400 px) -->
+                                        <td class="gallery-cell">
+                                            <img src="https://crm.seteventthailand.com/uploads/1781934503772-uohtc7.png" alt="LED ผลงาน" class="gallery-img">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- HIGHLIGHT CARDS -->
+                    <table width="100%" style="padding: 0 40px 25px 40px;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <div class="info-card">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="font-size: 16px; font-weight: bold; color: #0f172a; padding-bottom: 6px;">
+                                                 บริการงานระบบแบบ One-Stop Service
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 14px; line-height: 1.6; color: #64748b;">
+                                                เราไม่ได้มีแค่จอ LED แต่พร้อมซัพพอร์ตโครงสร้างทรัส (Truss) ระบบแสง สี เสียง และเอฟเฟกต์หน้างานแบบครบวงจร จบงานได้ในที่เดียว
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="info-card">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="font-size: 16px; font-weight: bold; color: #0f172a; padding-bottom: 6px;">
+                                                ควบคุมโดย System Engineer มืออาชีพ
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 14px; line-height: 1.6; color: #64748b;">
+                                                อุ่นใจตลอดระยะเวลาจัดงาน ด้วยทีมช่างเทคนิคผู้เชี่ยวชาญสแตนด์บายมอนิเตอร์และควบคุมระบบภาพอย่างใกล้ชิดหน้างาน
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <table width="100%" bgcolor="#0f172a" style="padding: 40px; color: #94a3b8; font-size: 13px; line-height: 1.7;" class="responsive-padding">
+                        <tr>
+                            <td style="text-align: center;">
+                                <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">SET EVENT THAILAND</p>
+                                <p style="margin: 0 0 20px 0; font-size: 12px; color: #cbd5e1;">ผู้เชี่ยวชาญด้านระบบแสง เสียง ภาพ และโครงสร้างจัดงานอีเวนต์ครบวงจร</p>
+                                 
+                                <p style="margin: 0 0 4px 0;">ฝ่ายบริการลูกค้า: 093-726-5055 | Line OA: @setevent</p>
+                                <p style="margin: 0 0 20px 0;">Website: <a href="https://www.seteventthailand.com" style="color: #38bdf8; text-decoration: none;">www.seteventthailand.com</a></p>
+                                 
+                                <hr style="border: none; border-top: 1px solid #334155; margin-bottom: 20px;">
+                                <p style="margin: 0; font-size: 11px; color: #64748b;">
+                                    ทางบริษัทฯ หวังเป็นอย่างยิ่งว่าข้อมูลประชาสัมพันธ์นี้จะเป็นประโยชน์ต่อการวางแผนจัดงานครั้งถัดไปของคุณลูกค้า
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>`
+  },
+  {
     name: "✉️ จดหมายทักทายทั่วไป",
     subject: "สวัสดีคุณ {{contact_name}} — ขอบคุณที่ติดต่อเรา",
     body: `<div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
@@ -159,10 +368,10 @@ function fmtDate(iso: string) {
 }
 
 function campaignStatusMeta(s: string) {
-  if (s === "SENT")    return { label: "ส่งแล้ว",   color: "var(--success)", bg: "rgba(16,185,129,0.08)" };
-  if (s === "FAILED")  return { label: "ล้มเหลว",   color: "var(--danger)",  bg: "rgba(239,68,68,0.08)" };
-  if (s === "SENDING") return { label: "กำลังส่ง",  color: "var(--brand)",   bg: "rgba(14,165,233,0.08)" };
-  return                        { label: "ร่างแคมเปญ", color: "var(--muted)",   bg: "rgba(148,163,184,0.08)" };
+  if (s === "SENT") return { label: "ส่งแล้ว", color: "var(--success)", bg: "rgba(16,185,129,0.08)" };
+  if (s === "FAILED") return { label: "ล้มเหลว", color: "var(--danger)", bg: "rgba(239,68,68,0.08)" };
+  if (s === "SENDING") return { label: "กำลังส่ง", color: "var(--brand)", bg: "rgba(14,165,233,0.08)" };
+  return { label: "ร่างแคมเปญ", color: "var(--muted)", bg: "rgba(148,163,184,0.08)" };
 }
 
 function fieldSx() {
@@ -321,12 +530,13 @@ function TemplateDialog({
     if (!file.type.startsWith("image/")) { setErr("เฉพาะไฟล์รูปภาพเท่านั้น"); return; }
     setUploading(true);
     try {
+      const processedFile = await resizeAndCompressImage(file);
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", processedFile);
       const res = await fetch("/api/uploads", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
-      const imgTag = `<img src="${data.url}" alt="${file.name}" style="max-width:100%; height:auto; display:block; margin:8px 0; border-radius: 8px;">`;
+      const imgTag = `<img src="${data.url}" alt="${processedFile.name}" style="max-width:100%; height:auto; display:block; margin:8px 0; border-radius: 8px;">`;
       setBody((prev) => prev + "\n" + imgTag);
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "อัปโหลดไม่สำเร็จ");
@@ -382,10 +592,10 @@ function TemplateDialog({
         </IconButton>
       </DialogTitle>
       <Divider sx={{ borderColor: "var(--line)" }} />
-      
+
       <DialogContent sx={{ p: 3, flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" }, gap: 3.5, flex: 1, minHeight: 0 }}>
-          
+
           {/* Left Column: Form Editor */}
           <Stack spacing={2} sx={{ height: "100%", overflowY: "auto", pr: { md: 1.5 } }}>
             {err && (
@@ -396,7 +606,7 @@ function TemplateDialog({
             )}
 
             <TextField label="ชื่อ Template" placeholder="เช่น เทมเพลตเสนอราคา BITEC" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" sx={fieldSx()} />
-            
+
             <TextField
               label="Subject (หัวข้ออีเมล)" value={subject} onChange={(e) => setSubject(e.target.value)} fullWidth size="small"
               placeholder="เช่น สวัสดีคุณ {{contact_name}} — ยินดีต้อนรับร่วมโครงการ"
@@ -448,7 +658,7 @@ function TemplateDialog({
                 <Typography sx={{ color: "var(--foreground)", fontSize: "0.74rem", fontWeight: 700 }}>
                   แท็กข้อมูลสำหรับเชื่อมโยง (Merge Tags)
                 </Typography>
-                
+
                 <Box component="label" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.5, py: 0.5, borderRadius: "8px", cursor: "pointer", bgcolor: uploading ? "rgba(14,165,233,0.08)" : "rgba(0,0,0,0.02)", border: "1px solid var(--line)", "&:hover": { bgcolor: "rgba(14,165,233,0.05)", borderColor: "rgba(14,165,233,0.3)" }, transition: "all 0.15s" }}>
                   <input type="file" hidden accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); e.target.value = ""; }} />
                   {uploading ? <CircularProgress size={12} sx={{ color: "var(--brand)" }} /> : <ImageIcon size={13} style={{ color: "var(--brand)" }} />}
@@ -457,7 +667,7 @@ function TemplateDialog({
                   </Typography>
                 </Box>
               </Stack>
-              
+
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                 {MERGE_TAGS.map((m) => (
                   <Chip
@@ -490,7 +700,7 @@ function TemplateDialog({
             <Typography sx={{ color: "var(--foreground)", fontSize: "0.76rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.75 }}>
               <Eye size={14} style={{ color: "var(--brand)" }} /> แสดงตัวอย่างแบบเรียลไทม์ (Live HTML Preview)
             </Typography>
-            
+
             <Box sx={{
               flex: 1,
               bgcolor: "#ffffff",
@@ -533,7 +743,7 @@ function PreviewDialog({ open, onClose, subject, body }: { open: boolean; onClos
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth
       slotProps={{ paper: { sx: { bgcolor: "var(--panel-solid)", border: "1px solid var(--line)", borderRadius: "16px", overflow: "hidden", boxShadow: "var(--shadow-md)" } } }}>
-      
+
       {/* Mock Client Topbar */}
       <Box sx={{ bgcolor: "#f1f5f9", px: 2.5, py: 1.5, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--line)" }}>
         <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
@@ -1005,7 +1215,7 @@ function SendCampaignTab() {
           <Typography sx={{ color: "var(--foreground)", fontWeight: 700, fontSize: "0.95rem", mb: 2 }}>
             ระบุรายละเอียดแคมเปญและแม่แบบจดหมาย
           </Typography>
-          
+
           <Stack spacing={2.5}>
             <TextField
               label="ชื่อแคมเปญ (Campaign Name)" value={campaignName} onChange={(e) => setCampaignName(e.target.value)} fullWidth size="small"
@@ -1085,7 +1295,7 @@ function SendCampaignTab() {
                   label={<Typography sx={{ color: "var(--foreground)", fontSize: "0.8rem", fontWeight: 500 }}>แสดงเฉพาะที่มีอีเมล</Typography>}
                 />
               </Stack>
-              
+
               <Button size="small" variant="outlined" onClick={toggleAll}
                 sx={{ color: "var(--brand)", borderColor: "rgba(14,165,233,0.3)", borderRadius: "8px", textTransform: "none", fontSize: "0.78rem", px: 2, py: 0.75, whiteSpace: "nowrap" }}>
                 {filteredContacts.every((c) => selectedIds.has(c.id)) ? "ยกเลิกการเลือกทั้งหมด" : "เลือกทั้งหมดตามผลลัพธ์"}
@@ -1191,7 +1401,7 @@ function SendCampaignTab() {
                   <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 550 }}>
                     แสดง {(page - 1) * CONTACTS_PER_PAGE + 1} - {Math.min(page * CONTACTS_PER_PAGE, filteredContacts.length)} จากทั้งหมด {filteredContacts.length} รายการ
                   </Typography>
-                  
+
                   <Stack direction="row" className="paginationControls" spacing={0.5} sx={{ alignItems: "center" }}>
                     <IconButton size="small" className="paginationIcon" disabled={page === 1} onClick={() => setPage(1)}>
                       <ChevronsLeft size={14} />
@@ -1199,7 +1409,7 @@ function SendCampaignTab() {
                     <IconButton size="small" className="paginationIcon" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
                       <ChevronLeft size={14} />
                     </IconButton>
-                    
+
                     <Stack direction="row" className="paginationPages" spacing={0.5} sx={{ alignItems: "center" }}>
                       {pgItems.map((item, idx) => (
                         item === "…" ? (
@@ -1217,7 +1427,7 @@ function SendCampaignTab() {
                         )
                       ))}
                     </Stack>
-                    
+
                     <IconButton size="small" className="paginationIcon" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
                       <ChevronRight size={14} />
                     </IconButton>
@@ -1269,9 +1479,9 @@ function SendCampaignTab() {
                     <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>หัวข้ออีเมล:</Typography>
                     <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.82rem", fontWeight: 600 }}>{selectedTemplate?.subject}</Typography>
                   </Stack>
-                  
+
                   <Divider sx={{ my: 0.5, borderColor: "var(--line)" }} />
-                  
+
                   <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                     <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>จำนวนผู้รับที่พร้อมส่ง:</Typography>
                     <Typography sx={{ color: "var(--success)", fontSize: "0.85rem", fontWeight: 800 }}>{recipientsWithEmail.length} รายชื่อ</Typography>
@@ -1431,7 +1641,7 @@ function CampaignsTab() {
                       <Typography sx={{ color: "var(--foreground)", fontWeight: 750, fontSize: "0.9rem" }}>{c.name}</Typography>
                       <Chip label={meta.label} size="small" sx={{ bgcolor: meta.bg, color: meta.color, fontWeight: 700, fontSize: "0.66rem", height: 20, borderRadius: "6px" }} />
                     </Stack>
-                    
+
                     <Stack direction="row" spacing={2} sx={{ color: "var(--muted)", fontSize: "0.74rem", flexWrap: "wrap", gap: 1 }}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
                         <FileText size={12} /> เทมเพลต: <strong>{c.template.name}</strong>
@@ -1440,17 +1650,17 @@ function CampaignsTab() {
                         <Users size={12} /> ผู้รับทั้งหมด: <strong>{c._count.recipients} รายชื่อ</strong>
                       </span>
                     </Stack>
-                    
+
                     {c.sentAt && (
                       <Typography sx={{ color: "var(--muted)", fontSize: "0.7rem", mt: 1, display: "flex", alignItems: "center", gap: 0.5 }}>
                         <Clock size={12} /> ส่งออกเมื่อ {fmtDate(c.sentAt)}
                       </Typography>
                     )}
                   </Box>
-                  
+
                   <Box sx={{ alignSelf: { xs: "flex-end", sm: "center" } }}>
-                    {c.status === "SENT"   && <CheckCircle2 size={20} style={{ color: "var(--success)" }} />}
-                    {c.status === "FAILED" && <XCircle      size={20} style={{ color: "var(--danger)" }} />}
+                    {c.status === "SENT" && <CheckCircle2 size={20} style={{ color: "var(--success)" }} />}
+                    {c.status === "FAILED" && <XCircle size={20} style={{ color: "var(--danger)" }} />}
                     {c.status === "SENDING" && <CircularProgress size={18} sx={{ color: "var(--brand)" }} />}
                   </Box>
                 </Stack>
@@ -1469,7 +1679,7 @@ export default function EmailPage() {
   const [tab, setTab] = useState(0);
 
   return (
-    <Box sx={{ p: { xs: 2.5, md: 4.5 }, maxWidth: 1200, mx: "auto" }}>
+    <Box className="dashboardPage">
       {/* Premium Header */}
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2.5} sx={{ alignItems: { xs: "flex-start", sm: "center" }, mb: 4 }}>
         <Box sx={{ width: 46, height: 46, borderRadius: "12px", bgcolor: "rgba(14,165,233,0.1)", border: "1.5px solid rgba(14,165,233,0.2)", display: "grid", placeItems: "center", flexShrink: 0, boxShadow: "var(--shadow-glow)" }}>
@@ -1509,4 +1719,109 @@ export default function EmailPage() {
       </Box>
     </Box>
   );
+}
+
+function resizeAndCompressImage(file: File, maxDim: number = 1200, maxSize: number = 1 * 1024 * 1024): Promise<File> {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith("image/")) {
+      resolve(file);
+      return;
+    }
+    if (file.type.includes("svg")) {
+      resolve(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width <= maxDim && height <= maxDim && file.size <= maxSize) {
+          resolve(file);
+          return;
+        }
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const outputMime = file.type === "image/png" ? "image/png" : "image/jpeg";
+        const quality = 0.85;
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const ext = outputMime === "image/png" ? ".png" : ".jpg";
+              let baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+              const newName = baseName + ext;
+              
+              const resizedFile = new File([blob], newName, {
+                type: outputMime,
+                lastModified: Date.now(),
+              });
+
+              if (resizedFile.size > maxSize && outputMime === "image/png") {
+                const jpegCanvas = document.createElement("canvas");
+                jpegCanvas.width = width;
+                jpegCanvas.height = height;
+                const jpegCtx = jpegCanvas.getContext("2d");
+                if (jpegCtx) {
+                  jpegCtx.fillStyle = "#ffffff";
+                  jpegCtx.fillRect(0, 0, width, height);
+                  jpegCtx.drawImage(img, 0, 0, width, height);
+                  jpegCanvas.toBlob(
+                    (jpegBlob) => {
+                      if (jpegBlob) {
+                        const finalFile = new File([jpegBlob], baseName + ".jpg", {
+                          type: "image/jpeg",
+                          lastModified: Date.now(),
+                        });
+                        resolve(finalFile);
+                      } else {
+                        resolve(resizedFile);
+                      }
+                    },
+                    "image/jpeg",
+                    0.75
+                  );
+                } else {
+                  resolve(resizedFile);
+                }
+              } else {
+                resolve(resizedFile);
+              }
+            } else {
+              resolve(file);
+            }
+          },
+          outputMime,
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
 }
