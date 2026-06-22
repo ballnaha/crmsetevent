@@ -91,7 +91,7 @@ function getPaginationItems(page: number, totalPages: number) {
   return items;
 }
 
-export default function EventSyncDashboard() {
+export default function SetEventThailandDashboard() {
   const searchParams = useSearchParams();
   const sourceParam = searchParams ? searchParams.get("source") : null;
 

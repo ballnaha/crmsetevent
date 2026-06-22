@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.RESEND_FROM ?? "EventSync <onboarding@resend.dev>";
+const FROM = process.env.RESEND_FROM ?? "SetEventThailand <onboarding@resend.dev>";
 
 type Recipient = { email: string; name?: string; company?: string };
 type AttachmentInput = { filename: string; contentType: string; base64: string };

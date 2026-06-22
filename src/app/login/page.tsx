@@ -139,7 +139,7 @@ export default function LoginPage() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            EventSync
+            SetEventThailand
           </Typography>
         </Stack>
 
@@ -148,7 +148,7 @@ export default function LoginPage() {
             ยินดีต้อนรับกลับมา
           </Typography>
           <Typography variant="body2" sx={{ color: "var(--muted)" }}>
-            เข้าสู่ระบบ EventSync CRM เพื่อจัดการข้อมูลผู้จัดงาน
+            เข้าสู่ระบบ SetEventThailand CRM เพื่อจัดการข้อมูลผู้จัดงาน
           </Typography>
         </Box>
 
@@ -181,7 +181,7 @@ export default function LoginPage() {
               fullWidth
               required
               disabled={loading}
-              placeholder="operator@eventsync.com"
+              placeholder="operator@seteventthailand.com"
               slotProps={{
                 input: {
                   startAdornment: (
@@ -280,7 +280,7 @@ export default function LoginPage() {
             บัญชีเริ่มต้นระบบ:
           </Typography>
           <Typography variant="caption" sx={{ fontWeight: 600, color: "var(--foreground)", display: "block" }}>
-            admin@eventsync.com / admin123
+            admin@seteventthailand.com / admin123
           </Typography>
         </Box>
       </Card>

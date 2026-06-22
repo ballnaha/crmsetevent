@@ -46,7 +46,7 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
               <rect x="3" y="16" width="7" height="5" rx="1.5" />
             </svg>
           </Box>
-          <Typography className="brandName">EventSync</Typography>
+          <Typography className="brandName">SetEventThailand</Typography>
         </Stack>
       </Box>
 

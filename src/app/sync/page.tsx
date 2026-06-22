@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import AppFrame from "../components/AppFrame";
-import EventSyncDashboard from "../components/EventSyncDashboard";
+import SetEventThailandDashboard from "../components/SetEventThailandDashboard";
 
 export default function SyncPage() {
   return (
@@ -10,7 +10,7 @@ export default function SyncPage() {
           Loading Sync Center...
         </div>
       }>
-        <EventSyncDashboard />
+        <SetEventThailandDashboard />
       </Suspense>
     </AppFrame>
   );

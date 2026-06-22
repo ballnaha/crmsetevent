@@ -32,13 +32,13 @@ export const authOptions: AuthOptions = {
             const hashedPassword = await bcrypt.hash("admin123", 10);
             await prisma.user.create({
               data: {
-                email: "admin@eventsync.com",
+                email: "admin@seteventthailand.com",
                 name: "CRM Operator",
                 password: hashedPassword,
                 role: "ADMIN",
               },
             });
-            console.log("Successfully seeded default admin user (admin@eventsync.com / admin123)");
+            console.log("Successfully seeded default admin user (admin@seteventthailand.com / admin123)");
           }
         } catch (e) {
           console.error("Error during auto-seeding user table:", e);

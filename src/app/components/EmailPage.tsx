@@ -417,76 +417,460 @@ const BOILERPLATES = [
   {
     name: "✉️ จดหมายทักทายทั่วไป",
     subject: "สวัสดีคุณ {{contact_name}} — ขอบคุณที่ติดต่อเรา",
-    body: `<div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-  <h2 style="color: #0ea5e9; margin-top: 0; font-size: 20px; font-weight: 700;">เรียนคุณ {{contact_name}},</h2>
-  <p>ขอขอบคุณสำหรับความสนใจในบริการของทาง <strong>{{company_name}}</strong> ทางทีมงานของเรายินดีเป็นอย่างยิ่งที่มีโอกาสได้แนะนำข้อมูลให้แก่ท่าน</p>
-  <p>หากท่านมีคำถามเกี่ยวกับแคมเปญ งานสัมมนา หรือระบบ CRM เพิ่มเติม สามารถติดต่อผู้ดูแลโครงการของท่านได้โดยการตอบกลับอีเมลนี้โดยตรง</p>
-  <p style="margin-top: 24px;">ขอแสดงความนับถือ,<br/><span style="color: #0ea5e9; font-weight: 600;">ทีมงาน EventSync Co.</span></p>
-  <hr style="border: 0; border-top: 1px dashed #e2e8f0; margin: 24px 0;" />
-  <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">อีเมลฉบับนี้ส่งตรงถึง {{email}} จากระบบบริหารจัดการลูกค้าสัมพันธ์อัตโนมัติ</p>
-</div>`
+    body: `<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Event Thailand - Thank You</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            font-family: 'Prompt', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            -webkit-font-smoothing: antialiased;
+        }
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+        td {
+            padding: 0;
+        }
+        img {
+            border: 0;
+            display: block;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .btn-modern {
+            background-color: #0ea5e9;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 45px;
+            font-weight: 600;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25);
+            transition: all 0.3s ease;
+        }
+        @media screen and (max-width: 600px) {
+            .responsive-padding {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <table width="100%" bgcolor="#f3f4f6" style="padding: 50px 0;">
+        <tr>
+            <td>
+                <div class="email-container">
+                    
+                    <!-- HEADER SECTION -->
+                    <table width="100%" style="padding: 30px 40px; background-color: #ffffff; border-bottom: 1px solid #f1f5f9;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <img src="https://seteventthailand.com/images/logo1.png" alt="Set Event Thailand" width="120">
+                            </td>
+                            <td align="right" style="color: #64748b; font-size: 13px; font-weight: 500; letter-spacing: 0.5px;">
+                                PROFESSIONAL TEAM <br>
+                                End-to-End Event Solution
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- MAIN CONTENT -->
+                    <table width="100%" style="padding: 45px 40px 30px 40px;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <span style="color: #0ea5e9; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; text-transform: uppercase;">Customer Greeting & Support</span>
+                                <h1 style="font-size: 26px; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; line-height: 1.4;">
+                                    เรียนคุณ {{contact_name}},
+                                </h1>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 20px 0;">
+                                    ขอขอบคุณสำหรับความสนใจในบริการของทาง <strong>{{company_name}}</strong> ทางทีมงานของเรายินดีเป็นอย่างยิ่งที่มีโอกาสได้แนะนำข้อมูลและแนวทางจัดงานอีเวนต์ให้แก่ท่าน
+                                </p>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 30px 0;">
+                                    หากท่านมีคำถามเกี่ยวกับแคมเปญ งานสัมมนา หรือระบบจัดการความต้องการพิเศษของงานจัดแสดงสินค้าเพิ่มเติม สามารถติดต่อผู้ดูแลโครงการของท่านได้โดยการตอบกลับอีเมลนี้โดยตรง หรือกดปุ่มพูดคุยกับเจ้าหน้าที่ของเราด้านล่างนี้
+                                </p>
+                                <div style="text-align: center;">
+                                    <a href="#" class="btn-modern">พูดคุยกับเจ้าหน้าที่</a>
+                                </div>
+                                <p style="margin-top: 40px; font-size: 15px; line-height: 1.8; color: #475569;">
+                                    ขอแสดงความนับถือ,<br>
+                                    <span style="color: #0ea5e9; font-weight: bold;">ทีมงาน SetEventThailand Co.</span>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <table width="100%" bgcolor="#0f172a" style="padding: 40px; color: #94a3b8; font-size: 13px; line-height: 1.7;" class="responsive-padding">
+                        <tr>
+                            <td style="text-align: center;">
+                                <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">SET EVENT THAILAND</p>
+                                <p style="margin: 0 0 20px 0; font-size: 12px; color: #cbd5e1;">ผู้เชี่ยวชาญด้านระบบแสง เสียง ภาพ และโครงสร้างจัดงานอีเวนต์ครบวงจร</p>
+                                 
+                                <p style="margin: 0 0 4px 0;">ฝ่ายบริการลูกค้า: 093-726-5055 | Email: setevent26@gmail.com | Line OA: @setevent</p>
+                                <p style="margin: 0 0 20px 0;">Website: <a href="https://www.seteventthailand.com" style="color: #38bdf8; text-decoration: none;">www.seteventthailand.com</a></p>
+                                 
+                                <hr style="border: none; border-top: 1px solid #334155; margin-bottom: 20px;">
+                                <p style="margin: 0; font-size: 11px; color: #64748b;">
+                                    ทางบริษัทฯ หวังเป็นอย่างยิ่งว่าข้อมูลประชาสัมพันธ์นี้จะเป็นประโยชน์ต่อการวางแผนจัดงานครั้งถัดไปของคุณลูกค้า
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>`
   },
   {
     name: "📅 การ์ดเชิญร่วมงานสัมมนา",
     subject: "ขอเรียนเชิญคุณ {{contact_name}} เข้าร่วมงานสัมมนาพิเศษประจำปี 2026",
-    body: `<div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-  <div style="background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%); padding: 36px 24px; text-align: center; color: #ffffff;">
-    <span style="font-size: 36px; display: block; margin-bottom: 8px;">✨</span>
-    <h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">EventSync Forum 2026</h1>
-    <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 14px;">The Next Era of Smart Event Technology & CRM Integration</p>
-  </div>
-  <div style="padding: 28px 24px;">
-    <p>เรียน คุณ <strong>{{contact_name}}</strong> จากบริษัท <strong>{{company_name}}</strong>,</p>
-    <p>เรามีความยินดีเป็นอย่างยิ่งที่จะเรียนเชิญท่านเข้าร่วมสัมมนาพิเศษ ที่จะรวมเหล่าผู้บริหารและผู้เชี่ยวชาญจากกลุ่มงาน Event ทั่วประเทศมาร่วมแบ่งปันวิสัยทัศน์ในหัวข้อการใช้ Data ขับเคลื่อนความสำเร็จของการจัดแสดงสินค้า</p>
-    <div style="background-color: #f8fafc; border-radius: 10px; padding: 16px; margin: 20px 0; border-left: 4px solid #8b5cf6;">
-      <p style="margin: 0 0 8px 0; font-weight: 700; color: #8b5cf6; font-size: 14px;">รายละเอียดงานสัมมนา</p>
-      <p style="margin: 0; font-size: 13px;">📆 วันที่: 15 กรกฎาคม 2026<br/>📍 สถานที่: BITEC Grand Hall (Room 201-203)<br/>⏰ เวลา: 13:00 - 17:00 น.</p>
-    </div>
-    <div style="text-align: center; margin: 28px 0;">
-      <a href="#" style="background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%); color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 30px; font-weight: 700; display: inline-block; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">ลงทะเบียนรับบัตรฟรี</a>
-    </div>
-    <p style="margin-bottom: 0;">ขอแสดงความนับถือ,<br/>คณะผู้จัดงาน EventSync Forum</p>
-  </div>
-</div>`
+    body: `<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Event Thailand - Seminar Invitation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            font-family: 'Prompt', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            -webkit-font-smoothing: antialiased;
+        }
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+        td {
+            padding: 0;
+        }
+        img {
+            border: 0;
+            display: block;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .btn-modern {
+            background-color: #8b5cf6;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 45px;
+            font-weight: 600;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
+            transition: all 0.3s ease;
+        }
+        @media screen and (max-width: 600px) {
+            .responsive-padding {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <table width="100%" bgcolor="#f3f4f6" style="padding: 50px 0;">
+        <tr>
+            <td>
+                <div class="email-container">
+                    
+                    <!-- HEADER SECTION -->
+                    <table width="100%" style="padding: 30px 40px; background-color: #ffffff; border-bottom: 1px solid #f1f5f9;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <img src="https://seteventthailand.com/images/logo1.png" alt="Set Event Thailand" width="120">
+                            </td>
+                            <td align="right" style="color: #64748b; font-size: 13px; font-weight: 500; letter-spacing: 0.5px;">
+                                PROFESSIONAL TEAM <br>
+                                End-to-End Event Solution
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- MAIN CONTENT -->
+                    <table width="100%" style="padding: 45px 40px 20px 40px;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <span style="color: #8b5cf6; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; text-transform: uppercase;">Exclusive Invitation</span>
+                                <h1 style="font-size: 26px; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; line-height: 1.4;">
+                                    EventSync Forum 2026<br><span style="color: #8b5cf6;">The Next Era of Smart Event Tech</span>
+                                </h1>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 20px 0;">
+                                    เรียน คุณ <strong>{{contact_name}}</strong> จากบริษัท <strong>{{company_name}}</strong>,
+                                </p>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 25px 0;">
+                                    เรามีความยินดีเป็นอย่างยิ่งที่จะเรียนเชิญท่านเข้าร่วมสัมมนาพิเศษ ที่จะรวมเหล่าผู้บริหารและผู้เชี่ยวชาญจากกลุ่มงาน Event ทั่วประเทศมาร่วมแบ่งปันวิสัยทัศน์ในหัวข้อการใช้ Data ขับเคลื่อนความสำเร็จของการจัดแสดงสินค้าและนวัตกรรมระบบแสง สี เสียง แห่งอนาคต
+                                </p>
+
+                                <!-- DETAILS CARD -->
+                                <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1.5px solid #8b5cf6; border-radius: 14px; background-color: #ffffff; margin: 25px 0 30px 0; overflow: hidden;">
+                                    <tr>
+                                        <td style="padding: 3px;">
+                                            <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1px solid #faf5ff; border-radius: 10px; overflow: hidden; background-color: #ffffff;">
+                                                <tr>
+                                                    <td style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); padding: 12px 16px; color: #ffffff; font-size: 14.5px; font-weight: 700; font-family: 'Prompt', sans-serif;">
+                                                        📆 รายละเอียดงานสัมมนา
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 18px; background-color: #faf5ff; font-size: 14px; line-height: 1.8; color: #334155; font-family: 'Prompt', sans-serif;">
+                                                        • <strong>วันที่:</strong> 15 กรกฎาคม 2026<br>
+                                                        • <strong>สถานที่:</strong> BITEC Grand Hall (Room 201-203)<br>
+                                                        • <strong>เวลา:</strong> 13:00 - 17:00 น.
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <div style="text-align: center; margin-bottom: 30px;">
+                                    <a href="#" class="btn-modern">ลงทะเบียนรับบัตรฟรี</a>
+                                </div>
+
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin-top: 30px;">
+                                    ขอแสดงความนับถือ,<br>
+                                    <span style="color: #8b5cf6; font-weight: bold;">คณะผู้จัดงาน SetEventThailand Forum</span>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <table width="100%" bgcolor="#0f172a" style="padding: 40px; color: #94a3b8; font-size: 13px; line-height: 1.7;" class="responsive-padding">
+                        <tr>
+                            <td style="text-align: center;">
+                                <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">SET EVENT THAILAND</p>
+                                <p style="margin: 0 0 20px 0; font-size: 12px; color: #cbd5e1;">ผู้เชี่ยวชาญด้านระบบแสง เสียง ภาพ และโครงสร้างจัดงานอีเวนต์ครบวงจร</p>
+                                 
+                                <p style="margin: 0 0 4px 0;">ฝ่ายบริการลูกค้า: 093-726-5055 | Email: setevent26@gmail.com | Line OA: @setevent</p>
+                                <p style="margin: 0 0 20px 0;">Website: <a href="https://www.seteventthailand.com" style="color: #38bdf8; text-decoration: none;">www.seteventthailand.com</a></p>
+                                 
+                                <hr style="border: none; border-top: 1px solid #334155; margin-bottom: 20px;">
+                                <p style="margin: 0; font-size: 11px; color: #64748b;">
+                                    ทางบริษัทฯ หวังเป็นอย่างยิ่งว่าข้อมูลประชาสัมพันธ์นี้จะเป็นประโยชน์ต่อการวางแผนจัดงานครั้งถัดไปของคุณลูกค้า
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>`
   },
   {
     name: "🚀 ข้อเสนอพิเศษ / Proposal",
     subject: "ข้อเสนอพิเศษสุดพิเศษสำหรับ {{company_name}} ยกระดับระบบจัดการ Event ของท่าน",
-    body: `<div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 28px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-  <div style="text-align: center; margin-bottom: 24px;">
-    <span style="font-size: 40px;">🚀</span>
-    <h2 style="color: #0ea5e9; margin: 10px 0 4px 0; font-size: 22px; font-weight: 800;">Exclusive Partnership Proposal</h2>
-    <p style="color: #64748b; margin: 0; font-size: 13px;">จัดเตรียมเป็นพิเศษสำหรับ {{company_name}}</p>
-  </div>
-  <p>เรียน คุณ {{contact_name}},</p>
-  <p>สืบเนื่องจากการติดต่อขอข้อมูลระบบบริหารจัดการความสัมพันธ์ลูกค้าร่วมกันที่ผ่านมา ทางทีมงานได้สรุปบริการและอัตราค่าใช้จ่ายพิเศษสำหรับแคมเปญ Q3 ดังรายละเอียดต่อไปนี้:</p>
-  <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px;">
-    <thead>
-      <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-        <th style="padding: 10px; text-align: left; font-weight: 700;">รายการบริการ</th>
-        <th style="padding: 10px; text-align: right; font-weight: 700;">ราคาพิเศษ (บาท)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 10px;">Event Calendar Sync Hub (BITEC & IMPACT)</td>
-        <td style="padding: 10px; text-align: right; font-weight: 600; color: #0ea5e9;">Included</td>
-      </tr>
-      <tr style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 10px;">Email Automation Campaign Module</td>
-        <td style="padding: 10px; text-align: right; font-weight: 600; color: #0ea5e9;">Included</td>
-      </tr>
-      <tr style="border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 10px; font-weight: bold;">ค่าธรรมเนียมรายปีสมาชิก CRM Operator License</td>
-        <td style="padding: 10px; text-align: right; font-weight: bold; color: #8b5cf6;">9,500.- / ปี</td>
-      </tr>
-    </tbody>
-  </table>
-  <p>ข้อเสนอนี้ยืดอายุถึงสิ้นเดือนนี้เท่านั้น ท่านสามารถกดยืนยันเพื่อขอข้อมูลเพิ่มเติมหรือนัดสาธิตการใช้งานระบบกับเจ้าหน้าที่เทคนิคของเรา</p>
-  <div style="text-align: center; margin-top: 24px;">
-    <a href="#" style="background-color: #0f172a; color: #ffffff; padding: 10px 24px; text-decoration: none; border-radius: 8px; font-weight: 700; display: inline-block;">นัดจองคิวรับการสาธิตระบบ</a>
-  </div>
-</div>`
+    body: `<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Event Thailand - Special Proposal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            font-family: 'Prompt', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            -webkit-font-smoothing: antialiased;
+        }
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+        td {
+            padding: 0;
+        }
+        img {
+            border: 0;
+            display: block;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .btn-modern {
+            background-color: #06b6d4;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 45px;
+            font-weight: 600;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.25);
+            transition: all 0.3s ease;
+        }
+        @media screen and (max-width: 600px) {
+            .responsive-padding {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <table width="100%" bgcolor="#f3f4f6" style="padding: 50px 0;">
+        <tr>
+            <td>
+                <div class="email-container">
+                    
+                    <!-- HEADER SECTION -->
+                    <table width="100%" style="padding: 30px 40px; background-color: #ffffff; border-bottom: 1px solid #f1f5f9;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <img src="https://seteventthailand.com/images/logo1.png" alt="Set Event Thailand" width="120">
+                            </td>
+                            <td align="right" style="color: #64748b; font-size: 13px; font-weight: 500; letter-spacing: 0.5px;">
+                                PROFESSIONAL TEAM <br>
+                                End-to-End Event Solution
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- MAIN CONTENT -->
+                    <table width="100%" style="padding: 45px 40px 20px 40px;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <span style="color: #06b6d4; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; text-transform: uppercase;">Exclusive Proposal</span>
+                                <h1 style="font-size: 26px; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; line-height: 1.4;">
+                                    Exclusive Partnership Proposal<br><span style="color: #ec4899;">จัดเตรียมเป็นพิเศษสำหรับ {{company_name}}</span>
+                                </h1>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 20px 0;">
+                                    เรียน คุณ {{contact_name}},
+                                </p>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 10px 0;">
+                                    สืบเนื่องจากการติดต่อขอข้อมูลระบบบริการและโครงสร้างจัดการแคมเปญร่วมกันที่ผ่านมา ทางทีมงานได้สรุปบริการและอัตราค่าใช้จ่ายพิเศษสำหรับแคมเปญ Q3 ดังรายละเอียดต่อไปนี้:
+                                </p>
+
+                                <!-- DETAILS PROPOSAL TABLE CARD -->
+                                <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1.5px solid #06b6d4; border-radius: 14px; background-color: #ffffff; margin: 25px 0 25px 0; overflow: hidden;">
+                                    <tr>
+                                        <td style="padding: 3px;">
+                                            <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1px solid #e0f7fa; border-radius: 10px; overflow: hidden; background-color: #ffffff;">
+                                                <tr>
+                                                    <td style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); padding: 12px 16px; color: #ffffff; font-size: 14.5px; font-weight: 700; font-family: 'Prompt', sans-serif;">
+                                                        📋 ตารางข้อเสนอพิเศษ
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 16px; background-color: #ffffff;">
+                                                        <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; font-family: 'Prompt', sans-serif;">
+                                                            <thead>
+                                                                <tr style="border-bottom: 2px solid #e2e8f0; color: #475569; font-weight: 750;">
+                                                                    <th style="padding: 8px 10px; text-align: left;">รายการบริการ</th>
+                                                                    <th style="padding: 8px 10px; text-align: right;">ราคาพิเศษ (บาท)</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                                                    <td style="padding: 10px 10px; color: #334155;">Event Calendar Sync Hub (BITEC & IMPACT)</td>
+                                                                    <td style="padding: 10px 10px; text-align: right; font-weight: 600; color: #06b6d4;">Included</td>
+                                                                </tr>
+                                                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                                                    <td style="padding: 10px 10px; color: #334155;">Email Automation Campaign Module</td>
+                                                                    <td style="padding: 10px 10px; text-align: right; font-weight: 600; color: #06b6d4;">Included</td>
+                                                                </tr>
+                                                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                                                    <td style="padding: 10px 10px; font-weight: bold; color: #0f172a;">ค่าธรรมเนียมรายปีสมาชิก CRM Operator License</td>
+                                                                    <td style="padding: 10px 10px; text-align: right; font-weight: bold; color: #ec4899;">9,500.- / ปี</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 25px 0;">
+                                    ข้อเสนอนี้ยืดอายุถึงสิ้นเดือนนี้เท่านั้น ท่านสามารถกดยืนยันเพื่อขอข้อมูลเพิ่มเติมหรือนัดสาธิตการใช้งานระบบกับเจ้าหน้าที่เทคนิคของเรา
+                                </p>
+
+                                <div style="text-align: center; margin-bottom: 30px;">
+                                    <a href="#" class="btn-modern" style="background: linear-gradient(135deg, #06b6d4 0%, #ec4899 100%); box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35);">นัดจองคิวรับการสาธิตระบบ</a>
+                                </div>
+
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin-top: 30px;">
+                                    ขอแสดงความนับถือ,<br>
+                                    <span style="color: #06b6d4; font-weight: bold;">ฝ่ายประสานงานเทคนิค SetEventThailand</span>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <table width="100%" bgcolor="#0f172a" style="padding: 40px; color: #94a3b8; font-size: 13px; line-height: 1.7;" class="responsive-padding">
+                        <tr>
+                            <td style="text-align: center;">
+                                <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">SET EVENT THAILAND</p>
+                                <p style="margin: 0 0 20px 0; font-size: 12px; color: #cbd5e1;">ผู้เชี่ยวชาญด้านระบบแสง เสียง ภาพ และโครงสร้างจัดงานอีเวนต์ครบวงจร</p>
+                                 
+                                <p style="margin: 0 0 4px 0;">ฝ่ายบริการลูกค้า: 093-726-5055 | Email: setevent26@gmail.com | Line OA: @setevent</p>
+                                <p style="margin: 0 0 20px 0;">Website: <a href="https://www.seteventthailand.com" style="color: #38bdf8; text-decoration: none;">www.seteventthailand.com</a></p>
+                                 
+                                <hr style="border: none; border-top: 1px solid #334155; margin-bottom: 20px;">
+                                <p style="margin: 0; font-size: 11px; color: #64748b;">
+                                    ทางบริษัทฯ หวังเป็นอย่างยิ่งว่าข้อมูลประชาสัมพันธ์นี้จะเป็นประโยชน์ต่อการวางแผนจัดงานครั้งถัดไปของคุณลูกค้า
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>`
   }
 ];
 
@@ -981,7 +1365,7 @@ function PreviewDialog({ open, onClose, subject, body }: { open: boolean; onClos
           <Stack direction="row" sx={{ alignItems: "center" }}>
             <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem", fontWeight: 600, minWidth: 60 }}>จาก:</Typography>
             <Typography sx={{ color: "var(--brand-dark)", fontSize: "0.8rem", fontWeight: 600 }}>
-              SetEvent Company &lt;noreply@eventsync.com&gt;
+              SetEventThailand Company &lt;noreply@seteventthailand.com&gt;
             </Typography>
           </Stack>
           <Stack direction="row" sx={{ alignItems: "center" }}>
@@ -994,23 +1378,14 @@ function PreviewDialog({ open, onClose, subject, body }: { open: boolean; onClos
       </Box>
 
       {/* Mock Client Body Frame */}
-      <DialogContent sx={{ p: 0, bgcolor: "#f8fafc", minHeight: 320, display: "flex", justifyContent: "center", py: 4 }}>
-        <Box sx={{
-          width: "100%",
-          maxWidth: 660,
-          bgcolor: "#ffffff",
-          boxShadow: "0 4px 20px rgba(15,23,42,0.05)",
-          borderRadius: "10px",
-          border: "1px solid var(--line)",
-          p: 3,
-          mx: { xs: 2, sm: 3 }
-        }}>
-          {body.trim() ? (
-            <div dangerouslySetInnerHTML={{ __html: body }} />
-          ) : (
-            <Typography sx={{ color: "var(--muted)", fontSize: "0.85rem", textAlign: "center", py: 4 }}>(เทมเพลตนี้ว่างเปล่า)</Typography>
-          )}
-        </Box>
+      <DialogContent sx={{ p: 0, bgcolor: "#f8fafc", minHeight: 320, overflow: "auto" }}>
+        {body.trim() ? (
+          <div dangerouslySetInnerHTML={{ __html: body }} />
+        ) : (
+          <Box sx={{ py: 8, display: "flex", justifyContent: "center", alignItems: "center", color: "var(--muted)" }}>
+            <Typography sx={{ fontSize: "0.85rem" }}>(เทมเพลตนี้ว่างเปล่า)</Typography>
+          </Box>
+        )}
       </DialogContent>
     </Dialog>
   );

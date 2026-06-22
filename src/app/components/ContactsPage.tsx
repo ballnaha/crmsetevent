@@ -103,7 +103,7 @@ function paginationItems(page: number, total: number) {
 async function exportExcel(contacts: Contact[]) {
   const ExcelJS = (await import("exceljs")).default;
   const wb = new ExcelJS.Workbook();
-  wb.creator = "EventSync";
+  wb.creator = "SetEventThailand";
   wb.created = new Date();
 
   const ws = wb.addWorksheet("Organizer Contacts", {
@@ -133,7 +133,7 @@ async function exportExcel(contacts: Contact[]) {
   const r1 = ws.getRow(1);
   r1.height = 34;
   const c1 = ws.getCell("A1");
-  c1.value = "EventSync — Organizer Contacts";
+  c1.value = "SetEventThailand — Organizer Contacts";
   c1.font = { bold: true, size: 16, name: "Calibri", color: { argb: "FFFFFFFF" } };
   c1.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0C4A6E" } };
   c1.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
