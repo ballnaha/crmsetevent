@@ -196,7 +196,7 @@ const BOILERPLATES = [
                                     <tr>
                                         <!-- ภาพที่ 1 (แนะนำขนาดสี่เหลี่ยมจัตุรัส หรือ 4:3 เช่น 400x400 px) -->
                                         <td class="gallery-cell">
-                                            <img src="https://crm.seteventthailand.com/uploads/1781934503772-uohtc7.png" alt="LED ผลงาน" class="gallery-img">
+                                            <img src="https://crm.seteventthailand.com/uploads/1782091617684-4znt6k.jpg" alt="LED ผลงาน" class="gallery-img">
                                         </td>
                                     </tr>
                                 </table>
@@ -209,58 +209,181 @@ const BOILERPLATES = [
                         <tr>
                             <td>
                                 <!-- PACKAGE S -->
-                                <div class="info-card" style="border-left: 4px solid #0ea5e9; background-color: #f0f9ff; margin-bottom: 20px; border-radius: 12px; padding: 20px; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
-                                    <table width="100%">
-                                        <tr>
-                                            <td style="font-size: 16px; font-weight: 800; color: #0369a1; padding-bottom: 8px;">
-                                                 ⚡ PACKAGE S — 60,000 BAHT
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="font-size: 13.5px; line-height: 1.7; color: #334155;">
-                                                • <strong>LED Screen:</strong> PH3.9 ขนาด 2x4 เมตร<br>
-                                                • <strong>Lighting System:</strong> Beam 4 Units / Par LED 8 Units / Daylight 8 Units / Truss I shape 2 Units / Truss T shape 2 Units<br>
-                                                • <strong>Sound System (up to 100 Pax):</strong> ลำโพง 2 Units / ไมโครโฟน 2-4 Units
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                                <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1.5px solid #06b6d4; border-radius: 14px; background-color: #ffffff; margin-bottom: 20px; overflow: hidden;">
+                                    <tr>
+                                        <td style="padding: 3px;">
+                                            <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1px solid #e0f7fa; border-radius: 10px; overflow: hidden; background-color: #ffffff;">
+                                                <!-- Header -->
+                                                <tr>
+                                                    <td style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); padding: 14px 18px; color: #ffffff;">
+                                                        <table width="100%" style="border-collapse: collapse;">
+                                                            <tr>
+                                                                <td style="font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; font-family: 'Prompt', sans-serif;">
+                                                                    ⚡ PACKAGE S
+                                                                </td>
+                                                                <td align="right" style="font-size: 15px; font-weight: 800; color: #ffffff; font-family: 'Prompt', sans-serif;">
+                                                                    60,000 BAHT
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <!-- Body -->
+                                                <tr>
+                                                    <td style="padding: 18px; background-color: #fcfdfd;">
+                                                        <table width="100%" style="border-collapse: collapse;">
+                                                            <!-- LED Screen -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px; padding-bottom: 12px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #e0f7fa; color: #00acc1; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; padding-bottom: 12px; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">LED Screen:</strong> PH3.9 ขนาด 2x4 เมตร
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Lighting System -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px; padding-bottom: 12px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #e0f7fa; color: #00acc1; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; padding-bottom: 12px; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">Lighting System:</strong> Beam 4 Units / Par LED 8 Units / Daylight 8 Units / Truss I shape 2 Units / Truss T shape 2 Units
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Sound System -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #e0f7fa; color: #00acc1; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">Sound System (up to 100 Pax):</strong> ลำโพง 2 Units / ไมโครโฟน 2-4 Units
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
 
                                 <!-- PACKAGE M -->
-                                <div class="info-card" style="border-left: 4px solid #8b5cf6; background-color: #faf5ff; margin-bottom: 20px; border-radius: 12px; padding: 20px; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
-                                    <table width="100%">
-                                        <tr>
-                                            <td style="font-size: 16px; font-weight: 800; color: #6d28d9; padding-bottom: 8px;">
-                                                 ⭐ PACKAGE M — 100,000 BAHT
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="font-size: 13.5px; line-height: 1.7; color: #334155;">
-                                                • <strong>LED Display:</strong> PH2.6 ขนาด 3x5.5 เมตร<br>
-                                                • <strong>Lighting System:</strong> Beam 6 Units / Par LED 10 Units / Par Warm Light 8 Units<br>
-                                                • <strong>Sound System (200 Pax):</strong> ลำโพง Eon JBL 4 Units / ไมโครโฟนไร้สาย 4-6 Units
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                                <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1.5px solid #ec4899; border-radius: 14px; background-color: #ffffff; margin-bottom: 20px; overflow: hidden;">
+                                    <tr>
+                                        <td style="padding: 3px;">
+                                            <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1px solid #fce7f3; border-radius: 10px; overflow: hidden; background-color: #ffffff;">
+                                                <!-- Header -->
+                                                <tr>
+                                                    <td style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); padding: 14px 18px; color: #ffffff;">
+                                                        <table width="100%" style="border-collapse: collapse;">
+                                                            <tr>
+                                                                <td style="font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; font-family: 'Prompt', sans-serif;">
+                                                                    ⭐ PACKAGE M
+                                                                </td>
+                                                                <td align="right" style="font-size: 15px; font-weight: 800; color: #ffffff; font-family: 'Prompt', sans-serif;">
+                                                                    100,000 BAHT
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <!-- Body -->
+                                                <tr>
+                                                    <td style="padding: 18px; background-color: #fcfdfd;">
+                                                        <table width="100%" style="border-collapse: collapse;">
+                                                            <!-- LED Display -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px; padding-bottom: 12px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #fce7f3; color: #db2777; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; padding-bottom: 12px; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">LED Display:</strong> PH2.6 ขนาด 3x5.5 เมตร
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Lighting System -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px; padding-bottom: 12px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #fce7f3; color: #db2777; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; padding-bottom: 12px; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">Lighting System:</strong> Beam 6 Units / Par LED 10 Units / Par Warm Light 8 Units
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Sound System -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #fce7f3; color: #db2777; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">Sound System (200 Pax):</strong> ลำโพง Eon JBL 4 Units / ไมโครโฟนไร้สาย 4-6 Units
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
 
                                 <!-- PACKAGE L -->
-                                <div class="info-card" style="border-left: 4px solid #e50914; background-color: #fff5f5; margin-bottom: 10px; border-radius: 12px; padding: 20px; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
-                                    <table width="100%">
-                                        <tr>
-                                            <td style="font-size: 16px; font-weight: 800; color: #b91c1c; padding-bottom: 8px;">
-                                                 🔥 PACKAGE L — 150,000 BAHT
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="font-size: 13.5px; line-height: 1.7; color: #334155;">
-                                                • <strong>LED Display:</strong> PH3.9 ขนาด 3x10 เมตร (จอยาวพิเศษ)<br>
-                                                • <strong>Lighting System:</strong> Beam 14 Units / Par LED 16 Units / Par Warm Light 16 Units<br>
-                                                • <strong>Sound System (300-400 Pax):</strong> ลำโพง 6-8 Units / ไมโครโฟนไร้สาย 6 Units
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
+                                <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 2px solid #06b6d4; border-radius: 14px; background-color: #ffffff; margin-bottom: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.1);">
+                                    <tr>
+                                        <td style="padding: 3px;">
+                                            <table width="100%" style="border-collapse: separate; border-spacing: 0; border: 1.5px solid #ec4899; border-radius: 10px; overflow: hidden; background-color: #ffffff;">
+                                                <!-- Header -->
+                                                <tr>
+                                                    <td style="background: linear-gradient(135deg, #06b6d4 0%, #ec4899 100%); padding: 14px 18px; color: #ffffff;">
+                                                        <table width="100%" style="border-collapse: collapse;">
+                                                            <tr>
+                                                                <td style="font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; font-family: 'Prompt', sans-serif; vertical-align: middle;">
+                                                                    <span style="background-color: #ffffff; color: #ec4899; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-right: 8px; vertical-align: middle; display: inline-block; font-family: sans-serif;">POPULAR</span> 🔥 PACKAGE L
+                                                                </td>
+                                                                <td align="right" style="font-size: 15px; font-weight: 800; color: #ffffff; font-family: 'Prompt', sans-serif; vertical-align: middle;">
+                                                                    150,000 BAHT
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <!-- Body -->
+                                                <tr>
+                                                    <td style="padding: 18px; background-color: #faf5ff;">
+                                                        <table width="100%" style="border-collapse: collapse;">
+                                                            <!-- LED Display -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px; padding-bottom: 12px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #e0f7fa; color: #00acc1; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; padding-bottom: 12px; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">LED Display:</strong> PH3.9 ขนาด 3x10 เมตร (จอยาวพิเศษ)
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Lighting System -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px; padding-bottom: 12px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #fce7f3; color: #db2777; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; padding-bottom: 12px; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">Lighting System:</strong> Beam 14 Units / Par LED 16 Units / Par Warm Light 16 Units
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Sound System -->
+                                                            <tr>
+                                                                <td style="vertical-align: top; width: 26px;">
+                                                                    <span style="display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: #f3e8ff; color: #7c3aed; font-size: 10px; font-weight: bold;">✓</span>
+                                                                </td>
+                                                                <td style="font-size: 13.5px; line-height: 1.6; color: #334155; font-family: 'Prompt', sans-serif;">
+                                                                    <strong style="color: #0f172a;">Sound System (300-400 Pax):</strong> ลำโพง 6-8 Units / ไมโครโฟนไร้สาย 6 Units
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                     </table>
