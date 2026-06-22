@@ -1641,6 +1641,11 @@ function TemplatesTab() {
 
 // ─── Send Campaign Tab ───────────────────────────────────────────────────────
 
+const SENDERS = [
+  { id: "setevent", label: "SetEventThailand", email: "noreply@seteventthailand.com", formatted: "SetEventThailand <noreply@seteventthailand.com>" },
+  { id: "propacific", label: "ProPacific", email: "noreplay@propacific.com", formatted: "ProPacific <noreplay@propacific.com>" }
+];
+
 type SendStep = "compose" | "contacts" | "confirm" | "done";
 
 const wizardSteps = [
@@ -1659,6 +1664,7 @@ function SendCampaignTab() {
 
   const [campaignName, setCampaignName] = useState("");
   const [templateId, setTemplateId] = useState<number | "">("");
+  const [senderId, setSenderId] = useState("setevent");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
   const [filterEmail, setFilterEmail] = useState(true);
@@ -1668,6 +1674,8 @@ function SendCampaignTab() {
   const [result, setResult] = useState<{ campaignId?: number; sent?: number; failed?: number; queued?: boolean; total?: number } | null>(null);
   const [sendErr, setSendErr] = useState("");
   const [page, setPage] = useState(1);
+
+  const selectedSender = SENDERS.find((s) => s.id === senderId) ?? SENDERS[0];
 
   useEffect(() => {
     setPage(1);
@@ -1771,7 +1779,7 @@ function SendCampaignTab() {
       const res = await fetch("/api/email-campaigns", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ templateId, name: campaignName, recipients, attachments }),
+        body: JSON.stringify({ templateId, name: campaignName, recipients, attachments, fromAddress: selectedSender.formatted }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Error");
@@ -1788,6 +1796,7 @@ function SendCampaignTab() {
     setStep("compose");
     setCampaignName("");
     setTemplateId("");
+    setSenderId("setevent");
     setAttachments([]);
     setSelectedIds(new Set());
     setSearch("");
@@ -1881,6 +1890,29 @@ function SendCampaignTab() {
               placeholder="เช่น ส่งเชิญงาน BITEC Q3 - ผู้จัดงานกลุ่มไอที"
               sx={fieldSx()}
             />
+
+            <FormControl fullWidth size="small" sx={{
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(148,163,184,0.15)" },
+              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(14,165,233,0.3)" },
+              "& .MuiInputLabel-root": { color: "var(--muted)", fontSize: "0.78rem" },
+              "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand)" },
+              "& .MuiSelect-select": { color: "var(--foreground)", fontSize: "0.82rem" },
+            }}>
+              <InputLabel>ส่งในนามบริษัท (Sender Identity)</InputLabel>
+              <Select
+                value={senderId}
+                onChange={(e) => setSenderId(e.target.value as string)}
+                label="ส่งในนามบริษัท (Sender Identity)"
+                sx={{ bgcolor: "rgba(0,0,0,0.015)", borderRadius: "10px", "& .MuiSvgIcon-root": { color: "var(--muted)" } }}
+                MenuProps={{ slotProps: { paper: { sx: { bgcolor: "#ffffff", border: "1px solid var(--line)", borderRadius: "8px" } } } }}
+              >
+                {SENDERS.map((s) => (
+                  <MenuItem key={s.id} value={s.id} sx={{ color: "var(--foreground)", fontSize: "0.82rem" }}>
+                    {s.label} ({s.email})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <FormControl fullWidth size="small" sx={{
               "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(148,163,184,0.15)" },
@@ -2129,6 +2161,12 @@ function SendCampaignTab() {
                   <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                     <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ชื่อแคมเปญ:</Typography>
                     <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem", fontWeight: 700 }}>{campaignName}</Typography>
+                  </Stack>
+                  <Stack direction="row" sx={{ justifyContent: "space-between" }}>
+                    <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>ส่งในนามบริษัท:</Typography>
+                    <Typography sx={{ color: "var(--foreground)", fontSize: "0.82rem", fontWeight: 700 }}>
+                      {selectedSender.label} ({selectedSender.email})
+                    </Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                     <Typography sx={{ color: "var(--muted)", fontSize: "0.78rem" }}>โครงร่างจดหมาย:</Typography>

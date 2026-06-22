@@ -52,12 +52,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-async function runEmailCampaignQueue(campaignId: number, attachments: AttachmentInput[]) {
+async function runEmailCampaignQueue(campaignId: number, attachments: AttachmentInput[], fromAddress?: string) {
   const db = prisma;
   if (!db) {
     console.error("[Background Queue] Database client is unavailable");
     return;
   }
+
+  const campaignFromAddress = fromAddress ?? FROM;
 
   try {
     const campaign = await db.emailCampaign.findUnique({
@@ -87,7 +89,7 @@ async function runEmailCampaignQueue(campaignId: number, attachments: Attachment
             email: r.email,
           };
           return {
-            from: FROM,
+            from: campaignFromAddress,
             to: [r.email],
             subject: merge(campaign.subject, vars),
             html: merge(campaign.body, vars),
@@ -169,7 +171,7 @@ async function runEmailCampaignQueue(campaignId: number, attachments: Attachment
 
                 try {
                   const { data, error } = await resend.emails.send({
-                    from: FROM,
+                    from: campaignFromAddress,
                     to: [r.email],
                     subject,
                     html: htmlBody,
@@ -246,7 +248,7 @@ async function runEmailCampaignQueue(campaignId: number, attachments: Attachment
 
             try {
               const { data, error } = await resend.emails.send({
-                from: FROM,
+                from: campaignFromAddress,
                 to: [r.email],
                 subject,
                 html: htmlBody,
@@ -328,11 +330,12 @@ export async function POST(req: NextRequest) {
   try {
     if (!prisma) return NextResponse.json({ error: "DB unavailable" }, { status: 503 });
     const body = await req.json();
-    const { templateId, name, recipients, attachments = [] } = body as {
+    const { templateId, name, recipients, attachments = [], fromAddress } = body as {
       templateId: number;
       name: string;
       recipients: Recipient[];
       attachments: AttachmentInput[];
+      fromAddress?: string;
     };
 
     if (!templateId || !name?.trim() || !recipients?.length) {
@@ -361,7 +364,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Fire & Forget background processing
-    runEmailCampaignQueue(campaign.id, attachments).catch((err) => {
+    runEmailCampaignQueue(campaign.id, attachments, fromAddress).catch((err) => {
       console.error("[Background Queue Dispatch Error]", err);
     });
 
