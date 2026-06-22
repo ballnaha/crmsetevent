@@ -60,7 +60,7 @@ const MERGE_TAGS = [
 const BOILERPLATES = [
   {
     name: "📺 โปรโมชั่นจอ LED (Set Event)",
-    subject: "ยกระดับภาพลักษณ์งานอีเวนต์ด้วยจอ LED คมชัดสูง — Set Event Thailand",
+    subject: "เนรมิตอีเวนต์พรีเมียม ครบวงจร แสง-สี-เสียง-จอ LED จบในที่เดียว — Set Event Thailand",
     body: `<!DOCTYPE html>
 <html lang="th">
 <head>
@@ -176,13 +176,17 @@ const BOILERPLATES = [
                     <table width="100%" style="padding: 45px 40px 20px 40px;" class="responsive-padding">
                         <tr>
                             <td>
-                                <span style="color: #e50914; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; text-transform: uppercase;">Premium LED Screen Rental</span>
+                                <span style="color: #e50914; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; text-transform: uppercase;">One-Stop Event Production</span>
                                 <h1 style="font-size: 26px; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; line-height: 1.4;">
-                                    ยกระดับภาพลักษณ์งานอีเวนต์<br>ด้วย<span style="color: #e50914;">จอ LED คมชัดสูง</span> เต็มตา ทุกมิติ
+                                    เนรมิตงานอีเวนต์สุดพรีเมียม<br><span style="color: #e50914;">ครบวงจรจบในที่เดียว</span> สะกดทุกสายตา
                                 </h1>
                                 <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0;">
                                     เรียน พันธมิตรผู้จัดงานและลูกค้าทุกท่าน,<br><br>
-                                    สร้างความประทับใจให้ผู้ร่วมงานด้วย **ระบบจอ LED Display เกรดพรีเมียม (High Refresh Rate)** จาก Set Event Thailand ถ่ายภาพหน้างานสวยคมชัด แสงไม่กระพริบ ออกอากาศลื่นไหลไม่มีสะดุด เหมาะสำหรับงานแต่งงาน งานสัมมนา งานแถลงข่าว และคอนเสิร์ตทุกรูปแบบ
+                                    หมดกังวลเรื่องความยุ่งยากในการประสานงานหลายฝ่าย! **Set Event Thailand** ยกระดับมาตรฐานการจัดงานด้วยบริการ **Event Organizer & Production ครบวงจร** เราพร้อมเนรมิตงานของคุณให้สมบูรณ์แบบ ไร้รอยต่อ ตั้งแต่ระบบแสง สี เสียง โครงสร้างเวที ไปจนถึง **ระบบจอ LED Display เกรดพรีเมียม (High Refresh Rate)** ที่ให้ภาพคมชัดสูง แสงไม่กระพริบเมื่อถ่ายภาพ/วิดีโอหน้างาน ช่วยเสริมภาพลักษณ์ระดับไฮเอนด์ให้กับทุกงานสัมมนา งานแต่งงาน งานแถลงข่าว หรือคอนเสิร์ต<br><br>
+                                    <strong>ทำไมต้องเลือก Set Event Thailand?</strong><br>
+                                    • <strong>ครบจบในที่เดียว (One-Stop Solution):</strong> ดูแลทั้งจอ LED แสง เสียง และรันเวที ไม่ต้องแยกดีลหลายเจ้า ประหยัดงบและเวลา<br>
+                                    • <strong>อุปกรณ์เกรดพรีเมียมระดับท็อป:</strong> จอ LED และระบบเสียงมาตรฐานสากล คมชัดสมจริง ไร้กังวลเรื่องขัดข้องหน้างาน<br>
+                                    • <strong>ทีมงานผู้เชี่ยวชาญเคียงข้างคุณ:</strong> ทีมวิศวกรและช่างเทคนิคดูแลใกล้ชิดทุกวินาที มั่นใจได้ในความมืออาชีพ
                                 </p>
                             </td>
                         </tr>
