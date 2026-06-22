@@ -52,6 +52,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function runEmailCampaignQueue(campaignId: number, attachments: AttachmentInput[], fromAddress?: string) {
   const db = prisma;
   if (!db) {
@@ -156,88 +158,9 @@ async function runEmailCampaignQueue(campaignId: number, attachments: Attachment
           const msg = err instanceof Error ? err.message : String(err);
           console.warn(`[Background Queue] Batch failed, falling back to individual sending for chunk: ${msg}`);
 
-          const INDIVIDUAL_CONCURRENCY = 5;
-          for (let k = 0; k < chunk.length; k += INDIVIDUAL_CONCURRENCY) {
-            const subChunk = chunk.slice(k, k + INDIVIDUAL_CONCURRENCY);
-            await Promise.all(
-              subChunk.map(async (r) => {
-                const vars = {
-                  contact_name: r.name ?? "",
-                  company_name: r.company ?? "",
-                  email: r.email,
-                };
-                const subject = merge(campaign.subject, vars);
-                const htmlBody = merge(campaign.body, vars);
-
-                try {
-                  const { data, error } = await resend.emails.send({
-                    from: campaignFromAddress,
-                    to: [r.email],
-                    subject,
-                    html: htmlBody,
-                  });
-
-                  if (error) throw new Error(error.message);
-
-                  await db.emailRecipient.update({
-                    where: { id: r.id },
-                    data: { status: "SENT", messageId: data?.id ?? null, sentAt: new Date() },
-                  });
-                  sentCount++;
-
-                  const matchingOrgs = await db.organizer.findMany({ where: { email: r.email } });
-                  for (const org of matchingOrgs) {
-                    const newStatus = org.outreachStatus === "NEW" || org.outreachStatus === "NEEDS_REVIEW" || org.outreachStatus === "READY"
-                      ? "CONTACTED"
-                      : org.outreachStatus;
-
-                    await db.organizer.update({
-                      where: { id: org.id },
-                      data: { outreachStatus: newStatus },
-                    });
-
-                    await db.contactActivity.create({
-                      data: {
-                        organizerId: org.id,
-                        type: "EMAIL",
-                        text: `ส่งอีเมลแคมเปญสำเร็จ (โหมดสำรอง): "${campaign.name}" (หัวข้อ: "${subject}")`,
-                      },
-                    });
-                  }
-                } catch (subErr: any) {
-                  const subMsg = subErr instanceof Error ? subErr.message : String(subErr);
-                  await db.emailRecipient.update({
-                    where: { id: r.id },
-                    data: { status: "FAILED", error: subMsg },
-                  });
-                  failCount++;
-
-                  const matchingOrgs = await db.organizer.findMany({ where: { email: r.email } });
-                  for (const org of matchingOrgs) {
-                    await db.contactActivity.create({
-                      data: {
-                        organizerId: org.id,
-                        type: "EMAIL",
-                        text: `ส่งอีเมลแคมเปญล้มเหลว: "${campaign.name}" (สาเหตุ: ${subMsg})`,
-                      },
-                    });
-                  }
-                }
-              })
-            );
-          }
-        }
-      }
-    } else {
-      // ─── WITH ATTACHMENTS: BATCH IN PARALLEL CHUNKS (CONCURRENCY LIMIT: 5) ───
-      const recipients = campaign.recipients;
-      const CONCURRENCY = 5;
-
-      for (let i = 0; i < recipients.length; i += CONCURRENCY) {
-        const chunk = recipients.slice(i, i + CONCURRENCY);
-
-        await Promise.all(
-          chunk.map(async (r) => {
+          // FALLBACK INDIVIDUAL SENDING (SEQUENTIAL TO AVOID RATE LIMITS)
+          for (let k = 0; k < chunk.length; k++) {
+            const r = chunk[k];
             const vars = {
               contact_name: r.name ?? "",
               company_name: r.company ?? "",
@@ -252,10 +175,6 @@ async function runEmailCampaignQueue(campaignId: number, attachments: Attachment
                 to: [r.email],
                 subject,
                 html: htmlBody,
-                attachments: attachments.map((a) => ({
-                  filename: a.filename,
-                  content: Buffer.from(a.base64, "base64"),
-                })),
               });
 
               if (error) throw new Error(error.message);
@@ -281,15 +200,15 @@ async function runEmailCampaignQueue(campaignId: number, attachments: Attachment
                   data: {
                     organizerId: org.id,
                     type: "EMAIL",
-                    text: `ส่งอีเมลแคมเปญสำเร็จ: "${campaign.name}" (หัวข้อ: "${subject}")`,
+                    text: `ส่งอีเมลแคมเปญสำเร็จ (โหมดสำรอง): "${campaign.name}" (หัวข้อ: "${subject}")`,
                   },
                 });
               }
-            } catch (err: any) {
-              const msg = err instanceof Error ? err.message : String(err);
+            } catch (subErr: any) {
+              const subMsg = subErr instanceof Error ? subErr.message : String(subErr);
               await db.emailRecipient.update({
                 where: { id: r.id },
-                data: { status: "FAILED", error: msg },
+                data: { status: "FAILED", error: subMsg },
               });
               failCount++;
 
@@ -299,13 +218,99 @@ async function runEmailCampaignQueue(campaignId: number, attachments: Attachment
                   data: {
                     organizerId: org.id,
                     type: "EMAIL",
-                    text: `ส่งอีเมลแคมเปญล้มเหลว: "${campaign.name}" (สาเหตุ: ${msg})`,
+                    text: `ส่งอีเมลแคมเปญล้มเหลว: "${campaign.name}" (สาเหตุ: ${subMsg})`,
                   },
                 });
               }
             }
-          })
-        );
+
+            // Safe delay: Resend free tier allows max 2 requests/sec -> 550ms delay
+            await delay(550);
+          }
+        }
+
+        // Delay between batch calls (each batch counts as 1 request)
+        if (i + CHUNK_SIZE < recipients.length) {
+          await delay(600);
+        }
+      }
+    } else {
+      // ─── WITH ATTACHMENTS: SEND SEQUENTIALLY WITH RATE LIMIT DELAY ───
+      const recipients = campaign.recipients;
+
+      for (let i = 0; i < recipients.length; i++) {
+        const r = recipients[i];
+        const vars = {
+          contact_name: r.name ?? "",
+          company_name: r.company ?? "",
+          email: r.email,
+        };
+        const subject = merge(campaign.subject, vars);
+        const htmlBody = merge(campaign.body, vars);
+
+        try {
+          const { data, error } = await resend.emails.send({
+            from: campaignFromAddress,
+            to: [r.email],
+            subject,
+            html: htmlBody,
+            attachments: attachments.map((a) => ({
+              filename: a.filename,
+              content: Buffer.from(a.base64, "base64"),
+            })),
+          });
+
+          if (error) throw new Error(error.message);
+
+          await db.emailRecipient.update({
+            where: { id: r.id },
+            data: { status: "SENT", messageId: data?.id ?? null, sentAt: new Date() },
+          });
+          sentCount++;
+
+          const matchingOrgs = await db.organizer.findMany({ where: { email: r.email } });
+          for (const org of matchingOrgs) {
+            const newStatus = org.outreachStatus === "NEW" || org.outreachStatus === "NEEDS_REVIEW" || org.outreachStatus === "READY"
+              ? "CONTACTED"
+              : org.outreachStatus;
+
+            await db.organizer.update({
+              where: { id: org.id },
+              data: { outreachStatus: newStatus },
+            });
+
+            await db.contactActivity.create({
+              data: {
+                organizerId: org.id,
+                type: "EMAIL",
+                text: `ส่งอีเมลแคมเปญสำเร็จ: "${campaign.name}" (หัวข้อ: "${subject}")`,
+              },
+            });
+          }
+        } catch (err: any) {
+          const msg = err instanceof Error ? err.message : String(err);
+          await db.emailRecipient.update({
+            where: { id: r.id },
+            data: { status: "FAILED", error: msg },
+          });
+          failCount++;
+
+          const matchingOrgs = await db.organizer.findMany({ where: { email: r.email } });
+          for (const org of matchingOrgs) {
+            await db.contactActivity.create({
+              data: {
+                organizerId: org.id,
+                type: "EMAIL",
+                text: `ส่งอีเมลแคมเปญล้มเหลว: "${campaign.name}" (สาเหตุ: ${msg})`,
+              },
+            });
+          }
+        }
+
+        // Safe delay: Resend free tier allows max 2 requests/sec -> 550ms delay
+        if (i + 1 < recipients.length) {
+          await delay(550);
+        }
       }
     }
 
