@@ -1805,6 +1805,7 @@ function SendCampaignTab() {
     setSearch("");
     setResult(null);
     setSendErr("");
+    setContacts([]);
   }
 
   const recipientsWithEmail = contacts.filter((c) => selectedIds.has(c.id) && c.email);
