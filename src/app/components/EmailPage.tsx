@@ -1642,8 +1642,7 @@ function TemplatesTab() {
 // ─── Send Campaign Tab ───────────────────────────────────────────────────────
 
 const SENDERS = [
-  { id: "setevent", label: "SetEventThailand", email: "noreply@seteventthailand.com", formatted: "SetEventThailand <noreply@seteventthailand.com>" },
-  { id: "propacific", label: "ProPacific", email: "noreplay@propacific.com", formatted: "ProPacific <noreplay@propacific.com>" }
+  { id: "setevent", label: "SetEventThailand", email: "noreply@seteventthailand.com", formatted: "SetEventThailand <noreply@seteventthailand.com>" }
 ];
 
 type SendStep = "compose" | "contacts" | "confirm" | "done";
@@ -1891,28 +1890,10 @@ function SendCampaignTab() {
               sx={fieldSx()}
             />
 
-            <FormControl fullWidth size="small" sx={{
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(148,163,184,0.15)" },
-              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(14,165,233,0.3)" },
-              "& .MuiInputLabel-root": { color: "var(--muted)", fontSize: "0.78rem" },
-              "& .MuiInputLabel-root.Mui-focused": { color: "var(--brand)" },
-              "& .MuiSelect-select": { color: "var(--foreground)", fontSize: "0.82rem" },
-            }}>
-              <InputLabel>ส่งในนามบริษัท (Sender Identity)</InputLabel>
-              <Select
-                value={senderId}
-                onChange={(e) => setSenderId(e.target.value as string)}
-                label="ส่งในนามบริษัท (Sender Identity)"
-                sx={{ bgcolor: "rgba(0,0,0,0.015)", borderRadius: "10px", "& .MuiSvgIcon-root": { color: "var(--muted)" } }}
-                MenuProps={{ slotProps: { paper: { sx: { bgcolor: "#ffffff", border: "1px solid var(--line)", borderRadius: "8px" } } } }}
-              >
-                {SENDERS.map((s) => (
-                  <MenuItem key={s.id} value={s.id} sx={{ color: "var(--foreground)", fontSize: "0.82rem" }}>
-                    {s.label} ({s.email})
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Paper sx={{ bgcolor: "rgba(14,165,233,0.04)", border: "1px dashed rgba(14,165,233,0.25)", borderRadius: "10px", p: 2 }}>
+              <Typography sx={{ color: "var(--muted)", fontSize: "0.68rem", fontWeight: 700, mb: 0.5, letterSpacing: "0.02em" }}>ส่งในนามบริษัท (SENDER IDENTITY)</Typography>
+              <Typography sx={{ color: "var(--foreground)", fontSize: "0.85rem", fontWeight: 600 }}>{selectedSender.label} ({selectedSender.email})</Typography>
+            </Paper>
 
             <FormControl fullWidth size="small" sx={{
               "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(148,163,184,0.15)" },
