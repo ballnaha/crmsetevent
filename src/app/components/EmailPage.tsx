@@ -875,6 +875,240 @@ const BOILERPLATES = [
 
 </body>
 </html>`
+  },
+  {
+    name: "🏢 ส่ง Company Profile (ทางการ)",
+    subject: "Total Event Solutions Rental — LED • LIGHTING • SOUND • STAGE • EFFECTS ครบ จบ ในทีมเดียว | คุยง่าย ทำงานไว คุมงบได้",
+    body: `<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SET-EVENT Company Profile</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            font-family: 'Prompt', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            -webkit-font-smoothing: antialiased;
+        }
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+        td {
+            padding: 0;
+        }
+        img {
+            border: 0;
+            display: block;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .btn-modern {
+            background-color: #e50914; /* Set Event Brand Red */
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 45px;
+            font-weight: 600;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(229, 9, 21, 0.25);
+            transition: all 0.3s ease;
+        }
+        .service-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        @media screen and (max-width: 600px) {
+            .responsive-padding {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <table width="100%" bgcolor="#f3f4f6" style="padding: 50px 0;">
+        <tr>
+            <td>
+                <div class="email-container">
+                    
+                    <!-- HEADER SECTION -->
+                    <table width="100%" style="padding: 30px 40px; background-color: #ffffff; border-bottom: 1px solid #f1f5f9;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <img src="https://seteventthailand.com/images/logo1.png" alt="Set Event Thailand" width="120">
+                            </td>
+                            <td align="right" style="color: #64748b; font-size: 13px; font-weight: 500; letter-spacing: 0.5px;">
+                                PROFESSIONAL TEAM <br>
+                                End-to-End Event Solution
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- MAIN CONTENT -->
+                    <table width="100%" style="padding: 45px 40px 20px 40px;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <span style="color: #e50914; font-size: 13px; font-weight: bold; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; text-transform: uppercase;">Company Introduction</span>
+                                <h1 style="font-size: 24px; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; line-height: 1.4;">
+                                    เรียน {{company_name}}
+                                </h1>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 20px 0;">
+                                    ทาง <strong>SET-EVENT</strong> ขอส่ง Company Profile และรายละเอียดบริการเพื่อประกอบการพิจารณา โดยบริษัทให้บริการด้าน <strong>LED Screen, Lighting, Sound, Stage Design และ Special Effects</strong> แบบครบวงจรสำหรับงานอีเวนต์ทุกประเภท
+                                </p>
+                                <p style="font-size: 15px; line-height: 1.8; color: #475569; margin: 0 0 20px 0;">
+                                    หากท่านมีรายละเอียดงานเบื้องต้น ทางเรายินดีให้คำปรึกษาและจัดทำใบเสนอราคาให้โดยไม่มีค่าใช้จ่าย พร้อมแนบแพ็คเกจรายละเอียดบริการตามไฟล์แนบค่ะ ทั้งนี้ ราคาแต่ละแพ็คเกจสามารถปรับเปลี่ยนตามความเหมาะสมของแต่ละงานได้
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- SERVICES HIGHLIGHT -->
+                    <table width="100%" style="padding: 0 40px 20px 40px;" class="responsive-padding">
+                        <tr>
+                            <td>
+                                <h3 style="font-size: 16px; color: #0f172a; margin: 0 0 15px 0; font-weight: 700; border-left: 4px solid #e50914; padding-left: 10px;">
+                                    ขอบเขตบริการแบบครบวงจร (Our Services)
+                                </h3>
+                                
+                                <!-- Service 1 -->
+                                <div class="service-card">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="vertical-align: top; width: 30px;">
+                                                <span style="font-size: 18px;">📺</span>
+                                            </td>
+                                            <td>
+                                                <strong style="color: #0f172a; font-size: 14.5px;">LED Screen System</strong>
+                                                <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b; line-height: 1.5;">จอ LED ความละเอียดสูง ทั้งในร่มและกลางแจ้ง พร้อมทีมควบคุมเทคนิค</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <!-- Service 2 -->
+                                <div class="service-card">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="vertical-align: top; width: 30px;">
+                                                <span style="font-size: 18px;">💡</span>
+                                            </td>
+                                            <td>
+                                                <strong style="color: #0f172a; font-size: 14.5px;">Lighting System</strong>
+                                                <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b; line-height: 1.5;">ระบบแสง สี สาดส่องเวที สร้างบรรยากาศที่ยอดเยี่ยมและน่าประทับใจ</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <!-- Service 3 -->
+                                <div class="service-card">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="vertical-align: top; width: 30px;">
+                                                <span style="font-size: 18px;">🔊</span>
+                                            </td>
+                                            <td>
+                                                <strong style="color: #0f172a; font-size: 14.5px;">Sound System</strong>
+                                                <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b; line-height: 1.5;">ระบบเสียงคุณภาพสูง คมชัด ครอบคลุมพื้นที่การจัดงานทุกขนาด</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <!-- Service 4 -->
+                                <div class="service-card">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="vertical-align: top; width: 30px;">
+                                                <span style="font-size: 18px;">📐</span>
+                                            </td>
+                                            <td>
+                                                <strong style="color: #0f172a; font-size: 14.5px;">Stage Design & Truss Structure</strong>
+                                                <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b; line-height: 1.5;">ออกแบบและติดตั้งเวที โครงสร้าง Truss แข็งแรงทนทาน ปลอดภัย</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <!-- Service 5 -->
+                                <div class="service-card">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="vertical-align: top; width: 30px;">
+                                                <span style="font-size: 18px;">✨</span>
+                                            </td>
+                                            <td>
+                                                <strong style="color: #0f172a; font-size: 14.5px;">Special Effects</strong>
+                                                <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b; line-height: 1.5;">เอฟเฟกต์พิเศษสำหรับช่วงพิธีการ เช่น Dry Ice, CO2, Paper Shooter</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- CALL TO ACTION / CLOSING -->
+                    <table width="100%" style="padding: 10px 40px 40px 40px;" class="responsive-padding">
+                        <tr>
+                            <td style="text-align: center;">
+                                <div style="margin-bottom: 25px;">
+                                    <a href="https://line.me/R/ti/p/%40setevent" class="btn-modern" style="background-color: #e50914; color: #ffffff !important; text-decoration: none; padding: 14px 35px; font-weight: 600; border-radius: 8px; display: inline-block; font-size: 15px; box-shadow: 0 4px 14px rgba(229, 9, 21, 0.25);">ติดต่อปรึกษาและขอใบเสนอราคาฟรี</a>
+                                </div>
+                                <p style="font-size: 14px; line-height: 1.8; color: #475569; text-align: left; margin: 0;">
+                                    ขอบพระคุณสำหรับโอกาสในการนำเสนอบริการ และหวังเป็นอย่างยิ่งว่าจะได้ร่วมงานกับท่านในอนาคตอันใกล้
+                                </p>
+                                <p style="font-size: 14px; line-height: 1.8; color: #475569; text-align: left; margin: 20px 0 0 0;">
+                                    ขอแสดงความนับถือ,<br>
+                                    <strong>SETEVENT</strong>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <table width="100%" bgcolor="#0f172a" style="padding: 40px; color: #94a3b8; font-size: 13px; line-height: 1.7;" class="responsive-padding">
+                        <tr>
+                            <td style="text-align: center;">
+                                <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">SET EVENT THAILAND</p>
+                                <p style="margin: 0 0 20px 0; font-size: 12px; color: #cbd5e1;">ผู้เชี่ยวชาญด้านระบบแสง เสียง ภาพ และโครงสร้างจัดงานอีเวนต์ครบวงจร</p>
+                                 
+                                <p style="margin: 0 0 4px 0;">ฝ่ายบริการลูกค้า: 093-726-5055 | Email: setevent26@gmail.com | Line OA: @setevent</p>
+                                <p style="margin: 0 0 20px 0;">Website: <a href="https://www.seteventthailand.com" style="color: #38bdf8; text-decoration: none;">www.seteventthailand.com</a></p>
+                                 
+                                <hr style="border: none; border-top: 1px solid #334155; margin-bottom: 20px;">
+                                <p style="margin: 0; font-size: 11px; color: #64748b;">
+                                    ทางบริษัทฯ หวังเป็นอย่างยิ่งว่าข้อมูลประชาสัมพันธ์นี้จะเป็นประโยชน์ต่อการวางแผนจัดงานครั้งถัดไปของคุณลูกค้า
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>`
   }
 ];
 
