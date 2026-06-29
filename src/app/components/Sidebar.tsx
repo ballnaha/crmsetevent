@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Settings,
   Users,
+  UserCog,
   LogOut,
   Image as ImageIcon,
 } from "lucide-react";
@@ -18,14 +19,16 @@ type SidebarProps = {
   onClose?: () => void;
 };
 
-export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) {
+export default function Sidebar({ onClose }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
 
   const user = session?.user;
   const userName = user?.name || "CRM Operator";
-  const userRole = (user as any)?.role || "Administrator";
+  const userRole = user && "role" in user && typeof user.role === "string"
+    ? user.role
+    : "Administrator";
   const userInitials = userName
     .split(" ")
     .map((n) => n[0])
@@ -202,6 +205,29 @@ export default function Sidebar({ variant = "desktop", onClose }: SidebarProps) 
             Administration
           </Typography>
           <Stack spacing={0.5}>
+            {userRole === "ADMIN" && (
+              <Button
+              className={`navButton ${pathname === "/users" ? "navButtonActive" : ""}`}
+              startIcon={<UserCog size={16} />}
+              onClick={() => {
+                router.push("/users");
+                if (onClose) onClose();
+              }}
+              sx={{
+                justifyContent: "flex-start",
+                color: pathname === "/users" ? "var(--brand-dark)" : "var(--muted)",
+                bgcolor: pathname === "/users" ? "var(--sidebar-active-bg)" : "transparent",
+                fontWeight: pathname === "/users" ? 600 : 500,
+                px: 1.5,
+                py: 1,
+                width: "100%",
+                textTransform: "none",
+                fontSize: "0.85rem",
+              }}
+            >
+              จัดการผู้ใช้
+            </Button>
+            )}
             <Button
               className="navButton"
               disabled
